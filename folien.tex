@@ -1,0 +1,86 @@
+\documentclass[12pt,compress,ngerman]{beamer}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{ulem}  % sout
+\usepackage{multicol}
+
+% Manual syntax highlighting
+\newcommand{\synfunc}   [1]{\color{blue!50!black}#1\color{black}}
+\newcommand{\synstr}    [1]{\color{red!50!black}#1\color{black}}
+\newcommand{\synvar}    [1]{\color{purple!50!black}#1\color{black}}
+\newcommand{\synclass}  [1]{\color{green!50!black}#1\color{black}}
+\newcommand{\syncomment}[1]{\color{blue!20!black}#1\color{black}}
+\newcommand{\syncool}   [1]{\color{beamer@blendedblue}#1\color{black}}
+\newcommand{\synoder}      {\ \ \color{black}$\vee$\ \ }
+\newcommand{\hr}        {\rule[4pt]{\textwidth}{0.1pt}\\}
+\newcommand{\hicolor}   [1]{\color[rgb]{0.6,0.2,0.8}#1\color{black}}
+\newcommand{\synhilight}[1]{\hicolor{\textbf{#1}}}
+
+\newcommand{\doofcomment}{\ \ \syncomment{\# :-(}}
+\newcommand{\gutcomment} {\ \ \syncomment{\# :)}}
+
+\newcommand{\T}[1]{\mathbf{#1}}
+\newcommand{\Spur}[1]{\operatorname{Spur}{#1}}
+\newcommand{\ul}[1]{\mathcal{#1}}
+\newcommand{\singabb}[3]{$\begin{array}{@{}c@{}}\text{\includegraphics[scale=#3]{abb/#1.png}}\\\text{#2}\end{array}$}
+
+\title{Haskell, \\eine rein funktionale Programmiersprache}
+\author{Ingo Blechschmidt \\ \texttt{<iblech@web.de>}} % \\\texttt{<carina.willbold@student.uni-augsburg.de>}}
+%\institute{{\footnotesize Universität Augsburg}}
+\date{Augsburger Linux-Infotag 2010}
+
+\usetheme{Warsaw}  %Warsaw, Berkeley?
+\usecolortheme{seahorse}
+\usefonttheme{serif}
+\useinnertheme{rectangles}
+\usepackage{bookman}
+\setbeamercovered{transparent}
+
+\setbeamertemplate{navigation symbols}{}
+%\setbeamertemplate{headline}{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\frame[plain]{\begin{center}
+  \includegraphics[scale=0.35]{images/learn-you-a-haskell-for-great-good.png}
+\end{center}}
+
+\section{Grundlegendes}
+\frame[t]{\frametitle{Haskell ist komisch!}
+  \hfill\begin{picture}(0,0)(100,110)\includegraphics[scale=0.2]{images/endo.png}\end{picture}
+
+  Haskell ist rein funktional:
+  \begin{itemize}
+    \item keine veränderliche Variablen
+    \item keine Seiteneffekte
+  \end{itemize}
+}
+
+\frame[t]{\frametitle{Bedarfsauswertung}
+  \texttt{%
+    \synvar{natürlicheZahlen}\ :: [\synclass{Integer}] \\
+    \synvar{natürlicheZahlen}\ = [1..] \\
+    \ \\
+    \synvar{ungeradeZahlen}\ :: [\synclass{Integer}] \\
+    \synvar{ungeradeZahlen}\ = \synfunc{filter}\ \synfunc{odd}\ [1..] \\
+    \ \\
+    \synvar{fibs}\ :: [\synclass{Integer}] \\
+    \synvar{fibs}\ = 0 : 1 : \synfunc{zipWith}\ (+) \synvar{fibs}\ (\synfunc{tail}\ \synvar{fibs})
+  }
+}
+
+\appendix
+\section{Bildquellen}
+\frame[t]{\frametitle{Bildquellen}
+  \begin{itemize}
+    \item \url{http://learnyouahaskell.com/splash.png}
+    \item \url{http://save-endo.cs.uu.nl/target.png}
+  \end{itemize}
+}
+
+\end{document}
