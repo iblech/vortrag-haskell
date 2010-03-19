@@ -55,7 +55,9 @@
 
 \begin{document}
 
+\logo{\begin{picture}(0,0)(80,0)\includegraphics[scale=0.4]{images/haskell-logo.png}\end{picture}}
 \frame{\titlepage}
+\logo{}
 
 \frame[plain]{\begin{center}
   \includegraphics[scale=0.35]{images/learn-you-a-haskell-for-great-good.png}
@@ -67,26 +69,253 @@
   Haskell ist rein funktional:
   \begin{itemize}
     \item keine veränderliche Variablen
-    \item keine Seiteneffekte
+    \item keine Nebeneffekte
     \item keine Anweisungen
   \end{itemize}
 }
 
+\subsection{Variablen}
+\frame[t]{\frametitle{Keine veränderliche Variablen}
+  \floatbox{-260}{180}{\includegraphics[scale=0.1]{images/variable.jpg}}%
+  \texttt{%
+    \syncomment{\# Perl} \\
+    \synfunc{sub}\ main \{\\
+    \ \ \ \ \synfunc{my}\ \synvar{\$radius}\ \ \ \ = 42; \\
+    \ \ \ \ \synfunc{my}\ \synvar{\$quadriert}\ = \synvar{\$radius}\ ** 2; \\
+    \ \ \ \ \synfunc{my}\ \synvar{\$flaeche}\ \ \ = \synvar{\$quadriert}\ * pi; \\
+    \ \ \ \ \synfunc{print}\ \synvar{\$flaeche}; \\
+    \}
+  }
+  \vfill
+
+  \only<2>{
+    \texttt{%
+      \syncomment{-- Haskell} \\
+      main =\\
+      \ \ \ \ \synKey{let}\ radius\ \ \ \ \synSym{=}\ \synLit{42} \\
+      \ \ \ \ \ \ \ \ quadriert \synSym{=}\ radius\synOp{\^{}}\synLit{2} \\
+      \ \ \ \ \ \ \ \ flaeche\ \ \ \synSym{=}\ quadriert \synOp{*}\ pi \\
+      \ \ \ \ \synKey{in}\ print\ flaeche
+    }
+  }
+
+  \only<3>{
+    \texttt{%
+      \syncomment{-- Haskell} \\
+      main =\\
+      \ \ \ \ \synKey{let}\ flaeche\ \ \ \synSym{=}\ quadriert \synOp{*}\ pi \\
+      \ \ \ \ \ \ \ \ quadriert \synSym{=}\ radius\synOp{\^{}}\synLit{2} \\
+      \ \ \ \ \ \ \ \ radius\ \ \ \ \synSym{=}\ \synLit{42} \\
+      \ \ \ \ \synKey{in}\ print\ flaeche
+    }
+  }
+
+  \only<4>{
+    \texttt{%
+      \syncomment{-- Haskell} \\
+      main = print\ flaeche \\
+      \ \ \ \ \synKey{where} \\
+      \ \ \ \ flaeche\ \ \ \synSym{=}\ quadriert \synOp{*}\ pi \\
+      \ \ \ \ quadriert \synSym{=}\ radius\synOp{\^{}}\synLit{2} \\
+      \ \ \ \ radius\ \ \ \ \synSym{=}\ \synLit{42}
+    }
+  }
+}
+
+\subsection{Nebeneffekte}
+\frame[t]{\frametitle{Keine Nebeneffekte}
+  \floatbox{-280}{190}{\includegraphics[scale=0.9]{images/tablette.png}}%
+  \vspace{-2em}\setlength{\columnsep}{80pt}%
+  \begin{multicols*}{2}
+    \texttt{%
+      \syncomment{\# Perl} \\
+      \synfunc{my}\ \synvar{\$a}\ = f(\synvar{\$x}); \\
+      \synfunc{my}\ \synvar{\$b}\ = f(\synvar{\$x}); \\
+      \ldots; \\
+      \syncomment{\# Ist \$a == \$b?}
+    }
+
+    \columnbreak
+
+    \pause
+    \texttt{%
+      \syncomment{-- Haskell} \\
+      \synKey{let}\ a = f x \\
+      \ \ \ \ b = f x \\
+      \synKey{in}\ \ldots \\
+      \syncomment{-- a == b gilt.}
+    }
+  \end{multicols*}
+
+  \vfill
+  \pause
+  \begin{itemize}
+    \item Gleiche Argumente $\leadsto$ gleiche Rückgaben
+    \item Rein lokales Codeverständnis!
+    \item Tiefgreifende Optimierungsmöglichkeiten
+  \end{itemize}
+}
+
+\subsection{Eingabe/Ausgabe}
+\frame[t]{\frametitle{Eingabe/Ausgabe}
+  \floatbox{-230}{180}{\visible<2->{\includegraphics[scale=0.2]{images/io.jpg}}}%
+  \texttt{%
+    \visible<2>{\syncomment{-- Compile-Zeit-Fehler!}} \\
+    \synKey{let}\ x \synSym{=}\ getLine \\
+    \synKey{in}\ print (x \synOp{++}\ x)
+  }
+
+  \vspace{1em}
+  vs.
+  \vspace{1em}
+
+  \texttt{%
+    \visible<2->{\syncomment{-- Compile-Zeit-Fehler!}} \\
+    print (getLine \synOp{++}\ getLine)
+  }
+
+  \pause
+  \pause
+  \vfill
+  \begin{itemize}
+    \item Aktionen $\neq$ Werte
+    \item \texttt{getLine \synSym{::}\ \synType{IO}\ \synType{String}}
+  \end{itemize}
+}
+
+\section{Typsystem}
+\subsection{Grundtypen}
+\frame[t]{\frametitle{Werte und Typen}
+  \floatbox{-250}{35}{\includegraphics[scale=0.25]{images/types.jpg}}%
+  \newcommand{\hatTyp}{\texttt{\synSym{::}}}%
+  \vspace{-2em}%
+  \begin{tabbing}
+    \texttt{"Hallo, Welt!123333"} \= \hatTyp\ \= \kill
+    \texttt{\synLit{"Hallo, Welt!"}} \> \hatTyp \> \texttt{\synType{String}} \\
+    \texttt{\synLit{True}} \> \hatTyp \> \texttt{\synType{Bool}} \\
+    \\
+    \texttt{[\synLit{'A'}, \synLit{'B'}, \synLit{'C'}]} \> \hatTyp \> \texttt{[\synType{Char}]} \\
+    \texttt{[[\synLit{1},\synLit{2}], [\synLit{3}], []]} \> \hatTyp \> \texttt{[[\synType{Integer}]]} \\
+    \\
+    \texttt{head}, \texttt{last} \> \hatTyp \> \texttt{[a] -> a} \\
+    \texttt{\syncomment{-- Bsp.:}\ head [\synLit{1},\synLit{2},\synLit{3}] == \synLit{1}} \\
+    \texttt{\ \ \ \ \ \ \ \ \ last [\synLit{1},\synLit{2},\synLit{3}] == \synLit{3}} \\
+    \\
+    \texttt{init}, \texttt{tail} \> \hatTyp \> \texttt{[a] -> a} \\
+    \texttt{\syncomment{-- Bsp.:}\ init [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{1},\synLit{2}]} \\
+    \texttt{\ \ \ \ \ \ \ \ \ tail [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{2},\synLit{3}]}
+  \end{tabbing}
+}
+
+\frame[plain]{
+  \centering\Huge
+   java.io.InputStreamReader
+}
+
+\frame[t]{\frametitle{Typerschließung}
+  \floatbox{-170}{190}{\includegraphics[scale=0.4]{images/katze.jpg}}%
+  Automatische Erschließung nicht angegebener Typen durch den Compiler
+
+  \texttt{%
+    \ \\
+    \visible<2>{%
+      greet \synSym{::}\ \synType{String}\ -> \synType{String}%
+    } \\
+    greet name \synSym{=}\ \synLit{"Hallo "}\ \synOp{++}\ name \synOp{++}\ \synLit{"!"}
+  }
+}
+
+\subsection{Aktionstypen}
+\frame[t]{\frametitle{Typen von Aktionen}
+  \newcommand{\hatTyp}{\texttt{\synSym{::}}}
+  \begin{tabbing}
+    \texttt{readFile} \= \hatTyp\ \= \kill
+    \texttt{getLine} \> \hatTyp \> \texttt{\synType{IO}\ \synType{String}} \\
+    \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ -> \synType{IO}\ ()} \\
+    \texttt{readFile} \> \hatTyp \> \texttt{\synType{FilePath}\ -> \synType{IO}\ \synType{String}}
+  \end{tabbing}
+
+  \pause
+  \vfill
+  \begin{multicols*}{2}
+    \texttt{%
+      main \synSym{::}\ \synType{IO}\ () \\
+      main \synSym{=}\ \synKey{do} \\
+      \ \ \ \ x \synSym{<-}\ getLine \\
+      \ \ \ \ print (x \synOp{++}\ x) 
+    }
+
+    \columnbreak
+
+    \texttt{%
+      main \synSym{::}\ \synType{IO}\ () \\
+      main \synSym{=}\ \synKey{do} \\
+      \ \ \ \ x \synSym{<-}\ getLine \\
+      \ \ \ \ y \synSym{<-}\ getLine \\
+      \ \ \ \ print (x \synOp{++}\ y) 
+    }
+  \end{multicols*}
+}
+
+\frame[plain]{\begin{center}
+  \includegraphics[scale=0.6]{images/effects.png}
+
+  Grafik gestohlen von: Simon Peyton Jones
+\end{center}}
+
+\section{Weitere Fähigkeiten}
+\subsection{Parser-Aktionen}
+\frame[t]{\frametitle{Parser-Aktionen}
+  \floatbox{-250}{190}{\includegraphics[scale=0.13]{images/regex.png}}%
+  \texttt{%
+    perlBezeichner \synSym{::}\ \synType{Parser}\ \synType{String} \\
+    perlBezeichner \synSym{=}\ \synKey{do} \\
+    \ \ \ \ sigil \synSym{<-}\ oneOf \synLit{"\$@\%\&"} \\
+    \ \ \ \ name\ \ \synSym{<-}\ many alphaNum \\
+    \ \ \ \ return (sigil \synOp{:}\ name)
+  }
+
+  \vfill
+  Dabei verwendete Funktionen aus Parser-Bibliothek:
+  \newcommand{\hatTyp}{\texttt{\synSym{::}}}
+  \begin{tabbing}
+    \texttt{alphaNum} \= \hatTyp\ \= \kill
+    \texttt{oneOf} \> \hatTyp \> \texttt{[\synType{Char}] -> \synType{Parser}\ \synType{Char}} \\
+    \texttt{alphaNum} \> \hatTyp \> \texttt{\synType{Parser}\ \synType{Char}} \\
+    \texttt{many} \> \hatTyp \> \texttt{\synType{Parser}\ a -> \synType{Parser}\ [a]}
+  \end{tabbing}
+}
+
+\subsection{Bedarfsauswertung}
 \frame[t]{\frametitle{Bedarfsauswertung}
+  \floatbox{-210}{195}{\includegraphics[scale=0.2]{images/lazy.jpg}}%
+  \texttt{%
+    main \synSym{=}\ \synKey{do} \\
+    \ \ \ \ daten \synSym{<-}\ readFile \synLit{"große-datei.txt"} \\
+    \only<1>{\ \ \ \ print (lines daten \synOp{!!}\ 99)}
+    \only<2>{\ \ \ \ print \synOp{\$}\ lines daten \synOp{!!}\ 99}
+  }
+}
+
+\frame[t]{\frametitle{Bedarfsauswertung}
+  \floatbox{-210}{150}{\includegraphics[scale=0.2]{images/lazy.jpg}}%
   \begin{minipage}{20cm}
     \texttt{%
       natürlicheZahlen \synSym{::}\ [\synType{Integer}] \\
       natürlicheZahlen \synSym{=}\ [\synLit{1}..] \\
       \ \\
+      \pause
       ungeradeZahlen \synSym{::}\ [\synType{Integer}] \\
       ungeradeZahlen \synSym{=}\ filter odd [\synLit{1}..] \\
       \ \\
+      \pause
       fibs \synSym{::}\ [\synType{Integer}] \\
       fibs \synSym{=}\ \synLit{0}\ \synOp{:}\ \synLit{1}\ \synOp{:}\ zipWith\ \synOp{(+)}\ fibs (tail fibs)
     }
   \end{minipage}
 }
 
+\subsection{Datentypen}
 \frame[t]{\frametitle{Benutzerdefinierte Datentypen}
   \floatbox{-220}{190}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
   \texttt{%
@@ -140,12 +369,33 @@
   \end{minipage}
 }
 
+\frame[t]{
+  \floatbox{-190}{210}{\scalebox{0.7}{\visible<2>{\includegraphics{images/thankyou.png}}}}%
+  \begin{itemize}
+    \item \url{http://haskell.org/}
+    \item \url{http://tryhaskell.org/}
+    \item \texttt{\#haskell} auf Freenode
+    \item \texttt{apt-get install ghc6} \\ $\leadsto$ \texttt{ghci}
+  \end{itemize}
+}
+
 \appendix
 \section{Bildquellen}
 \frame[t]{\frametitle{Bildquellen}
+  \scriptsize
   \begin{itemize}
     \item \url{http://learnyouahaskell.com/splash.png}
     \item \url{http://save-endo.cs.uu.nl/target.png}
+    \item \url{http://media.nokrev.com/junk/haskell-logos/logo7.png}
+    \item \url{http://theleftwinger.files.wordpress.com/2010/01/lazy.jpg}
+    \item \url{http://www.nataliedee.com/093009/death-is-a-side-effect-of-most-things.jpg}
+    \item \url{http://www.sketchybeast.com/wp-content/uploads/2007/12/input_output.jpg}
+    \item \url{http://www.homemortgagerates.us/variable-rates-636.jpg}
+    \item \url{http://upload.wikimedia.org/wikipedia/commons/c/c6/Metal_movable_type_edit.jpg}
+    \item \url{http://imgs.xkcd.com/comics/regular_expressions.png}
+    \item \url{http://wordaligned.org/images/the-challenge-of-effects.jpg}
+    \item \url{http://www.lakehousecreations.com/images/ThankYou/Thank\%20You\%202003\%20(12).jpg}
+    \item \url{http://i.ehow.com/images/a04/8i/g0/show-real-smile-photographs-800X800.jpg}
   \end{itemize}
 }
 
