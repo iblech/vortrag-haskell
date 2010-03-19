@@ -19,13 +19,24 @@
 \newcommand{\hicolor}   [1]{\color[rgb]{0.6,0.2,0.8}#1\color{black}}
 \newcommand{\synhilight}[1]{\hicolor{\textbf{#1}}}
 
+\newcommand{\synType}   [1]{\color{red!38!black}#1\color{black}}
+\newcommand{\synSym}    [1]{\color{blue!56!black}#1\color{black}}
+\newcommand{\synKey}    [1]{\color{blue!56!black}#1\color{black}}
+\newcommand{\synLit}    [1]{\color{green!19!black}#1\color{black}}
+\newcommand{\synOp}     [1]{\color{green!38!black}#1\color{black}}
+
 \newcommand{\doofcomment}{\ \ \syncomment{\# :-(}}
 \newcommand{\gutcomment} {\ \ \syncomment{\# :)}}
 
 \newcommand{\T}[1]{\mathbf{#1}}
 \newcommand{\Spur}[1]{\operatorname{Spur}{#1}}
 \newcommand{\ul}[1]{\mathcal{#1}}
-\newcommand{\singabb}[3]{$\begin{array}{@{}c@{}}\text{\includegraphics[scale=#3]{abb/#1.png}}\\\text{#2}\end{array}$}
+
+\newcommand{\floatbox}[3]{%
+  \raisebox{0pt}[0pt][0pt]{%
+    \begin{picture}(0,0)(#1,#2)#3\end{picture}%
+  }%
+}
 
 \title{Haskell, \\eine rein funktionale Programmiersprache}
 \author{Ingo Blechschmidt \\ \texttt{<iblech@web.de>}} % \\\texttt{<carina.willbold@student.uni-augsburg.de>}}
@@ -37,7 +48,7 @@
 \usefonttheme{serif}
 \useinnertheme{rectangles}
 \usepackage{bookman}
-\setbeamercovered{transparent}
+\setbeamercovered{invisible}
 
 \setbeamertemplate{navigation symbols}{}
 %\setbeamertemplate{headline}{}
@@ -52,26 +63,81 @@
 
 \section{Grundlegendes}
 \frame[t]{\frametitle{Haskell ist komisch!}
-  \hfill\begin{picture}(0,0)(100,110)\includegraphics[scale=0.2]{images/endo.png}\end{picture}
-
+  \floatbox{-210}{110}{\includegraphics[scale=0.2]{images/endo.png}}%
   Haskell ist rein funktional:
   \begin{itemize}
     \item keine veränderliche Variablen
     \item keine Seiteneffekte
+    \item keine Anweisungen
   \end{itemize}
 }
 
 \frame[t]{\frametitle{Bedarfsauswertung}
+  \begin{minipage}{20cm}
+    \texttt{%
+      natürlicheZahlen \synSym{::}\ [\synType{Integer}] \\
+      natürlicheZahlen \synSym{=}\ [\synLit{1}..] \\
+      \ \\
+      ungeradeZahlen \synSym{::}\ [\synType{Integer}] \\
+      ungeradeZahlen \synSym{=}\ filter odd [\synLit{1}..] \\
+      \ \\
+      fibs \synSym{::}\ [\synType{Integer}] \\
+      fibs \synSym{=}\ \synLit{0}\ \synOp{:}\ \synLit{1}\ \synOp{:}\ zipWith\ \synOp{(+)}\ fibs (tail fibs)
+    }
+  \end{minipage}
+}
+
+\frame[t]{\frametitle{Benutzerdefinierte Datentypen}
+  \floatbox{-220}{190}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
   \texttt{%
-    \synvar{natürlicheZahlen}\ :: [\synclass{Integer}] \\
-    \synvar{natürlicheZahlen}\ = [1..] \\
-    \ \\
-    \synvar{ungeradeZahlen}\ :: [\synclass{Integer}] \\
-    \synvar{ungeradeZahlen}\ = \synfunc{filter}\ \synfunc{odd}\ [1..] \\
-    \ \\
-    \synvar{fibs}\ :: [\synclass{Integer}] \\
-    \synvar{fibs}\ = 0 : 1 : \synfunc{zipWith}\ (+) \synvar{fibs}\ (\synfunc{tail}\ \synvar{fibs})
+    \synKey{data}\ \synType{Tree}\ = Leaf \synType{Int}\ | Fork \synType{Tree}\ \synType{Tree}
   }
+  Konstruktoren: \\
+  \texttt{Leaf \synSym{::}\, Int \synSym{->}\ Tree} und \\
+  \texttt{Fork \synSym{::}\, Tree \synSym{->}\ Tree \synSym{->}\ Tree}
+
+  \vfill
+  \pause
+  \texttt{%
+    beispielBaum \synSym{=}\ Fork \\
+    \ \ \ \ (Fork (Leaf \synLit{17}) (Leaf \synLit{37}))\\
+    \ \ \ \ (Fork\\
+    \ \ \ \ \ \ \ \ (Fork (Leaf \synLit{42}) (Leaf \synLit{0}))\\
+    \ \ \ \ \ \ \ \ (Leaf \synLit{41}))
+  }
+
+  \vfill
+  \pause
+  \texttt{%
+    komischerBaum \synSym{=}\ Fork \\
+    \ \ \ \ (Fork (Leaf \synLit{23}) komischerBaum)
+  }
+}
+
+\frame[t]{\frametitle{Benutzerdefinierte Datentypen (Forts.)}
+  \floatbox{-223}{75}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
+  \hspace*{-1em}\begin{minipage}{20cm}
+  \texttt{%
+    \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ | Fork \synType{Tree}\ \synType{Tree} \\
+    \ \\
+    \pause
+    \synKey{data}\ \synType{Tree}\ a = Leaf a \ \ | Fork (\synType{Tree}\ a) (\synType{Tree}\ a)
+    \pause
+    \ \\
+    \ \\
+    size \synSym{::}\ \synType{Tree}\ a \synSym{->}\ \synType{Integer} \\
+    size (Leaf \symbol{95})\ \ \ \ \ \ \ \ \ \ \ \ \synSym{=}\ \synLit{1} \\
+    size (Fork links rechts) \synSym{=}\\
+    \phantom{ }\ \ \ size links \synOp{+}\ size rechts
+    \ \\
+    \ \\
+    \pause
+    inorder \synSym{:}\ \synType{Tree}\ a \synSym{->}\ [a] \\
+    inorder (Leaf x)\ \ \ \ \ \ \ \ \ \ \ \  \synSym{=}\ [x] \\
+    inorder (Fork links rechts) \synSym{=} \\
+    \phantom{ }\ \ \ inorder links \synOp{++}\ inorder rechts
+  }
+  \end{minipage}
 }
 
 \appendix
