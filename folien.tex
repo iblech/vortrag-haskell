@@ -32,6 +32,8 @@
 \newcommand{\Spur}[1]{\operatorname{Spur}{#1}}
 \newcommand{\ul}[1]{\mathcal{#1}}
 
+\definecolor{backblue}{rgb}{0.84,0.84,0.94}
+
 \newcommand{\floatbox}[3]{%
   \raisebox{0pt}[0pt][0pt]{%
     \begin{picture}(0,0)(#1,#2)#3\end{picture}%
@@ -125,7 +127,7 @@
 \subsection{Nebeneffekte}
 \frame[t]{\frametitle{Keine Nebeneffekte}
   \floatbox{-280}{190}{\includegraphics[scale=0.9]{images/tablette.png}}%
-  \vspace{-2em}\setlength{\columnsep}{80pt}%
+  \vspace{-2em}\setlength{\columnsep}{0pt}%
   \begin{multicols*}{2}
     \texttt{%
       \syncomment{\# Perl} \\
@@ -143,7 +145,7 @@
       \synKey{let}\ a = f x \\
       \ \ \ \ b = f x \\
       \synKey{in}\ \ldots \\
-      \syncomment{-- a == b gilt.}
+      \syncomment{-- a == b gilt stets.}
     }
   \end{multicols*}
 
@@ -151,6 +153,7 @@
   \pause
   \begin{itemize}
     \item Gleiche Argumente $\leadsto$ gleiche Rückgaben
+    \item Keine Ein-/Ausgabe, \\ keine Zustandsveränderungen, \ldots
     \item Rein lokales Codeverständnis!
     \item Tiefgreifende Optimierungsmöglichkeiten
   \end{itemize}
@@ -160,7 +163,7 @@
 \frame[t]{\frametitle{Eingabe/Ausgabe}
   \floatbox{-230}{180}{\visible<2->{\includegraphics[scale=0.2]{images/io.jpg}}}%
   \texttt{%
-    \visible<2>{\syncomment{-- Compile-Zeit-Fehler!}} \\
+    \visible<2->{\syncomment{-- Compile-Zeit-Fehler!}} \\
     \synKey{let}\ x \synSym{=}\ getLine \\
     \synKey{in}\ print (x \synOp{++}\ x)
   }
@@ -197,16 +200,17 @@
     \texttt{[\synLit{'A'}, \synLit{'B'}, \synLit{'C'}]} \> \hatTyp \> \texttt{[\synType{Char}]} \\
     \texttt{[[\synLit{1},\synLit{2}], [\synLit{3}], []]} \> \hatTyp \> \texttt{[[\synType{Integer}]]} \\
     \\
-    \texttt{head}, \texttt{last} \> \hatTyp \> \texttt{[a] -> a} \\
+    \texttt{head}, \texttt{last} \> \hatTyp \> \texttt{[a] \synSym{->}\ a} \\
     \texttt{\syncomment{-- Bsp.:}\ head [\synLit{1},\synLit{2},\synLit{3}] == \synLit{1}} \\
     \texttt{\ \ \ \ \ \ \ \ \ last [\synLit{1},\synLit{2},\synLit{3}] == \synLit{3}} \\
     \\
-    \texttt{init}, \texttt{tail} \> \hatTyp \> \texttt{[a] -> a} \\
+    \texttt{init}, \texttt{tail} \> \hatTyp \> \texttt{[a] \synSym{->}\ a} \\
     \texttt{\syncomment{-- Bsp.:}\ init [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{1},\synLit{2}]} \\
     \texttt{\ \ \ \ \ \ \ \ \ tail [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{2},\synLit{3}]}
   \end{tabbing}
 }
 
+\subsection{Typerschließung}
 \frame[plain]{
   \centering\Huge
    java.io.InputStreamReader
@@ -218,11 +222,51 @@
 
   \texttt{%
     \ \\
-    \visible<2>{%
-      greet \synSym{::}\ \synType{String}\ -> \synType{String}%
+    \visible<2->{%
+      greet \synSym{::}\ \synType{String}\ \synSym{->}\ \synType{String}
     } \\
-    greet name \synSym{=}\ \synLit{"Hallo "}\ \synOp{++}\ name \synOp{++}\ \synLit{"!"}
+    greet name \synSym{=}\ \synLit{"Hallo "}\ \synOp{++}\ name \synOp{++}\ \synLit{"!"} \\
+    \ \\
+    \visible<4->{%
+      dup \synSym{::}\ [a] \synSym{->}\ [a]
+    } \\
+    \visible<3->{%
+      dup xs \synSym{=}\ xs \synOp{++}\ xs
+    }
   }
+}
+
+\subsection{Typklassen}
+\frame[t]{\frametitle{Typklassen}
+  \texttt{%
+    \visible<2->{%
+      add37 \synSym{::}\ \visible<3->{\colorbox{backblue}{(Num a) =>}} a \synSym{->}\ a
+    } \\
+    add37 x \synSym{=}\ x \synOp{+}\ 37 \\
+    \syncomment{-- Bsp.: add37 5 == 42} \\
+    \ \\
+    \visible<5->{%
+      min \synSym{::}\ \colorbox{backblue}{(Ord a) =>} a \synSym{->}\ a \synSym{->}\ a
+    } \\
+    \visible<4->{%
+      min x y \synSym{=}\ \synKey{if}\ x \synOp{<=}\ y \synKey{then}\ x \synKey{else}\ y \\
+      \syncomment{-- Bsp.: min 19 17 == 17}
+    }
+  }
+
+  \pause\pause\pause\pause\pause
+  \vfill
+  \begin{itemize}
+    \item Deklaration von Schnittstellen durch Typklassen
+    \item
+      \texttt{%
+        \synKey{class}\ \synType{Num}\ a \synKey{where} \\
+        \ \ \ \ \synOp{(+)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
+        \ \ \ \ \synOp{(-)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
+        \ \ \ \ \synOp{(*)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
+        \ \ \ \ \ldots
+      }
+  \end{itemize}
 }
 
 \subsection{Aktionstypen}
@@ -367,6 +411,27 @@
     \phantom{ }\ \ \ inorder links \synOp{++}\ inorder rechts
   }
   \end{minipage}
+}
+
+\section[Misc]{Anwendungen}
+\subsection{QuickCheck}
+\frame[t]{\frametitle{QuickCheck}
+  \texttt{%
+    \syncomment{\# Perl} \\
+    \synfunc{is}(\synfunc{sqrt}(0), \ 0, \synstr{"{}sqrt(0) ist ok"}); \\
+    \synfunc{is}(\synfunc{sqrt}(1), \ 1, \synstr{"{}sqrt(1) ist ok"}); \\
+    \synfunc{is}(\synfunc{sqrt}(4), \ 2, \synstr{"{}sqrt(4) ist ok"}); \\
+    \synfunc{is}(\synfunc{sqrt}(9), \ 3, \synstr{"{}sqrt(9) ist ok"}); \\
+    \synfunc{is}(\synfunc{sqrt}(16), 4,  \synstr{"{}sqrt(16) ist ok"});
+  }
+
+  \vfill
+  \pause
+  \texttt{%
+    \syncomment{-- Haskell mit QuickCheck} \\
+    propSqrt \synSym{::}\ \synType{Double}\ -> \synType{Bool} \\
+    propSqrt x \synSym{=}\ sqrt (x \synOp{*}\ x) \synOp{==}\ x
+  }
 }
 
 \frame[t]{
