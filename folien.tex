@@ -42,9 +42,8 @@
 }
 
 \title{Haskell, \\eine rein funktionale Programmiersprache}
-\author{Ingo Blechschmidt \\ \texttt{<iblech@web.de>}} % \\\texttt{<carina.willbold@student.uni-augsburg.de>}}
-%\institute{{\footnotesize Universität Augsburg}}
-\date{Augsburger Linux-Infotag 2010}
+\author{Ingo Blechschmidt \\ \texttt{<iblech@web.de>}}
+\date{Augsburger Linux-Infotag \\ 27. März 2010}
 
 \usetheme{Warsaw}  %Warsaw, Berkeley?
 \usecolortheme{seahorse}
@@ -66,6 +65,8 @@
   \includegraphics[scale=0.35]{images/learn-you-a-haskell-for-great-good.png}
 \end{center}}
 
+\frame[t]{\tableofcontents}
+
 \section{Grundlegendes}
 \frame[t]{\frametitle{Haskell ist komisch!}
   \floatbox{-210}{110}{\includegraphics[scale=0.2]{images/endo.png}}%
@@ -77,7 +78,7 @@
   \end{itemize}
 }
 
-\subsection{Variablen}
+\subsection[Variablen]{Keine Variablen}
 \frame[t]{\frametitle{Keine veränderliche Variablen}
   \floatbox{-260}{180}{\includegraphics[scale=0.1]{images/variable.jpg}}%
   \texttt{%
@@ -125,7 +126,7 @@
   }
 }
 
-\subsection{Nebeneffekte}
+\subsection[Nebeneffekte]{Keine Nebeneffekte}
 \frame[t]{\frametitle{Keine Nebeneffekte}
   \floatbox{-280}{190}{\includegraphics[scale=0.9]{images/tablette.png}}%
   \vspace{-2em}\setlength{\columnsep}{0pt}%
@@ -160,8 +161,8 @@
   \end{itemize}
 }
 
-\subsection{Eingabe/Ausgabe}
-\frame[t]{\frametitle{Eingabe/Ausgabe}
+\subsection[Eingabe/Ausgabe]{Keine Ein-/Ausgabe}
+\frame[t]{\frametitle{Keine Eingabe/Ausgabe}
   \floatbox{-230}{180}{\visible<2->{\includegraphics[scale=0.2]{images/io.jpg}}}%
   \texttt{%
     \visible<2->{\syncomment{-- Compile-Zeit-Fehler!}} \\
@@ -185,6 +186,41 @@
     \item Aktionen $\neq$ Werte
     \item \texttt{getLine \synSym{::}\ \synType{IO}\ \synType{String}}
   \end{itemize}
+}
+
+\subsection[Beispiele]{Erste Beispiele: Aufsummieren und Quicksort}
+\frame[t]{\frametitle{Beispiel: Aufsummieren}
+  \floatbox{-210}{195}{\includegraphics[scale=0.35]{images/kasse.jpg}}%
+  \texttt{%
+    sum []\ \ \ \ \ \synSym{=}\ 0 \\
+    sum (x\synSym{:}xs) \synSym{=}\ x \synOp{+}\ sum xs
+  }
+
+  \pause\vfill
+  Beispielauswertung: \\
+  \texttt{%
+    \ \ \ sum [\synLit{1},\synLit{2},\synLit{3}] \\
+    == \synLit{1}\ \synOp{+}\ sum [\synLit{2},\synLit{3}] \\
+    == \synLit{1}\ \synOp{+}\ (\synLit{2}\ \synOp{+}\ sum [\synLit{3}]) \\
+    == \synLit{1}\ \synOp{+}\ (\synLit{2}\ \synOp{+}\ (\synLit{3}\ \synOp{+}\ sum [])) \\
+    == \synLit{1}\ \synOp{+}\ (\synLit{2}\ \synOp{+}\ (\synLit{3}\ \synOp{+}\ \synLit{0})) \\
+    == \synLit{6}
+  }
+}
+
+\frame[t]{\frametitle{Beispiel: Quicksort}
+  \floatbox{-230}{175}{\includegraphics[scale=0.7]{images/sort.jpg}}%
+  \vspace{\topskip}%
+  \begin{minipage}{20cm}
+    \texttt{%
+      qsort []\ \ \ \ \ \synSym{=}\ [] \\
+      qsort (x\synSym{:}xs) \synSym{=} \\
+      \phantom{ }\ \ \ qsort kleinere \synOp{++}\ [x] \synOp{++}\ qsort groessere \\
+      \phantom{ }\ \ \ \synKey{where} \\
+      \phantom{ }\ \ \ kleinere\ \ \synSym{=}\ [ y \synSym{|}\ y \synSym{<-}\ xs, y \synOp{<}\ \ x ] \\
+      \phantom{ }\ \ \ groessere \synSym{=}\ [ y \synSym{|}\ y \synSym{<-}\ xs, y \synOp{>=}\ x ]
+    }
+  \end{minipage}
 }
 
 \section{Typsystem}
@@ -212,12 +248,15 @@
 }
 
 \subsection{Typerschließung}
-\frame[plain]{
-  \centering\Huge
-   java.io.InputStreamReader
-}
+\newcommand{\unhappy}{{\setlength{\tabcolsep}{0pt}\footnotesize\begin{tabular}c.\thinspace.\\[-1ex]\texttt{\char'015}\\[-1.1em]$\frown$\\[ -1.5em]\large$\bigcirc$\end{tabular}}}
+\frame[plain]{\begin{center}
+  \Huge java.io.InputStreamReader
 
-\frame[t]{\frametitle{Typerschließung}
+  \vspace{-1em}
+  \scalebox{8}{\unhappy}
+\end{center}}
+
+\frame[t]{\frametitle{Automatische Typerschließung}
   \floatbox{-170}{190}{\includegraphics[scale=0.4]{images/katze.jpg}}%
   Automatische Erschließung nicht angegebener Typen durch den Compiler
 
@@ -274,13 +313,13 @@
 }
 
 \subsection{Aktionstypen}
-\frame[t]{\frametitle{Typen von Aktionen}
+\frame[t]{\frametitle{Typen von Ein-/Ausgabe-Aktionen}
   \newcommand{\hatTyp}{\texttt{\synSym{::}}}
   \begin{tabbing}
     \texttt{readFile} \= \hatTyp\ \= \kill
-    \texttt{getLine} \> \hatTyp \> \texttt{\synType{IO}\ \synType{String}} \\
-    \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ \synSym{->}\ \synType{IO}\ ()} \\
-    \texttt{readFile} \> \hatTyp \> \texttt{\synType{FilePath}\ \synSym{->}\ \synType{IO}\ \synType{String}}
+    \texttt{getLine} \> \hatTyp \> \texttt{\colorbox{backblue}{\synType{IO}}\ \synType{String}} \\
+    \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ ()} \\
+    \texttt{readFile} \> \hatTyp \> \texttt{\synType{FilePath}\ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ \synType{String}}
   \end{tabbing}
 
   \pause
@@ -288,7 +327,7 @@
   \setlength{\columnsep}{45pt}%
   \begin{multicols*}{2}
     \texttt{%
-      main \synSym{::}\ \synType{IO}\ () \\
+      main \synSym{::}\ \colorbox{backblue}{\synType{IO}}\ () \\
       main \synSym{=}\ \synKey{do} \\
       \ \ \ \ x \synSym{<-}\ getLine \\
       \ \ \ \ print (x \synOp{++}\ x) 
@@ -297,7 +336,7 @@
     \columnbreak
 
     \texttt{%
-      main \synSym{::}\ \synType{IO}\ () \\
+      main \synSym{::}\ \colorbox{backblue}{\synType{IO}}\ () \\
       main \synSym{=}\ \synKey{do} \\
       \ \ \ \ x \synSym{<-}\ getLine \\
       \ \ \ \ y \synSym{<-}\ getLine \\
@@ -342,8 +381,18 @@
     main \synSym{=}\ \synKey{do} \\
     \ \ \ \ daten \synSym{<-}\ readFile \synLit{"große-datei.txt"} \\
     \only<1>{\ \ \ \ print (lines daten \synOp{!!}\ 99)}
-    \only<2>{\ \ \ \ print \synOp{\$}\ lines daten \synOp{!!}\ 99}
+    \only<2->{\ \ \ \ print \synOp{\$}\ lines daten \synOp{!!}\ 99}
   }
+
+  \pause\pause
+  \vfill
+  \begin{itemize}
+    \item Auswertung von Ausdrücken erst dann, wenn Ergebnisse wirklich benötigt
+    \item Somit Fähigkeit für \\
+          unendliche Datenstrukturen: \\
+          Potenzreihen, Zeitreihen, \\
+          Entscheidungsbäume, \ldots
+  \end{itemize}
 }
 
 \frame[t]{\frametitle{Bedarfsauswertung}
@@ -470,7 +519,7 @@
 
 \frame[t]{\frametitle{QuickCheck (Forts.)}
   \floatbox{-253}{200}{\includegraphics[scale=0.2]{images/pruefung.jpg}}%
-  \vspace{-1.5em}%
+  \vspace{-\topsep}%
   \begin{itemize}
     \item Überprüfung durch zufällig generierte Stichproben
     \item \texttt{%
@@ -478,7 +527,7 @@
       \ \ \ \ arbitrary \synSym{::}\ \synType{Gen}\ a
     }
     \item Instanzen von \texttt{\synType{Arbitrary}} nicht nur für
-          primitive, sondern auch für zusammengesetzte Typen
+          primitive, sondern automatisch auch für zusammengesetzte Typen
   \end{itemize}
   \vfill
 
@@ -494,16 +543,67 @@
 }
 
 \frame[t]{
-  \floatbox{-190}{210}{\scalebox{0.7}{\visible<2>{\includegraphics{images/thankyou.png}}}}%
+  \floatbox{-195}{210}{\scalebox{0.7}{\visible<2>{\includegraphics{images/thankyou.png}}}}%
   \begin{itemize}
     \item \url{http://haskell.org/}
-    \item \url{http://tryhaskell.org/}
+          \vspace{2\itemsep}
+    \item zum Herumspielen im Browser: \\
+          \url{http://tryhaskell.org/}
+    \item interaktive Haskell-Shell: \\
+          \texttt{apt-get install ghc6} \\
+          $\leadsto$ \texttt{\$ ghci}
+          \vspace{2\itemsep}
     \item \texttt{\#haskell} auf Freenode
-    \item \texttt{apt-get install ghc6} \\ $\leadsto$ \texttt{ghci}
   \end{itemize}
 }
 
 \appendix
+\frame{
+  \floatbox{-200}{180}{\includegraphics[scale=0.25]{images/present.png}}%
+  \begin{center}\Huge Bonus-Folien\end{center}
+
+  \tableofcontents
+}
+
+\section[Fehlende Werte]{Umgang mit fehlenden Werten}
+\frame[t]{\frametitle{Umgang mit fehlenden Werten}
+  \floatbox{-260}{120}{\includegraphics[scale=0.25]{images/bug.png}}%
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item "`Null References: The Billion Dollar Mistake`` (Tony Hoare)
+    \item In Haskell: Explizite Kennzeichnung von möglicherweise fehlenden
+          Werten durch Maybe-Typen
+  \end{itemize}
+  \vfill
+
+  \texttt{%
+    \synKey{data}\ \synType{Maybe}\ a \synSym{=}\ Nothing \synSym{|}\ Just a \\
+    \ \\
+    lookupFarbe \synSym{::}\ \synType{String}\ \synSym{->}\ \colorbox{backblue}{\synType{Maybe}} \synType{Color} \\
+    \syncomment{-- Bsp.:} \\
+    \syncomment{\ \ \ lookupFarbe "{}Simpsons"{} == Just YELLOW} \\
+    \syncomment{\ \ \ lookupFarbe "{}Simqsons"{} == Nothing} \\
+  }
+}
+
+\frame[t]{\frametitle{Maybe-Ketten}
+  Anwendbarkeit des syntaktischen Zuckers für Aktionstypen für Maybe:
+  \vfill
+
+  \texttt{%
+    berechneA \synSym{::}\ \synType{Integer}\ \ \synSym{->}\ \synType{Maybe}\ \synType{String} \\
+    berechneB \synSym{::}\ \synType{Integer}\ \ \synSym{->}\ \synType{Maybe}\ [\synType{Double}] \\
+    berechneC \synSym{::}\ [\synType{Double}]\ \synSym{->}\ \synType{Maybe}\ \synType{String} \\
+    \ \\
+    berechne \synSym{::}\ \synType{Integer}\ \synSym{->}\ \synType{Maybe}\ \synType{String} \\
+    berechne x \synSym{=}\ \synKey{do} \\
+    \ \ \ \ teil1\ \ \synSym{<-}\ berechneA x \\
+    \ \ \ \ teil2\ \ \synSym{<-}\ berechneB x \\
+    \ \ \ \ teil2'   \synSym{<-}\ berechneC teil2 \\
+    \ \ \ \ return (teil1 \synOp{++}\ teil2)
+  }
+}
+
 \section{Bildquellen}
 \frame[t]{\frametitle{Bildquellen}
   \scriptsize
@@ -522,6 +622,10 @@
     \item \url{http://i.ehow.com/images/a04/8i/g0/show-real-smile-photographs-800X800.jpg}
     \item \url{http://www.galois.com/~dons/images/cloud.png}
     \item \url{http://www.sopaed-lern.uni-wuerzburg.de/uploads/pics/Pruefung.jpg}
+    \item \url{http://perl.plover.com/yak/presentation/samples/present.gif}
+    \item \url{http://upload.wikimedia.org/wikipedia/commons/7/7d/Bug.png}
+    \item \url{http://www.fos.org.au/custom/files/media/sort_it_cover_300.jpg}
+    \item \url{http://www.simpsonsline.com/rb/fakten/vorspann/02_kasse.jpg}
   \end{itemize}
 }
 
