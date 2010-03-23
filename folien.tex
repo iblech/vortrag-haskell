@@ -668,6 +668,84 @@
   }
 }
 
+\section{Nebenläufigkeit}
+\subsection{Software Transactional Memory}
+\frame[t]{\frametitle{Traditionelles Locking}
+  \floatbox{-265}{200}{\includegraphics{images/lock.jpg}}%
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item Schwierigkeiten bei traditionellem Locking: \\
+          nichtlokales Denken, Deadlocks, Livelocks, Prioritätsinversion
+    \item "`lock-based programs do not compose"'
+  \end{itemize}
+}
+
+\frame[t]{\frametitle{Traditionelles Locking (Forts.)}
+  \floatbox{-265}{200}{\includegraphics{images/lock.jpg}}%
+  \vspace{-\topsep}%
+  \begin{enumerate}
+    \item \texttt{%
+      \syncomment{\# Perl} \\
+      \synvar{\$x}->\synfunc{withdraw}(3); \\
+      \synvar{\$y}->\synfunc{deposit}(3); \\
+      \syncomment{\# Race Condition!}
+    }
+
+    \pause\vfill
+    \item \texttt{%
+      \synvar{\$x}->\synfunc{lock}(); \synvar{\$y}->\synfunc{lock}();
+      \synvar{\$x}->\synfunc{withdraw}(3); \\
+      \synvar{\$y}->\synfunc{deposit}(3); \\
+      \synvar{\$y}->\synfunc{unlock}(); \synvar{\$x}->\synfunc{unlock}(); \\
+    }
+
+    \pause\vfill
+    \item \texttt{%
+      \{ \synvar{\$x}->\synfunc{lock}(); \synvar{\$y}->\synfunc{lock}(); \ldots; \} \\
+      vs. \\
+      \{ \synvar{\$y}->\synfunc{lock}(); \synvar{\$x}->\synfunc{lock}(); \ldots; \} \\
+      \syncomment{\# Deadlock!}
+    }
+  \end{enumerate}
+}
+
+\frame[t]{\frametitle{Software Transactional Memory}
+  \floatbox{-240}{200}{\includegraphics[scale=0.25]{images/stm.jpg}}%
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item Transaktionsvorstellung: \\
+          Unabhängige, einfädige Ausführung jeder Transaktion
+    \item Implementierung durch Schreiben in temporären Puffer;
+          Commit nur, wenn gelesene Variablen noch unverändert,
+          sonst Neustart
+    \item Vorteile: \\
+          keine expliziten Locks, \\
+          keine Race Conditions, \\
+          Komponierbarkeit
+  \end{itemize}
+}
+
+\frame[t]{\frametitle{Software Transactional Memory (Forts.)}
+  \floatbox{-240}{200}{\includegraphics[scale=0.25]{images/stm.jpg}}%
+  \texttt{%
+    \syncomment{-- Haskell} \\
+    withdraw \synSym{::}\ \synType{Account}\ \synSym{->}\ \synType{Int}\ \synSym{->}\ \synType{STM}\ () \\
+    deposit\ \ \synSym{::}\ \synType{Account}\ \synSym{->}\ \synType{Int}\ \synSym{->}\ \synType{STM}\ () \\
+    \ \\
+    atomically \synOp{\$}\ \synKey{do} \\
+    \ \ \ \ withdraw x \synLit{3} \\
+    \ \ \ \ deposit\ \ y \synLit{3}
+  }
+}
+
+\subsection{Data Parallel Haskell}
+\frame[t]{\frametitle{Data Parallel Haskell}
+  \begin{itemize}
+    \item Umsetzung von nested data parallelism
+    \item 
+  \end{itemize}
+}
+
 \section{Bildquellen}
 \frame[t]{\frametitle{Bildquellen}
   \tiny
@@ -694,6 +772,7 @@
     \item \url{http://xmonad.org/images/logo.png}
     \item \url{http://www.galois.com/files/Cryptol/Cryptol_logo_image.png}
     \item \url{http://www.luga.de/LUGA_Logo}
+    \item \url{http://www.wfu.edu/nanotech/Microscopy\%20Facility/stm_view.jpg}
   \end{itemize}
 }
 
