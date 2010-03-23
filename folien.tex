@@ -33,6 +33,7 @@
 \newcommand{\ul}[1]{\mathcal{#1}}
 
 \definecolor{backblue}{rgb}{0.84,0.84,0.94}
+\definecolor{backgrey}{rgb}{0.84,0.84,0.84}
 
 \newcommand{\floatbox}[3]{%
   \raisebox{0pt}[0pt][0pt]{%
@@ -231,7 +232,10 @@
       dup \synSym{::}\ [a] \synSym{->}\ [a]
     } \\
     \visible<3->{%
-      dup xs \synSym{=}\ xs \synOp{++}\ xs
+      dup xs \synSym{=}\ xs \synOp{++}\ xs \\
+      \syncomment{-- Bsp.:} \\
+      \syncomment{\ \ \ dup [1,2,3] ==} \\
+      \syncomment{\ \ \ [1,2,3,1,2,3]}
     }
   }
 }
@@ -257,7 +261,7 @@
   \pause\pause\pause\pause\pause
   \vfill
   \begin{itemize}
-    \item Deklaration von Schnittstellen durch Typklassen
+    \item Typklassen als Schnittstellen
     \item
       \texttt{%
         \synKey{class}\ \synType{Num}\ a \synKey{where} \\
@@ -275,12 +279,13 @@
   \begin{tabbing}
     \texttt{readFile} \= \hatTyp\ \= \kill
     \texttt{getLine} \> \hatTyp \> \texttt{\synType{IO}\ \synType{String}} \\
-    \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ -> \synType{IO}\ ()} \\
-    \texttt{readFile} \> \hatTyp \> \texttt{\synType{FilePath}\ -> \synType{IO}\ \synType{String}}
+    \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ \synSym{->}\ \synType{IO}\ ()} \\
+    \texttt{readFile} \> \hatTyp \> \texttt{\synType{FilePath}\ \synSym{->}\ \synType{IO}\ \synType{String}}
   \end{tabbing}
 
   \pause
   \vfill
+  \setlength{\columnsep}{45pt}%
   \begin{multicols*}{2}
     \texttt{%
       main \synSym{::}\ \synType{IO}\ () \\
@@ -324,9 +329,9 @@
   \newcommand{\hatTyp}{\texttt{\synSym{::}}}
   \begin{tabbing}
     \texttt{alphaNum} \= \hatTyp\ \= \kill
-    \texttt{oneOf} \> \hatTyp \> \texttt{[\synType{Char}] -> \synType{Parser}\ \synType{Char}} \\
+    \texttt{oneOf} \> \hatTyp \> \texttt{[\synType{Char}] \synSym{->}\ \synType{Parser}\ \synType{Char}} \\
     \texttt{alphaNum} \> \hatTyp \> \texttt{\synType{Parser}\ \synType{Char}} \\
-    \texttt{many} \> \hatTyp \> \texttt{\synType{Parser}\ a -> \synType{Parser}\ [a]}
+    \texttt{many} \> \hatTyp \> \texttt{\synType{Parser}\ a \synSym{->}\ \synType{Parser}\ [a]}
   \end{tabbing}
 }
 
@@ -391,7 +396,12 @@
   \floatbox{-223}{75}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
   \hspace*{-1em}\begin{minipage}{20cm}
   \texttt{%
-    \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ | Fork \synType{Tree}\ \synType{Tree} \\
+    \only<1>{%
+      \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ | Fork \synType{Tree}\ \synType{Tree}
+    }%
+    \only<2->{\sout{%
+      \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ | Fork \synType{Tree}\ \synType{Tree}
+    }} \\
     \ \\
     \pause
     \synKey{data}\ \synType{Tree}\ a = Leaf a \ \ | Fork (\synType{Tree}\ a) (\synType{Tree}\ a)
@@ -416,21 +426,70 @@
 \section[Misc]{Anwendungen}
 \subsection{QuickCheck}
 \frame[t]{\frametitle{QuickCheck}
+  \floatbox{-253}{200}{\includegraphics[scale=0.2]{images/pruefung.jpg}}%
   \texttt{%
     \syncomment{\# Perl} \\
     \synfunc{is}(\synfunc{sqrt}(0), \ 0, \synstr{"{}sqrt(0) ist ok"}); \\
     \synfunc{is}(\synfunc{sqrt}(1), \ 1, \synstr{"{}sqrt(1) ist ok"}); \\
     \synfunc{is}(\synfunc{sqrt}(4), \ 2, \synstr{"{}sqrt(4) ist ok"}); \\
     \synfunc{is}(\synfunc{sqrt}(9), \ 3, \synstr{"{}sqrt(9) ist ok"}); \\
-    \synfunc{is}(\synfunc{sqrt}(16), 4,  \synstr{"{}sqrt(16) ist ok"});
+    \synfunc{is}(\synfunc{sqrt}(16), 4,  \synstr{"{}sqrt(16) ist ok"}); \\
+    \ldots;\ \ \syncomment{\# ??}
   }
 
   \vfill
   \pause
   \texttt{%
     \syncomment{-- Haskell mit QuickCheck} \\
-    propSqrt \synSym{::}\ \synType{Double}\ -> \synType{Bool} \\
+    propSqrt \synSym{::}\ \synType{Double}\ \synSym{->}\ \synType{Bool} \\
     propSqrt x \synSym{=}\ sqrt (x \synOp{*}\ x) \synOp{==}\ x
+  }
+}
+
+\frame[t]{\frametitle{QuickCheck (Forts.)}
+  \floatbox{-253}{200}{\includegraphics[scale=0.2]{images/pruefung.jpg}}%
+  \texttt{%
+    propSqrt \synSym{::}\ \synType{Double}\ \synSym{->}\ \synType{Bool} \\
+    propSqrt x \synSym{=}\ sqrt (x \synOp{*}\ x) \synOp{==}\ x \\
+    \ \\
+    ghci> quickCheck propSqrt \\
+    Falsifiable, after 6 tests: \\
+    -0.25
+  }
+  \pause
+
+  \vfill
+  \texttt{%
+    propSqrt' \synSym{::}\ \synType{Double}\ \synSym{->}\ \synType{Bool} \\
+    propSqrt' x \synSym{=}\ sqrt (x \synOp{*}\ x) \synOp{==}\ \colorbox{backblue}{abs} x \\
+    \ \\
+    ghci> quickCheck propSqrt' \\
+    OK, passed 100 tests.
+  }
+}
+
+\frame[t]{\frametitle{QuickCheck (Forts.)}
+  \floatbox{-253}{200}{\includegraphics[scale=0.2]{images/pruefung.jpg}}%
+  \vspace{-1.5em}%
+  \begin{itemize}
+    \item Überprüfung durch zufällig generierte Stichproben
+    \item \texttt{%
+      \synKey{class}\ \synType{Arbitrary}\ a \synKey{where} \\
+      \ \ \ \ arbitrary \synSym{::}\ \synType{Gen}\ a
+    }
+    \item Instanzen von \texttt{\synType{Arbitrary}} nicht nur für
+          primitive, sondern auch für zusammengesetzte Typen
+  \end{itemize}
+  \vfill
+
+  \pause
+  \vfill
+  \texttt{%
+    \synKey{import}\ Data.Char \\
+    kleinbuchstabe \synSym{::}\ \synType{Gen}\ \synType{Char} \\
+    kleinbuchstabe \synSym{=}\ \synKey{do} \\
+    \ \ \ \ c \synSym{<-}\ arbitrary \\
+    \ \ \ \ return (toUpper c)
   }
 }
 
@@ -461,6 +520,8 @@
     \item \url{http://wordaligned.org/images/the-challenge-of-effects.jpg}
     \item \url{http://www.lakehousecreations.com/images/ThankYou/Thank\%20You\%202003\%20(12).jpg}
     \item \url{http://i.ehow.com/images/a04/8i/g0/show-real-smile-photographs-800X800.jpg}
+    \item \url{http://www.galois.com/~dons/images/cloud.png}
+    \item \url{http://www.sopaed-lern.uni-wuerzburg.de/uploads/pics/Pruefung.jpg}
   \end{itemize}
 }
 
