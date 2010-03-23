@@ -65,7 +65,7 @@
   \includegraphics[scale=0.35]{images/learn-you-a-haskell-for-great-good.png}
 \end{center}}
 
-\frame[t]{\tableofcontents}
+\frame[t]{\begin{multicols}{2}\tableofcontents\end{multicols}}
 
 \section{Grundlegendes}
 \frame[t]{\frametitle{Haskell ist komisch!}
@@ -313,7 +313,7 @@
 }
 
 \subsection{Aktionstypen}
-\frame[t]{\frametitle{Typen von Ein-/Ausgabe-Aktionen}
+\frame[t]{\frametitle{Typen von Ein-/Ausgabe-Operationen}
   \newcommand{\hatTyp}{\texttt{\synSym{::}}}
   \begin{tabbing}
     \texttt{readFile} \= \hatTyp\ \= \kill
@@ -351,8 +351,8 @@
   Grafik gestohlen von: Simon Peyton Jones
 \end{center}}
 
-\section{Weitere Fähigkeiten}
-\subsection{Parser-Aktionen}
+\section[Weiteres]{Weitere Fähigkeiten}
+\subsection[Parser]{Parser-Aktionen}
 \frame[t]{\frametitle{Parser-Aktionen}
   \floatbox{-250}{190}{\includegraphics[scale=0.13]{images/regex.png}}%
   \texttt{%
@@ -374,7 +374,7 @@
   \end{tabbing}
 }
 
-\subsection{Bedarfsauswertung}
+\subsection[Laziness]{Bedarfsauswertung}
 \frame[t]{\frametitle{Bedarfsauswertung}
   \floatbox{-210}{195}{\includegraphics[scale=0.2]{images/lazy.jpg}}%
   \texttt{%
@@ -413,7 +413,7 @@
   \end{minipage}
 }
 
-\subsection{Datentypen}
+\subsection[Datentypen]{Benutzerdefinierte Datentypen}
 \frame[t]{\frametitle{Benutzerdefinierte Datentypen}
   \floatbox{-220}{190}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
   \texttt{%
@@ -472,7 +472,6 @@
   \end{minipage}
 }
 
-\section[Misc]{Anwendungen}
 \subsection{QuickCheck}
 \frame[t]{\frametitle{QuickCheck}
   \floatbox{-253}{200}{\includegraphics[scale=0.2]{images/pruefung.jpg}}%
@@ -542,6 +541,58 @@
   }
 }
 
+\subsection[FFI]{Foreign Function Interface}
+\frame[t]{\frametitle{Foreign Function Interface}
+  \texttt{%
+    \syncomment{\{-\# INCLUDE <math.h> \#-\}} \\
+    foreign \synKey{import}\ ccall unsafe "{}sin"{}\\
+    \ \ \ \ c\_{}sin \synSym{::}\ \synType{CDouble}\ \synSym{->}\ \synType{CDouble} \\
+  }
+
+  \vfill
+  \begin{itemize}
+    \item Einbindung von (C-)Bibliotheken
+    \item Keine besondere Handhabung der importierten Funktionen
+    \item Callbacks aus dem C-Code heraus möglich
+  \end{itemize}
+}
+
+\section{Gemeinschaft}
+\subsection{Hackage}
+\frame[t]{\frametitle{Paketarchiv Hackage}
+  \begin{itemize}
+    \item Entstehung 2007, mittlerweile $2300^+$ Pakete
+    \item Installationswerkzeug cabal-install
+  \end{itemize}
+
+  \vspace{-0.6em}
+  \begin{center}
+    \includegraphics[scale=0.35]{images/cloud.png}
+  \end{center}
+}
+
+\subsection{Größere Anwendungen}
+\frame[t]{\frametitle{Größere Anwendungen}
+  \begin{itemize}
+    \item Glasgow Haskell Compiler (GHC)
+    \item Verteiltes Versionskontrollsystem: Darcs
+    \item Fenstermanager: xmonad
+    \item Perl-6-Prototyp: Pugs
+    \item Sprache für kryptographische Algorithmen: Cryptol
+    \item Benchmarkbibliothek: Criterion
+  \end{itemize}
+
+  \begin{center}
+    \hfill
+    \includegraphics[scale=0.9]{images/darcs.png}
+    \hfill
+    \includegraphics{images/xmonad.png}
+    \hfill
+    \includegraphics[scale=0.8]{images/cryptol.png}
+    \hfill
+  \end{center}
+}
+
 \frame[t]{
   \floatbox{-195}{210}{\scalebox{0.7}{\visible<2>{\includegraphics{images/thankyou.png}}}}%
   \begin{itemize}
@@ -550,10 +601,11 @@
     \item zum Herumspielen im Browser: \\
           \url{http://tryhaskell.org/}
     \item interaktive Haskell-Shell: \\
-          \texttt{apt-get install ghc6} \\
-          $\leadsto$ \texttt{\$ ghci}
+          \texttt{\$ apt-get install ghc6} \\
+          \texttt{\$ ghci}
           \vspace{2\itemsep}
     \item \texttt{\#haskell} auf Freenode
+    \item \url{http://planet.haskell.org/}
   \end{itemize}
 }
 
@@ -606,7 +658,7 @@
 
 \section{Bildquellen}
 \frame[t]{\frametitle{Bildquellen}
-  \scriptsize
+  \tiny
   \begin{itemize}
     \item \url{http://learnyouahaskell.com/splash.png}
     \item \url{http://save-endo.cs.uu.nl/target.png}
@@ -626,6 +678,9 @@
     \item \url{http://upload.wikimedia.org/wikipedia/commons/7/7d/Bug.png}
     \item \url{http://www.fos.org.au/custom/files/media/sort_it_cover_300.jpg}
     \item \url{http://www.simpsonsline.com/rb/fakten/vorspann/02_kasse.jpg}
+    \item \url{http://www.darcs.net/logos/logo.png}
+    \item \url{http://xmonad.org/images/logo.png}
+    \item \url{http://www.galois.com/files/Cryptol/Cryptol_logo_image.png}
   \end{itemize}
 }
 
