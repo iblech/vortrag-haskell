@@ -318,7 +318,7 @@
   \begin{tabbing}
     \texttt{readFile} \= \hatTyp\ \= \kill
     \texttt{getLine} \> \hatTyp \> \texttt{\colorbox{backblue}{\synType{IO}}\ \synType{String}} \\
-    \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ ()} \\
+    \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ \ \ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ ()} \\
     \texttt{readFile} \> \hatTyp \> \texttt{\synType{FilePath}\ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ \synType{String}}
   \end{tabbing}
 
@@ -376,7 +376,7 @@
 
 \subsection[Laziness]{Bedarfsauswertung}
 \frame[t]{\frametitle{Bedarfsauswertung}
-  \floatbox{-210}{195}{\includegraphics[scale=0.2]{images/lazy.jpg}}%
+  \floatbox{-210}{202}{\includegraphics[scale=0.2]{images/lazy.jpg}}%
   \texttt{%
     main \synSym{=}\ \synKey{do} \\
     \ \ \ \ daten \synSym{<-}\ readFile \synLit{"große-datei.txt"} \\
@@ -408,7 +408,8 @@
       \ \\
       \pause
       fibs \synSym{::}\ [\synType{Integer}] \\
-      fibs \synSym{=}\ \synLit{0}\ \synOp{:}\ \synLit{1}\ \synOp{:}\ zipWith\ \synOp{(+)}\ fibs (tail fibs)
+      fibs \synSym{=}\ \synLit{0}\ \synOp{:}\ \synLit{1}\ \synOp{:}\ zipWith\ \synOp{(+)}\ fibs (tail fibs) \\
+      \syncomment{-- fibs == [0,1,1,2,3,5,8,13,21,34,\ldots]}
     }
   \end{minipage}
 }
@@ -543,6 +544,7 @@
 
 \subsection[FFI]{Foreign Function Interface}
 \frame[t]{\frametitle{Foreign Function Interface}
+  \floatbox{-270}{75}{\includegraphics[scale=0.7]{images/jabberwocky.jpg}}%
   \texttt{%
     \syncomment{\{-\# INCLUDE <math.h> \#-\}} \\
     foreign \synKey{import}\ ccall unsafe "{}sin"{}\\
@@ -595,6 +597,8 @@
 
 \subsection{Einstiegspunkte}
 \frame[t]{
+  \floatbox{-240}{100}{\includegraphics[scale=0.2]{images/rwh.jpg}}%
+  \vspace{-\topsep}%
   \begin{itemize}
     \item \url{http://haskell.org/}
           \vspace{2\itemsep}
@@ -604,8 +608,8 @@
           \texttt{\$ apt-get install ghc6} \\
           \texttt{\$ ghci}
           \vspace{2\itemsep}
-    \item \texttt{\#haskell} auf Freenode
-    \item \url{http://planet.haskell.org/}
+    \item \url{http://learnyouahaskell.com/}
+    \item Buch: Real World Haskell, O'Reilly
           \vfill
     \item Teile dieses Vortrags inspiriert von einem Vortrag von
           Audrey Tang: \\
@@ -623,7 +627,7 @@
 
 \appendix
 \frame{
-  \floatbox{-200}{180}{\includegraphics[scale=0.25]{images/present.png}}%
+  \floatbox{-210}{190}{\includegraphics[scale=0.25]{images/present.png}}%
   \begin{center}\Huge Bonus-Folien\end{center}
 
   \tableofcontents
@@ -669,8 +673,21 @@
 }
 
 \section{Nebenläufigkeit}
+\frame[t]{\frametitle{Nebenläufigkeit}
+  \floatbox{-235}{200}{\includegraphics[scale=0.45]{images/philosophen.png}}%
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item Aufgabenparallelismus: \\
+          Software Transactional Memory
+          \hyperlink{stm}{\beamergotobutton{weiter}}
+    \item Datenparallelismus: \\
+          Data Parallel Haskell
+          \hyperlink{dph}{\beamergotobutton{weiter}}
+  \end{itemize}
+}
+
 \subsection{Software Transactional Memory}
-\frame[t]{\frametitle{Traditionelles Locking}
+\frame[t,label=stm]{\frametitle{Traditionelles Locking}
   \floatbox{-265}{200}{\includegraphics{images/lock.jpg}}%
   \vspace{-\topsep}%
   \begin{itemize}
@@ -739,11 +756,38 @@
 }
 
 \subsection{Data Parallel Haskell}
+\frame[t,label=dph]{\frametitle{Flat/Nested Data Parallelism}
+  \begin{itemize}
+    \item Flat Data Parallelism: \\
+          \texttt{%
+            \synfunc{for}\ \synfunc{my}\ \synvar{\$i}\ (1..\synvar{\$N}) \{ \\
+            \ \ \ \ \synvar{work}(\synvar{\$i}); \\
+            \}
+          }
+    \item Effizienz verschenkt, wenn \texttt{\synvar{work}()} selbst
+          parallel arbeiten könnte!
+  \end{itemize}
+}
+
 \frame[t]{\frametitle{Data Parallel Haskell}
   \begin{itemize}
-    \item Umsetzung von nested data parallelism
-    \item 
+    \item Umsetzung von Nested Data Parallelism
+    \item Automatische Programmtransformationen: \\
+          Flattening (global), Fusion (lokal)
+    \item Wesentliche Abhängigkeit von Haskells reiner Funktionalität
   \end{itemize}
+
+  \pause
+  \texttt{%
+    \syncomment{-- Komponentenweise Vektor-Multiplikation} \\
+    mulP \synSym{::}\ (\synType{Num}\ a) \synSym{=>}\ [:a:] \synSym{->}\ [:a:] \synSym{->}\ [:a:] \\
+    mulP xs ys \synSym{=} \\
+    \ \ \ \ [: x \synOp{+}\ y \synSym{|}\ x \synSym{<-}\ xs \synSym{|}\ y \synSym{<-}\ ys :] \\
+    \ \\
+    \syncomment{-- Skalarprodukt} \\
+    dotP \synSym{::}\ (\synType{Num}\ a) \synSym{=>}\ [:a:] \synSym{->}\ [:a:] \synSym{->}\ a \\
+    dotP xs ys \synSym{=}\ sumP (mulP xs ys)
+  }
 }
 
 \section{Bildquellen}
@@ -773,6 +817,9 @@
     \item \url{http://www.galois.com/files/Cryptol/Cryptol_logo_image.png}
     \item \url{http://www.luga.de/LUGA_Logo}
     \item \url{http://www.wfu.edu/nanotech/Microscopy\%20Facility/stm_view.jpg}
+    \item \url{http://www.coverbrowser.com/image/oreilly-books/42-1.jpg}
+    \item \url{http://de.academic.ru/pictures/dewiki/100/dining_philosophers.png}
+    \item \url{http://upload.wikimedia.org/wikipedia/commons/d/d0/Jabberwocky.jpg}
   \end{itemize}
 }
 
