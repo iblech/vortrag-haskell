@@ -65,11 +65,35 @@
   \includegraphics[scale=0.35]{images/learn-you-a-haskell-for-great-good.png}
 \end{center}}
 
-\frame[t]{\begin{multicols}{2}\tableofcontents\end{multicols}}
+%\frame[t]{\begin{multicols}{2}\small\tableofcontents\end{multicols}}
+\frame[t]{\scriptsize\tableofcontents}
 
 \section{Grundlegendes}
+\frame[t]{\frametitle{Über Haskell}
+  \floatbox{-225}{200}{\includegraphics[scale=0.35]{images/committee.png}}%
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item Hochsprache, rein funktional, \\
+          streng statisch typisiert, "`nicht-strikt``
+    \item Sprachspezifikation durch ein Komitee
+    \item Veröffentlichung von Haskell 1.0: 1990
+    \item Glasgow Haskell Compiler, \\
+          Haskell User's Gofer System (Bytecodeinterpreter)
+  \end{itemize}
+}
+
+\frame[t]{\frametitle{Imperative Sprachen}
+  \floatbox{-180}{200}{\includegraphics[scale=0.4]{images/standard.jpg}}%
+  Kennzeichen imperativer Sprachen:
+  \begin{itemize}
+    \item veränderliche Variablen
+    \item Nebeneffekte
+    \item Anweisungen
+  \end{itemize}
+}
+
 \frame[t]{\frametitle{Haskell ist komisch!}
-  \floatbox{-210}{110}{\includegraphics[scale=0.2]{images/endo.png}}%
+  \floatbox{-210}{190}{\includegraphics[scale=0.2]{images/endo.png}}%
   Haskell ist rein funktional:
   \begin{itemize}
     \item keine veränderliche Variablen
@@ -77,6 +101,10 @@
     \item keine Anweisungen
   \end{itemize}
 }
+
+\frame[plain]{\begin{center}
+  \includegraphics[scale=0.6]{images/wtf.jpg}
+\end{center}}
 
 \subsection[Variablen]{Keine Variablen}
 \frame[t]{\frametitle{Keine veränderliche Variablen}
@@ -157,7 +185,7 @@
     \item Gleiche Argumente $\leadsto$ gleiche Rückgaben
     \item Keine Ein-/Ausgabe, \\ keine Zustandsveränderungen, \ldots
     \item Rein lokales Codeverständnis!
-    \item Tiefgreifende Optimierungsmöglichkeiten
+    \item Tiefgreifende Optimierungsmöglichkeiten!
   \end{itemize}
 }
 
@@ -184,19 +212,21 @@
   \vfill
   \begin{itemize}
     \item Aktionen $\neq$ Werte
-    \item \texttt{getLine \synSym{::}\ \synType{IO}\ \synType{String}}
+    \item Explizite Unterscheidung \\
+          durchs Typsystem (s. gleich)
   \end{itemize}
 }
 
 \subsection[Beispiele]{Erste Beispiele: Aufsummieren und Quicksort}
-\frame[t]{\frametitle{Beispiel: Aufsummieren}
+\frame[t]{\frametitle{Beispiel: Aufsummieren einer Zahlenliste}
   \floatbox{-210}{195}{\includegraphics[scale=0.35]{images/kasse.jpg}}%
+  Deklaration durch Musterabgleich: \\
   \texttt{%
-    sum []\ \ \ \ \ \synSym{=}\ 0 \\
+    sum []\ \ \ \ \ \synSym{=}\ \synLit{0} \\
     sum (x\synSym{:}xs) \synSym{=}\ x \synOp{+}\ sum xs
   }
 
-  \pause\vfill
+  \vfill
   Beispielauswertung: \\
   \texttt{%
     \ \ \ sum [\synLit{1},\synLit{2},\synLit{3}] \\
@@ -228,23 +258,52 @@
 \frame[t]{\frametitle{Werte und Typen}
   \floatbox{-250}{35}{\includegraphics[scale=0.25]{images/types.jpg}}%
   \newcommand{\hatTyp}{\texttt{\synSym{::}}}%
-  \vspace{-2em}%
-  \begin{tabbing}
-    \texttt{"Hallo, Welt!123333"} \= \hatTyp\ \= \kill
-    \texttt{\synLit{"Hallo, Welt!"}} \> \hatTyp \> \texttt{\synType{String}} \\
-    \texttt{\synLit{True}} \> \hatTyp \> \texttt{\synType{Bool}} \\
-    \\
-    \texttt{[\synLit{'A'}, \synLit{'B'}, \synLit{'C'}]} \> \hatTyp \> \texttt{[\synType{Char}]} \\
-    \texttt{[[\synLit{1},\synLit{2}], [\synLit{3}], []]} \> \hatTyp \> \texttt{[[\synType{Integer}]]} \\
-    \\
-    \texttt{head}, \texttt{last} \> \hatTyp \> \texttt{[a] \synSym{->}\ a} \\
-    \texttt{\syncomment{-- Bsp.:}\ head [\synLit{1},\synLit{2},\synLit{3}] == \synLit{1}} \\
-    \texttt{\ \ \ \ \ \ \ \ \ last [\synLit{1},\synLit{2},\synLit{3}] == \synLit{3}} \\
-    \\
-    \texttt{init}, \texttt{tail} \> \hatTyp \> \texttt{[a] \synSym{->}\ a} \\
-    \texttt{\syncomment{-- Bsp.:}\ init [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{1},\synLit{2}]} \\
-    \texttt{\ \ \ \ \ \ \ \ \ tail [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{2},\synLit{3}]}
-  \end{tabbing}
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item Strenge, statische Typisierung; \\
+          jeder Wert ist von genau einem Typ.
+    \item Enorm hilfreich!
+    \item Keine impliziten Typumwandlungen
+
+    \item Primitive Typen:
+      \begin{tabbing}
+        \texttt{"Hallo, Welt!12"} \= \hatTyp\ \= \texttt{Integer\ \ } \= \kill
+        \texttt{\synLit{"Hallo, Welt!"}} \> \hatTyp \> \texttt{\synType{String}} \\
+        \texttt{\synLit{True}} \> \hatTyp \> \texttt{\synType{Bool}} \\
+        \texttt{\synLit{37}} \> \hatTyp \> \texttt{\synType{Integer}} \> (beliebige Größe) \\
+        \texttt{\synLit{37}} \> \hatTyp \> \texttt{\synType{Int}} \> (mind. 31 Bit)
+      \end{tabbing}
+
+    \item Zusammengesetzte Typen:
+      \begin{tabbing}
+        \texttt{"Hallo, Welt!12"} \= \hatTyp\ \= \kill
+        \texttt{[\synLit{'A'}, \synLit{'B'}, \synLit{'C'}]} \> \hatTyp \> \texttt{[\synType{Char}]} \\
+        \texttt{[[\synLit{1},\synLit{2}], [\synLit{3}], []]} \> \hatTyp \> \texttt{[[\synType{Integer}]]}
+      \end{tabbing}
+  \end{itemize}
+}
+
+\frame[t]{\frametitle{Werte und Typen (Forts.)}
+  \floatbox{-250}{35}{\includegraphics[scale=0.25]{images/types.jpg}}%
+  \newcommand{\hatTyp}{\texttt{\synSym{::}}}%
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item Funktionstypen:
+      \begin{tabbing}
+        \texttt{"Hallo,e"} \= \hatTyp\ \= \kill
+        \texttt{head}, \texttt{last} \> \hatTyp \> \texttt{[a] \synSym{->}\ a} \\
+        \texttt{\syncomment{-- Bsp.:}\ head [\synLit{1},\synLit{2},\synLit{3}] == \synLit{1}} \\
+        \texttt{\ \ \ \ \ \ \ \ \ last [\synLit{1},\synLit{2},\synLit{3}] == \synLit{3}} \\
+        \\
+        \texttt{init}, \texttt{tail} \> \hatTyp \> \texttt{[a] \synSym{->}\ [a]} \\
+        \texttt{\syncomment{-- Bsp.:}\ init [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{1},\synLit{2}]} \\
+        \texttt{\ \ \ \ \ \ \ \ \ tail [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{2},\synLit{3}]} \\
+        \\
+        \texttt{\syncomment{-- Operatoren:}} \\
+        \texttt{(\synOp{\&\&})} \> \hatTyp \> \texttt{Bool \synSym{->}\ Bool \synSym{->}\ Bool} \\
+        \texttt{(\synOp{++})} \> \hatTyp \> \texttt{[a]\ \ \synSym{->}\ [a]\ \ \synSym{->}\ [a]} \\
+      \end{tabbing}
+  \end{itemize}
 }
 
 \subsection{Typerschließung}
@@ -257,7 +316,7 @@
 \end{center}}
 
 \frame[t]{\frametitle{Automatische Typerschließung}
-  \floatbox{-170}{190}{\includegraphics[scale=0.4]{images/katze.jpg}}%
+  \floatbox{-210}{190}{\includegraphics[scale=0.3]{images/katze.jpg}}%
   Automatische Erschließung nicht angegebener Typen durch den Compiler
 
   \texttt{%
@@ -280,28 +339,29 @@
 }
 
 \subsection{Typklassen}
-\frame[t]{\frametitle{Typklassen}
-  \texttt{%
-    \visible<2->{%
-      add37 \synSym{::}\ \visible<3->{\colorbox{backblue}{(Num a) =>}} a \synSym{->}\ a
-    } \\
-    add37 x \synSym{=}\ x \synOp{+}\ 37 \\
-    \syncomment{-- Bsp.: add37 5 == 42} \\
-    \ \\
-    \visible<5->{%
-      min \synSym{::}\ \colorbox{backblue}{(Ord a) =>} a \synSym{->}\ a \synSym{->}\ a
-    } \\
-    \visible<4->{%
-      min x y \synSym{=}\ \synKey{if}\ x \synOp{<=}\ y \synKey{then}\ x \synKey{else}\ y \\
-      \syncomment{-- Bsp.: min 19 17 == 17}
-    }
-  }
-
-  \pause\pause\pause\pause\pause
-  \vfill
+\frame[t]{\frametitle{Typklassen ($=$ Schnittstellen, Rollen)}
   \begin{itemize}
-    \item Typklassen als Schnittstellen
+    \item Typklassen für ad-hoc Polymorphismus:
+
+      \texttt{%
+        \visible<2->{%
+          add37 \synSym{::}\ \visible<3->{\colorbox{backblue}{(Num a) =>}} a \synSym{->}\ a
+        } \\
+        add37 x \synSym{=}\ x \synOp{+}\ 37 \\
+        \syncomment{-- Bsp.: add37 5 == 42} \\
+        \ \\
+        \visible<5->{%
+          min \synSym{::}\ \colorbox{backblue}{(Ord a) =>} a \synSym{->}\ a \synSym{->}\ a
+        } \\
+        \visible<4->{%
+          min x y \synSym{=}\ \synKey{if}\ x \synOp{<=}\ y \synKey{then}\ x \synKey{else}\ y \\
+          \syncomment{-- Bsp.: min 19 17 == 17}
+        }
+      }
+
+    \pause\pause\pause\pause\pause
     \item
+      Deklaration: \\
       \texttt{%
         \synKey{class}\ \synType{Num}\ a \synKey{where} \\
         \ \ \ \ \synOp{(+)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
@@ -314,35 +374,39 @@
 
 \subsection{Aktionstypen}
 \frame[t]{\frametitle{Typen von Ein-/Ausgabe-Operationen}
-  \newcommand{\hatTyp}{\texttt{\synSym{::}}}
-  \begin{tabbing}
-    \texttt{readFile} \= \hatTyp\ \= \kill
-    \texttt{getLine} \> \hatTyp \> \texttt{\colorbox{backblue}{\synType{IO}}\ \synType{String}} \\
-    \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ \ \ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ ()} \\
-    \texttt{readFile} \> \hatTyp \> \texttt{\synType{FilePath}\ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ \synType{String}}
-  \end{tabbing}
+  \newcommand{\hatTyp}{\texttt{\synSym{::}}}%
+  \begin{minipage}{11.3cm}\begin{itemize}
+    \item \texttt{\synType{IO}\ \synType{Foo}} meint:
+          IO-Aktion vom Typ \texttt{\synType{Foo}}
+    \item Häufig benutzte Ein-/Ausgabe-Operationen: \\
+      \begin{tabbing}
+        \texttt{readFile} \= \hatTyp\ \= \kill
+        \texttt{getLine} \> \hatTyp \> \texttt{\colorbox{backblue}{\synType{IO}}\ \synType{String}} \\
+        \texttt{putStr}  \> \hatTyp \> \texttt{\synType{String}\ \ \ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ ()} \\
+        \texttt{readFile} \> \hatTyp \> \texttt{\synType{FilePath}\ \synSym{->}\ \colorbox{backblue}{\synType{IO}}\ \synType{String}}
+      \end{tabbing}
+    \pause
+    \item Zum früheren Beispiel: \\
+      \setlength{\columnsep}{35pt}%
+      \begin{multicols*}{2}
+        \texttt{%
+          main \synSym{::}\ \colorbox{backblue}{\synType{IO}}\ () \\
+          main \synSym{=}\ \synKey{do} \\
+          \ \ \ \ x \synSym{<-}\ getLine \\
+          \ \ \ \ print (x \synOp{++}\ x) 
+        }
 
-  \pause
-  \vfill
-  \setlength{\columnsep}{45pt}%
-  \begin{multicols*}{2}
-    \texttt{%
-      main \synSym{::}\ \colorbox{backblue}{\synType{IO}}\ () \\
-      main \synSym{=}\ \synKey{do} \\
-      \ \ \ \ x \synSym{<-}\ getLine \\
-      \ \ \ \ print (x \synOp{++}\ x) 
-    }
+        \columnbreak
 
-    \columnbreak
-
-    \texttt{%
-      main \synSym{::}\ \colorbox{backblue}{\synType{IO}}\ () \\
-      main \synSym{=}\ \synKey{do} \\
-      \ \ \ \ x \synSym{<-}\ getLine \\
-      \ \ \ \ y \synSym{<-}\ getLine \\
-      \ \ \ \ print (x \synOp{++}\ y) 
-    }
-  \end{multicols*}
+        \texttt{%
+          main \synSym{::}\ \colorbox{backblue}{\synType{IO}}\ () \\
+          main \synSym{=}\ \synKey{do} \\
+          \ \ \ \ x \synSym{<-}\ getLine \\
+          \ \ \ \ y \synSym{<-}\ getLine \\
+          \ \ \ \ print (x \synOp{++}\ y) 
+        }
+      \end{multicols*}
+  \end{itemize}\end{minipage}
 }
 
 \frame[plain]{\begin{center}
@@ -355,6 +419,10 @@
 \subsection[Parser]{Parser-Aktionen}
 \frame[t]{\frametitle{Parser-Aktionen}
   \floatbox{-250}{190}{\includegraphics[scale=0.13]{images/regex.png}}%
+  Parser für Perl-Bezeichner (wie beispielsweise \texttt{\$foo} oder
+  \texttt{@bar123}):
+  \vfill
+
   \texttt{%
     perlBezeichner \synSym{::}\ \synType{Parser}\ \synType{String} \\
     perlBezeichner \synSym{=}\ \synKey{do} \\
@@ -376,15 +444,15 @@
 
 \subsection[Laziness]{Bedarfsauswertung}
 \frame[t]{\frametitle{Bedarfsauswertung}
-  \floatbox{-210}{202}{\includegraphics[scale=0.2]{images/lazy.jpg}}%
+  \floatbox{-230}{195}{\includegraphics[scale=0.17]{images/lazy.jpg}}%
   \texttt{%
+    \syncomment{-- 99. Zeile aus Datei ausgeben} \\
     main \synSym{=}\ \synKey{do} \\
     \ \ \ \ daten \synSym{<-}\ readFile \synLit{"große-datei.txt"} \\
-    \only<1>{\ \ \ \ print (lines daten \synOp{!!}\ 99)}
-    \only<2->{\ \ \ \ print \synOp{\$}\ lines daten \synOp{!!}\ 99}
+    \ \ \ \ print (lines daten \synOp{!!}\ 99)
   }
 
-  \pause\pause
+  \pause
   \vfill
   \begin{itemize}
     \item Auswertung von Ausdrücken erst dann, wenn Ergebnisse wirklich benötigt
@@ -395,19 +463,18 @@
   \end{itemize}
 }
 
-\frame[t]{\frametitle{Bedarfsauswertung}
-  \floatbox{-210}{150}{\includegraphics[scale=0.2]{images/lazy.jpg}}%
+\frame[t]{\frametitle{Bedarfsauswertung (Forts.)}
+  \floatbox{-230}{150}{\includegraphics[scale=0.17]{images/lazy.jpg}}%
   \begin{minipage}{20cm}
     \texttt{%
-      natürlicheZahlen \synSym{::}\ [\synType{Integer}] \\
       natürlicheZahlen \synSym{=}\ [\synLit{1}..] \\
+      \syncomment{-- natürlicheZahlen == [1,2,3,4,\ldots] } \\
       \ \\
       \pause
-      ungeradeZahlen \synSym{::}\ [\synType{Integer}] \\
       ungeradeZahlen \synSym{=}\ filter odd [\synLit{1}..] \\
+      \syncomment{-- ungeradeZahlen == [1,3,5,7,\ldots] } \\
       \ \\
       \pause
-      fibs \synSym{::}\ [\synType{Integer}] \\
       fibs \synSym{=}\ \synLit{0}\ \synOp{:}\ \synLit{1}\ \synOp{:}\ zipWith\ \synOp{(+)}\ fibs (tail fibs) \\
       \syncomment{-- fibs == [0,1,1,2,3,5,8,13,21,34,\ldots]}
     }
@@ -458,6 +525,7 @@
     \pause
     \ \\
     \ \\
+    \syncomment{-- Gesamtzahl Blätter zählen} \\
     size \synSym{::}\ \synType{Tree}\ a \synSym{->}\ \synType{Integer} \\
     size (Leaf \symbol{95})\ \ \ \ \ \ \ \ \ \ \ \ \synSym{=}\ \synLit{1} \\
     size (Fork links rechts) \synSym{=}\\
@@ -465,7 +533,8 @@
     \ \\
     \ \\
     \pause
-    inorder \synSym{:}\ \synType{Tree}\ a \synSym{->}\ [a] \\
+    \syncomment{-- Blätter inorder als Liste zurückgeben} \\
+    inorder \synSym{::}\ \synType{Tree}\ a \synSym{->}\ [a] \\
     inorder (Leaf x)\ \ \ \ \ \ \ \ \ \ \ \  \synSym{=}\ [x] \\
     inorder (Fork links rechts) \synSym{=} \\
     \phantom{ }\ \ \ inorder links \synOp{++}\ inorder rechts
@@ -503,7 +572,7 @@
     \ \\
     ghci> quickCheck propSqrt \\
     Falsifiable, after 6 tests: \\
-    -0.25
+    -4
   }
   \pause
 
@@ -521,47 +590,29 @@
   \floatbox{-253}{200}{\includegraphics[scale=0.2]{images/pruefung.jpg}}%
   \vspace{-\topsep}%
   \begin{itemize}
-    \item Überprüfung durch zufällig generierte Stichproben
-    \item \texttt{%
-      \synKey{class}\ \synType{Arbitrary}\ a \synKey{where} \\
-      \ \ \ \ arbitrary \synSym{::}\ \synType{Gen}\ a
-    }
+    \item Spezifikationsüberprüfung durch zufällig generierte Stichproben
+    \item Enorm hilfreich!
+    \item Implementierung durch Typklasse: \\
+      \texttt{%
+        \synKey{class}\ \synType{Arbitrary}\ a \synKey{where} \\
+        \ \ \ \ arbitrary \synSym{::}\ \synType{Gen}\ a
+      }
     \item Instanzen von \texttt{\synType{Arbitrary}} nicht nur für
           primitive, sondern automatisch auch für zusammengesetzte Typen
   \end{itemize}
-  \vfill
-
-  \pause
-  \vfill
-  \texttt{%
-    \synKey{import}\ Data.Char \\
-    kleinbuchstabe \synSym{::}\ \synType{Gen}\ \synType{Char} \\
-    kleinbuchstabe \synSym{=}\ \synKey{do} \\
-    \ \ \ \ c \synSym{<-}\ arbitrary \\
-    \ \ \ \ return (toUpper c)
-  }
-}
-
-\subsection[FFI]{Foreign Function Interface}
-\frame[t]{\frametitle{Foreign Function Interface}
-  \floatbox{-270}{75}{\includegraphics[scale=0.7]{images/jabberwocky.jpg}}%
-  \texttt{%
-    \syncomment{\{-\# INCLUDE <math.h> \#-\}} \\
-    foreign \synKey{import}\ ccall unsafe "{}sin"{}\\
-    \ \ \ \ c\_{}sin \synSym{::}\ \synType{CDouble}\ \synSym{->}\ \synType{CDouble} \\
-  }
-
-  \vfill
-  \begin{itemize}
-    \item Einbindung von (C-)Bibliotheken
-    \item Keine besondere Handhabung der importierten Funktionen
-    \item Callbacks aus dem C-Code heraus möglich
-  \end{itemize}
+%  \texttt{%
+%    \synKey{import}\ Data.Char \\
+%    kleinbuchstabe \synSym{::}\ \synType{Gen}\ \synType{Char} \\
+%    kleinbuchstabe \synSym{=}\ \synKey{do} \\
+%    \ \ \ \ c \synSym{<-}\ arbitrary \\
+%    \ \ \ \ return (toUpper c)
+%  }
 }
 
 \section{Gemeinschaft}
 \subsection{Hackage}
 \frame[t]{\frametitle{Paketarchiv Hackage}
+  \vspace{-0.5em}%
   \begin{itemize}
     \item Entstehung 2007, mittlerweile $2300^+$ Pakete
     \item Installationswerkzeug cabal-install
@@ -578,7 +629,7 @@
   \begin{itemize}
     \item Glasgow Haskell Compiler (GHC)
     \item Verteiltes Versionskontrollsystem: Darcs
-    \item Fenstermanager: xmonad
+    \item Tiling Fenstermanager: xmonad
     \item Perl-6-Prototyp: Pugs
     \item Sprache für kryptographische Algorithmen: Cryptol
     \item Benchmarkbibliothek: Criterion
@@ -627,7 +678,7 @@
 
 \appendix
 \frame{
-  \floatbox{-210}{190}{\includegraphics[scale=0.25]{images/present.png}}%
+  \floatbox{-210}{200}{\includegraphics[scale=0.25]{images/present.png}}%
   \begin{center}\Huge Bonus-Folien\end{center}
 
   \tableofcontents
@@ -655,7 +706,7 @@
 }
 
 \frame[t]{\frametitle{Maybe-Ketten}
-  Anwendbarkeit des syntaktischen Zuckers für Aktionstypen für Maybe:
+  Anwendbarkeit des syntaktischen Zuckers von Aktionstypen für Maybe:
   \vfill
 
   \texttt{%
@@ -670,6 +721,23 @@
     \ \ \ \ teil2'   \synSym{<-}\ berechneC teil2 \\
     \ \ \ \ return (teil1 \synOp{++}\ teil2)
   }
+}
+
+\section[FFI]{Foreign Function Interface}
+\frame[t]{\frametitle{Foreign Function Interface}
+  \floatbox{-270}{75}{\includegraphics[scale=0.7]{images/jabberwocky.jpg}}%
+  \texttt{%
+    \syncomment{\{-\# INCLUDE <math.h> \#-\}} \\
+    foreign \synKey{import}\ ccall unsafe "{}sin"{}\\
+    \ \ \ \ c\_{}sin \synSym{::}\ \synType{CDouble}\ \synSym{->}\ \synType{CDouble} \\
+  }
+
+  \vfill
+  \begin{itemize}
+    \item Einbindung von (C-)Bibliotheken
+    \item Keine besondere Handhabung der importierten Funktionen
+    \item Callbacks aus dem C-Code heraus möglich
+  \end{itemize}
 }
 
 \section{Nebenläufigkeit}
@@ -764,6 +832,8 @@
             \ \ \ \ \synvar{work}(\synvar{\$i}); \\
             \}
           }
+    \item Parallelisierung durch einfaches Aufteilen der Fälle auf
+          die Prozessoren
     \item Effizienz verschenkt, wenn \texttt{\synvar{work}()} selbst
           parallel arbeiten könnte!
   \end{itemize}
@@ -820,6 +890,9 @@
     \item \url{http://www.coverbrowser.com/image/oreilly-books/42-1.jpg}
     \item \url{http://de.academic.ru/pictures/dewiki/100/dining_philosophers.png}
     \item \url{http://upload.wikimedia.org/wikipedia/commons/d/d0/Jabberwocky.jpg}
+    \item \url{http://otierney.net/images/perl6.gif}
+    \item \url{http://www.ctri.co.uk/images/cat30.jpg}
+    \item \url{http://betr1ebsrat.files.wordpress.com/2009/10/zeitungs-logo-standard.jpg}
   \end{itemize}
 }
 
