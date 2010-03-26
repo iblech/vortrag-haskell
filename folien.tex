@@ -266,7 +266,7 @@
   \end{itemize}
 }
 
-\frame{\begin{center}
+\frame[plain]{\begin{center}
   \Huge \scalebox{1.6}{Enorm hilfreich!}
 \end{center}}
 
@@ -279,6 +279,7 @@
           jeder Wert ist von genau einem Typ.
     \item Keine impliziten Typumwandlungen
     \item Enorm hilfreich!
+    \pause
     \item Primitive Typen:
       \begin{tabbing}
         \texttt{"Hallo, Welt!12"} \= \hatTyp\ \= \texttt{Integer\ \ } \= \kill
@@ -660,7 +661,7 @@
 \frame[t]{\frametitle{Benutzerdefinierte Datentypen}
   \floatbox{-220}{190}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
   \texttt{%
-    \synKey{data}\ \synType{Tree}\ = Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
+    \synKey{data}\ \synType{Tree}\ \synSym{=}\ Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
   }
   Konstruktoren: \\
   \texttt{Leaf \synSym{::}\, Int \synSym{->}\ Tree} und \\
@@ -689,14 +690,14 @@
   \hspace*{-1em}\begin{minipage}{20cm}
   \texttt{%
     \only<1>{%
-      \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
+      \synKey{data}\ \synType{Tree}\ \ \ \synSym{=}\ Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
     }%
     \only<2->{\sout{%
-      \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
+      \synKey{data}\ \synType{Tree}\ \ \ \synSym{=}\ Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
     }} \\
     \ \\
     \pause
-    \synKey{data}\ \synType{Tree}\ a = Leaf a \ \ \synSym{|}\ Fork (\synType{Tree}\ a) (\synType{Tree}\ a)
+    \synKey{data}\ \synType{Tree}\ a \synSym{=}\ Leaf a \ \ \synSym{|}\ Fork (\synType{Tree}\ a) (\synType{Tree}\ a)
     \pause
     \ \\
     \ \\
