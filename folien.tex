@@ -77,8 +77,7 @@
           statisch stark typisiert, "`nicht-strikt``
     \item Sprachspezifikation durch ein Komitee
     \item Veröffentlichung von Haskell 1.0: 1990
-    \item Glasgow Haskell Compiler, \\
-          Haskell User's Gofer System (Bytecodeinterpreter)
+    \item Kompiliert und interpretiert
   \end{itemize}
 }
 
@@ -292,13 +291,11 @@
     \item Funktionstypen:
       \begin{tabbing}
         \texttt{"Hallo,e"} \= \hatTyp\ \= \kill
-        \texttt{head}, \texttt{last} \> \hatTyp \> \texttt{[a] \synSym{->}\ a} \\
-        \texttt{\syncomment{-- Bsp.:}\ head [\synLit{1},\synLit{2},\synLit{3}] == \synLit{1}} \\
-        \texttt{\ \ \ \ \ \ \ \ \ last [\synLit{1},\synLit{2},\synLit{3}] == \synLit{3}} \\
+        \texttt{head}                \> \hatTyp \> \texttt{[a] \synSym{->}\ a} \\
+        \texttt{\syncomment{-- Bsp.:}\ head [1,2,3] == 1} \\
         \\
-        \texttt{init}, \texttt{tail} \> \hatTyp \> \texttt{[a] \synSym{->}\ [a]} \\
-        \texttt{\syncomment{-- Bsp.:}\ init [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{1},\synLit{2}]} \\
-        \texttt{\ \ \ \ \ \ \ \ \ tail [\synLit{1},\synLit{2},\synLit{3}] == [\synLit{2},\synLit{3}]} \\
+        \texttt{tail}                \> \hatTyp \> \texttt{[a] \synSym{->}\ [a]} \\
+        \texttt{\syncomment{-- Bsp.:}\ tail [1,2,3] == [2,3]} \\
         \\
         \texttt{\syncomment{-- Operatoren:}} \\
         \texttt{(\synOp{\&\&})} \> \hatTyp \> \texttt{Bool \synSym{->}\ Bool \synSym{->}\ Bool} \\
@@ -383,6 +380,21 @@
 \end{center}}
 
 \section[Weiteres]{Weitere Fähigkeiten}
+\subsection{Aktionsarten}
+\frame[t]{\frametitle{Arten von Aktionen}
+  \floatbox{-235}{90}{\includegraphics[scale=0.4]{images/gargoyle.png}}%
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item IO (Eingabe/Ausgabe)
+    \item Parser
+    \item Reader (vererbende Umgebung)
+    \item State (veränderlicher Zustand)
+    \item Writer (Logging)
+    \item Cont (Continuations)
+    \item \ldots
+  \end{itemize}
+}
+
 \subsection[Parser]{Parser-Aktionen}
 \frame[t]{\frametitle{Parser-Aktionen}
   \floatbox{-250}{190}{\includegraphics[scale=0.13]{images/regex.png}}%
@@ -895,6 +907,7 @@
     \item \url{http://www.sketchybeast.com/wp-content/uploads/2007/12/input_output.jpg}
     \item \url{http://www.sopaed-lern.uni-wuerzburg.de/uploads/pics/Pruefung.jpg}
     \item \url{http://www.wfu.edu/nanotech/Microscopy\%20Facility/stm_view.jpg}
+    \item \url{http://www.wishlist.nu/wp-content/uploads/2007/10/gargoyle.jpg}
     \item \url{http://xmonad.org/images/logo.png}
   \end{itemize}
 }
