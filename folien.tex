@@ -74,7 +74,7 @@
   \vspace{-\topsep}%
   \begin{itemize}
     \item Hochsprache, rein funktional, \\
-          streng statisch typisiert, "`nicht-strikt``
+          statisch stark typisiert, "`nicht-strikt``
     \item Sprachspezifikation durch ein Komitee
     \item Veröffentlichung von Haskell 1.0: 1990
     \item Glasgow Haskell Compiler, \\
@@ -260,10 +260,11 @@
   \newcommand{\hatTyp}{\texttt{\synSym{::}}}%
   \vspace{-\topsep}%
   \begin{itemize}
-    \item Strenge, statische Typisierung; \\
+    \item Statische starke Typisierung; \\
           jeder Wert ist von genau einem Typ.
     \item Enorm hilfreich!
     \item Keine impliziten Typumwandlungen
+    \pause
 
     \item Primitive Typen:
       \begin{tabbing}
@@ -419,8 +420,7 @@
 \subsection[Parser]{Parser-Aktionen}
 \frame[t]{\frametitle{Parser-Aktionen}
   \floatbox{-250}{190}{\includegraphics[scale=0.13]{images/regex.png}}%
-  Parser für Perl-Bezeichner (wie beispielsweise \texttt{\$foo} oder
-  \texttt{@bar123}):
+  Parser für Perl-Bezeichner (z.B. \texttt{\$foo}, \texttt{@bar123}):
   \vfill
 
   \texttt{%
@@ -560,7 +560,8 @@
   \texttt{%
     \syncomment{-- Haskell mit QuickCheck} \\
     propSqrt \synSym{::}\ \synType{Double}\ \synSym{->}\ \synType{Bool} \\
-    propSqrt x \synSym{=}\ sqrt (x \synOp{*}\ x) \synOp{==}\ x
+    propSqrt x \synSym{=} \\
+    \ \ \ \ sqrt (x \synOp{*}\ x) \synOp{==}\ x
   }
 }
 
@@ -669,17 +670,17 @@
 }
 
 \frame{\begin{center}
-  \floatbox{-165}{130}{\includegraphics[scale=0.5]{images/thankyou.png}}%
+  \floatbox{-165}{120}{\includegraphics[scale=0.5]{images/thankyou.png}}%
   \includegraphics[scale=0.7]{images/luga.png}
   \vspace{3em}
 
-  \Huge \syncool{-- Haskell --}
+  \hyperlink{bonus}{\scalebox{2}{\beamergotobutton{Bonusfolien}}}
 \end{center}}
 
 \appendix
-\frame{
-  \floatbox{-210}{200}{\includegraphics[scale=0.25]{images/present.png}}%
-  \begin{center}\Huge Bonus-Folien\end{center}
+\frame[label=bonus]{
+  \floatbox{-215}{205}{\includegraphics[scale=0.25]{images/present.png}}%
+  \begin{center}\Huge Bonusfolien\end{center}
 
   \tableofcontents
 }
