@@ -262,8 +262,8 @@
   \begin{itemize}
     \item Statische starke Typisierung; \\
           jeder Wert ist von genau einem Typ.
-    \item Enorm hilfreich!
     \item Keine impliziten Typumwandlungen
+    \item Enorm hilfreich!
     \pause
 
     \item Primitive Typen:
@@ -339,46 +339,12 @@
   }
 }
 
-\subsection{Typklassen}
-\frame[t]{\frametitle{Typklassen ($=$ Schnittstellen, Rollen)}
-  \begin{itemize}
-    \item Typklassen für ad-hoc Polymorphismus:
-
-      \texttt{%
-        \visible<2->{%
-          add37 \synSym{::}\ \visible<3->{\colorbox{backblue}{(Num a) =>}} a \synSym{->}\ a
-        } \\
-        add37 x \synSym{=}\ x \synOp{+}\ 37 \\
-        \syncomment{-- Bsp.: add37 5 == 42} \\
-        \ \\
-        \visible<5->{%
-          min \synSym{::}\ \colorbox{backblue}{(Ord a) =>} a \synSym{->}\ a \synSym{->}\ a
-        } \\
-        \visible<4->{%
-          min x y \synSym{=}\ \synKey{if}\ x \synOp{<=}\ y \synKey{then}\ x \synKey{else}\ y \\
-          \syncomment{-- Bsp.: min 19 17 == 17}
-        }
-      }
-
-    \pause\pause\pause\pause\pause
-    \item
-      Deklaration: \\
-      \texttt{%
-        \synKey{class}\ \synType{Num}\ a \synKey{where} \\
-        \ \ \ \ \synOp{(+)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
-        \ \ \ \ \synOp{(-)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
-        \ \ \ \ \synOp{(*)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
-        \ \ \ \ \ldots
-      }
-  \end{itemize}
-}
-
 \subsection{Aktionstypen}
 \frame[t]{\frametitle{Typen von Ein-/Ausgabe-Operationen}
   \newcommand{\hatTyp}{\texttt{\synSym{::}}}%
   \begin{minipage}{11.3cm}\begin{itemize}
-    \item \texttt{\synType{IO}\ \synType{Foo}} meint:
-          IO-Aktion vom Typ \texttt{\synType{Foo}}
+    \item \texttt{\synType{IO}\ \synType{Foo}} meint: \\
+          Wert vom Typ \texttt{\synType{Foo}} produzierende IO-Aktion
     \item Häufig benutzte Ein-/Ausgabe-Operationen: \\
       \begin{tabbing}
         \texttt{readFile} \= \hatTyp\ \= \kill
@@ -456,6 +422,7 @@
   \vfill
   \begin{itemize}
     \item Auswertung von Ausdrücken erst dann, wenn Ergebnisse wirklich benötigt
+    \item Wegabstraktion des Speicherkonzepts!
     \item Somit Fähigkeit für \\
           unendliche Datenstrukturen: \\
           Potenzreihen, Zeitreihen, \\
@@ -478,67 +445,6 @@
       fibs \synSym{=}\ \synLit{0}\ \synOp{:}\ \synLit{1}\ \synOp{:}\ zipWith\ \synOp{(+)}\ fibs (tail fibs) \\
       \syncomment{-- fibs == [0,1,1,2,3,5,8,13,21,34,\ldots]}
     }
-  \end{minipage}
-}
-
-\subsection[Datentypen]{Benutzerdefinierte Datentypen}
-\frame[t]{\frametitle{Benutzerdefinierte Datentypen}
-  \floatbox{-220}{190}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
-  \texttt{%
-    \synKey{data}\ \synType{Tree}\ = Leaf \synType{Int}\ | Fork \synType{Tree}\ \synType{Tree}
-  }
-  Konstruktoren: \\
-  \texttt{Leaf \synSym{::}\, Int \synSym{->}\ Tree} und \\
-  \texttt{Fork \synSym{::}\, Tree \synSym{->}\ Tree \synSym{->}\ Tree}
-
-  \vfill
-  \pause
-  \texttt{%
-    beispielBaum \synSym{=}\ Fork \\
-    \ \ \ \ (Fork (Leaf \synLit{17}) (Leaf \synLit{37}))\\
-    \ \ \ \ (Fork\\
-    \ \ \ \ \ \ \ \ (Fork (Leaf \synLit{42}) (Leaf \synLit{0}))\\
-    \ \ \ \ \ \ \ \ (Leaf \synLit{41}))
-  }
-
-  \vfill
-  \pause
-  \texttt{%
-    komischerBaum \synSym{=}\ Fork \\
-    \ \ \ \ (Fork (Leaf \synLit{23}) komischerBaum)
-  }
-}
-
-\frame[t]{\frametitle{Benutzerdefinierte Datentypen (Forts.)}
-  \floatbox{-223}{75}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
-  \hspace*{-1em}\begin{minipage}{20cm}
-  \texttt{%
-    \only<1>{%
-      \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ | Fork \synType{Tree}\ \synType{Tree}
-    }%
-    \only<2->{\sout{%
-      \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ | Fork \synType{Tree}\ \synType{Tree}
-    }} \\
-    \ \\
-    \pause
-    \synKey{data}\ \synType{Tree}\ a = Leaf a \ \ | Fork (\synType{Tree}\ a) (\synType{Tree}\ a)
-    \pause
-    \ \\
-    \ \\
-    \syncomment{-- Gesamtzahl Blätter zählen} \\
-    size \synSym{::}\ \synType{Tree}\ a \synSym{->}\ \synType{Integer} \\
-    size (Leaf \symbol{95})\ \ \ \ \ \ \ \ \ \ \ \ \synSym{=}\ \synLit{1} \\
-    size (Fork links rechts) \synSym{=}\\
-    \phantom{ }\ \ \ size links \synOp{+}\ size rechts
-    \ \\
-    \ \\
-    \pause
-    \syncomment{-- Blätter inorder als Liste zurückgeben} \\
-    inorder \synSym{::}\ \synType{Tree}\ a \synSym{->}\ [a] \\
-    inorder (Leaf x)\ \ \ \ \ \ \ \ \ \ \ \  \synSym{=}\ [x] \\
-    inorder (Fork links rechts) \synSym{=} \\
-    \phantom{ }\ \ \ inorder links \synOp{++}\ inorder rechts
-  }
   \end{minipage}
 }
 
@@ -629,11 +535,11 @@
 \frame[t]{\frametitle{Größere Anwendungen}
   \begin{itemize}
     \item Glasgow Haskell Compiler (GHC)
-    \item Verteiltes Versionskontrollsystem: Darcs
-    \item Tiling Fenstermanager: xmonad
-    \item Perl-6-Prototyp: Pugs
-    \item Sprache für kryptographische Algorithmen: Cryptol
-    \item Benchmarkbibliothek: Criterion
+    \item darcs, verteiltes Versionskontrollsystem
+    \item xmonad, "`tiling'' Fenstermanager
+    \item Pugs, Perl-6-Prototyp
+    \item Cryptol, Sprache für Kryptographie
+    \item Criterion, Benchmarktoolkit
   \end{itemize}
 
   \begin{center}
@@ -672,7 +578,7 @@
 \frame{\begin{center}
   \floatbox{-165}{120}{\includegraphics[scale=0.5]{images/thankyou.png}}%
   \includegraphics[scale=0.7]{images/luga.png}
-  \vspace{3em}
+  \vspace{4em}
 
   \hyperlink{bonus}{\scalebox{2}{\beamergotobutton{Bonusfolien}}}
 \end{center}}
@@ -685,7 +591,103 @@
   \tableofcontents
 }
 
-\section[Fehlende Werte]{Umgang mit fehlenden Werten}
+\section[Typsystem]{Details zum Typsystem}
+\subsection{Typklassen}
+\frame[t]{\frametitle{Typklassen ($=$ Schnittstellen, Rollen)}
+  \begin{itemize}
+    \item Typklassen für ad-hoc Polymorphismus:
+
+      \texttt{%
+        \visible<2->{%
+          add37 \synSym{::}\ \visible<3->{\colorbox{backblue}{(Num a) =>}} a \synSym{->}\ a
+        } \\
+        add37 x \synSym{=}\ x \synOp{+}\ 37 \\
+        \syncomment{-- Bsp.: add37 5 == 42} \\
+        \ \\
+        \visible<5->{%
+          min \synSym{::}\ \colorbox{backblue}{(Ord a) =>} a \synSym{->}\ a \synSym{->}\ a
+        } \\
+        \visible<4->{%
+          min x y \synSym{=}\ \synKey{if}\ x \synOp{<=}\ y \synKey{then}\ x \synKey{else}\ y \\
+          \syncomment{-- Bsp.: min 19 17 == 17}
+        }
+      }
+
+    \pause\pause\pause\pause\pause
+    \item
+      Deklaration: \\
+      \texttt{%
+        \synKey{class}\ \synType{Num}\ a \synKey{where} \\
+        \ \ \ \ \synOp{(+)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
+        \ \ \ \ \synOp{(-)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
+        \ \ \ \ \synOp{(*)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
+        \ \ \ \ \ldots
+      }
+  \end{itemize}
+}
+
+\subsection[Datentypen]{Benutzerdefinierte Datentypen}
+\frame[t]{\frametitle{Benutzerdefinierte Datentypen}
+  \floatbox{-220}{190}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
+  \texttt{%
+    \synKey{data}\ \synType{Tree}\ = Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
+  }
+  Konstruktoren: \\
+  \texttt{Leaf \synSym{::}\, Int \synSym{->}\ Tree} und \\
+  \texttt{Fork \synSym{::}\, Tree \synSym{->}\ Tree \synSym{->}\ Tree}
+
+  \vfill
+  \pause
+  \texttt{%
+    beispielBaum \synSym{=}\ Fork \\
+    \ \ \ \ (Fork (Leaf \synLit{17}) (Leaf \synLit{37}))\\
+    \ \ \ \ (Fork\\
+    \ \ \ \ \ \ \ \ (Fork (Leaf \synLit{42}) (Leaf \synLit{0}))\\
+    \ \ \ \ \ \ \ \ (Leaf \synLit{41}))
+  }
+
+  \vfill
+  \pause
+  \texttt{%
+    komischerBaum \synSym{=}\ Fork \\
+    \ \ \ \ (Fork (Leaf \synLit{23}) komischerBaum)
+  }
+}
+
+\frame[t]{\frametitle{Benutzerdefinierte Datentypen (Forts.)}
+  \floatbox{-223}{75}{\scalebox{0.7}{\input{images/baum.pspdftex}}}%
+  \hspace*{-1em}\begin{minipage}{20cm}
+  \texttt{%
+    \only<1>{%
+      \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
+    }%
+    \only<2->{\sout{%
+      \synKey{data}\ \synType{Tree}\ \ \ = Leaf \synType{Int}\ \synSym{|}\ Fork \synType{Tree}\ \synType{Tree}
+    }} \\
+    \ \\
+    \pause
+    \synKey{data}\ \synType{Tree}\ a = Leaf a \ \ \synSym{|}\ Fork (\synType{Tree}\ a) (\synType{Tree}\ a)
+    \pause
+    \ \\
+    \ \\
+    \syncomment{-- Gesamtzahl Blätter zählen} \\
+    size \synSym{::}\ \synType{Tree}\ a \synSym{->}\ \synType{Integer} \\
+    size (Leaf \symbol{95})\ \ \ \ \ \ \ \ \ \ \ \ \synSym{=}\ \synLit{1} \\
+    size (Fork links rechts) \synSym{=}\\
+    \phantom{ }\ \ \ size links \synOp{+}\ size rechts
+    \ \\
+    \ \\
+    \pause
+    \syncomment{-- Blätter inorder als Liste zurückgeben} \\
+    inorder \synSym{::}\ \synType{Tree}\ a \synSym{->}\ [a] \\
+    inorder (Leaf x)\ \ \ \ \ \ \ \ \ \ \ \  \synSym{=}\ [x] \\
+    inorder (Fork links rechts) \synSym{=} \\
+    \phantom{ }\ \ \ inorder links \synOp{++}\ inorder rechts
+  }
+  \end{minipage}
+}
+
+\subsection[Fehlende Werte]{Umgang mit fehlenden Werten}
 \frame[t]{\frametitle{Umgang mit fehlenden Werten}
   \floatbox{-260}{120}{\includegraphics[scale=0.25]{images/bug.png}}%
   \vspace{-\topsep}%
