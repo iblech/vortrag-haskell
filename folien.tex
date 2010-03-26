@@ -263,8 +263,22 @@
           jeder Wert ist von genau einem Typ.
     \item Keine impliziten Typumwandlungen
     \item Enorm hilfreich!
-    \pause
+  \end{itemize}
+}
 
+\frame{\begin{center}
+  \Huge \scalebox{1.6}{Enorm hilfreich!}
+\end{center}}
+
+\frame[t]{\frametitle{Werte und Typen}
+  \floatbox{-250}{35}{\includegraphics[scale=0.25]{images/types.jpg}}%
+  \newcommand{\hatTyp}{\texttt{\synSym{::}}}%
+  \vspace{-\topsep}%
+  \begin{itemize}
+    \item Statische starke Typisierung; \\
+          jeder Wert ist von genau einem Typ.
+    \item Keine impliziten Typumwandlungen
+    \item Enorm hilfreich!
     \item Primitive Typen:
       \begin{tabbing}
         \texttt{"Hallo, Welt!12"} \= \hatTyp\ \= \texttt{Integer\ \ } \= \kill
@@ -354,7 +368,7 @@
       \setlength{\columnsep}{35pt}%
       \begin{multicols*}{2}
         \texttt{%
-          main \synSym{::}\ \colorbox{backblue}{\synType{IO}}\ () \\
+          main \synSym{::}\ \synType{IO}\ () \\
           main \synSym{=}\ \synKey{do} \\
           \ \ \ \ x \synSym{<-}\ getLine \\
           \ \ \ \ print (x \synOp{++}\ x) 
@@ -363,7 +377,7 @@
         \columnbreak
 
         \texttt{%
-          main \synSym{::}\ \colorbox{backblue}{\synType{IO}}\ () \\
+          main \synSym{::}\ \synType{IO}\ () \\
           main \synSym{=}\ \synKey{do} \\
           \ \ \ \ x \synSym{<-}\ getLine \\
           \ \ \ \ y \synSym{<-}\ getLine \\
@@ -511,13 +525,16 @@
   \begin{itemize}
     \item Spezifikationsüberprüfung durch zufällig generierte Stichproben
     \item Enorm hilfreich!
+    \pause
+    \vfill
     \item Implementierung durch Typklasse: \\
       \texttt{%
         \synKey{class}\ \synType{Arbitrary}\ a \synKey{where} \\
         \ \ \ \ arbitrary \synSym{::}\ \synType{Gen}\ a
       }
     \item Instanzen von \texttt{\synType{Arbitrary}} nicht nur für
-          primitive, sondern automatisch auch für zusammengesetzte Typen
+          primitive, sondern automatisch auch \\
+          für zusammengesetzte Typen
   \end{itemize}
 %  \texttt{%
 %    \synKey{import}\ Data.Char \\
@@ -597,8 +614,9 @@
 
 \appendix
 \frame[label=bonus]{
-  \floatbox{-215}{205}{\includegraphics[scale=0.25]{images/present.png}}%
+  \floatbox{-225}{220}{\includegraphics[scale=0.25]{images/present.png}}%
   \begin{center}\Huge Bonusfolien\end{center}
+  \vspace{2em}
 
   \tableofcontents
 }
@@ -878,6 +896,7 @@
 \section{Bildquellen}
 \frame[t]{\frametitle{Bildquellen}
   \tiny
+  \vspace{-1em}
   \begin{itemize}
     \item \url{http://betr1ebsrat.files.wordpress.com/2009/10/zeitungs-logo-standard.jpg}
     \item \url{http://de.academic.ru/pictures/dewiki/100/dining_philosophers.png}
