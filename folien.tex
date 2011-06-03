@@ -43,7 +43,7 @@
 
 \title{Haskell, \\eine rein funktionale Programmiersprache}
 \author{Ingo Blechschmidt \\ \texttt{<iblech@web.de>}}
-\date{Augsburger Linux-Infotag \\ 27. März 2010}
+\date{LUG-Camp 2011 Tschierv \\ 3. Juni 2011}
 
 \usetheme{Warsaw}  %Warsaw, Berkeley?
 \usecolortheme{seahorse}
@@ -106,7 +106,7 @@
 \end{center}}
 
 \subsection[Variablen]{Keine Variablen}
-\frame[t]{\frametitle{Keine veränderliche Variablen}
+\frame[t]{\frametitle{Erstes Beispiel}
   \floatbox{-260}{180}{\includegraphics[scale=0.1]{images/variable.jpg}}%
   \texttt{%
     \syncomment{\# Perl} \\
@@ -439,7 +439,7 @@
 \frame[t]{\frametitle{Bedarfsauswertung}
   \floatbox{-230}{195}{\includegraphics[scale=0.17]{images/lazy.jpg}}%
   \texttt{%
-    \syncomment{-- 99. Zeile aus Datei ausgeben} \\
+    \syncomment{-- 100. Zeile aus Datei ausgeben} \\
     main \synSym{=}\ \synKey{do} \\
     \ \ \ \ daten \synSym{<-}\ readFile \synLit{"große-datei.txt"} \\
     \ \ \ \ print (lines daten \synOp{!!}\ 99)
@@ -551,7 +551,7 @@
 \frame[t]{\frametitle{Paketarchiv Hackage}
   \vspace{-0.5em}%
   \begin{itemize}
-    \item Entstehung 2007, mittlerweile $2300^+$ Pakete
+    \item Entstehung 2007, mittlerweile $2400^+$ Pakete
     \item Installationswerkzeug cabal-install
   \end{itemize}
 
