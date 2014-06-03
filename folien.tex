@@ -42,8 +42,8 @@
 }
 
 \title{Haskell, \\eine rein funktionale Programmiersprache}
-\author{Ingo Blechschmidt \\ \texttt{<iblech@web.de>}}
-\date{LUG-Camp 2011 Tschierv \\ 3. Juni 2011}
+\author[Augsburg.pm]{Ingo Blechschmidt \\ \texttt{<iblech@web.de>}}
+\date{Augsburg.pm \\ 3. Juni 2014}
 
 \usetheme{Warsaw}  %Warsaw, Berkeley?
 \usecolortheme{seahorse}
@@ -63,6 +63,8 @@
 
 \frame[plain]{\begin{center}
   \includegraphics[scale=0.35]{images/learn-you-a-haskell-for-great-good.png}
+
+  Fragen zu jeder Zeit willkommen!
 \end{center}}
 
 %\frame[t]{\begin{multicols}{2}\small\tableofcontents\end{multicols}}
@@ -78,6 +80,7 @@
     \item Sprachspezifikation durch ein Komitee
     \item Veröffentlichung von Haskell 1.0: 1990
     \item Kompiliert und interpretiert
+    \item REPL
   \end{itemize}
 }
 
@@ -85,9 +88,9 @@
   \floatbox{-180}{200}{\includegraphics[scale=0.4]{images/standard.jpg}}%
   Kennzeichen imperativer Sprachen:
   \begin{itemize}
-    \item veränderliche Variablen
-    \item Nebeneffekte
-    \item Anweisungen
+    \item \textcolor{white}{keine} veränderliche Variablen
+    \item \textcolor{white}{keine} Nebeneffekte
+    \item \textcolor{white}{keine} Anweisungen
   \end{itemize}
 }
 
@@ -102,7 +105,11 @@
 }
 
 \frame[plain]{\begin{center}
-  \includegraphics[scale=0.6]{images/wtf.jpg}
+  \includegraphics[scale=0.35]{images/wtf.jpg}\hfill\phantom{a}
+
+  \vfill
+
+  \hfill\includegraphics[scale=0.4]{images/do-stuff.jpeg}
 \end{center}}
 
 \subsection[Variablen]{Keine Variablen}
@@ -111,8 +118,8 @@
   \texttt{%
     \syncomment{\# Perl} \\
     \synfunc{sub}\ main \{\\
-    \ \ \ \ \synfunc{my}\ \synvar{\$radius}\ \ \ \ = 42; \\
-    \ \ \ \ \synfunc{my}\ \synvar{\$quadriert}\ = \synvar{\$radius}\ ** 2; \\
+    \ \ \ \ \synfunc{my}\ \synvar{\$radius}\ \ \ \ = \synLit{42}; \\
+    \ \ \ \ \synfunc{my}\ \synvar{\$quadriert}\ = \synvar{\$radius}\ ** \synLit{2}; \\
     \ \ \ \ \synfunc{my}\ \synvar{\$flaeche}\ \ \ = \synvar{\$quadriert}\ * pi; \\
     \ \ \ \ \synfunc{print}\ \synvar{\$flaeche}; \\
     \}
@@ -263,22 +270,6 @@
           jeder Wert ist von genau einem Typ.
     \item Keine impliziten Typumwandlungen
     \item Enorm hilfreich!
-  \end{itemize}
-}
-
-\frame[plain]{\begin{center}
-  \Huge \scalebox{1.6}{Enorm hilfreich!}
-\end{center}}
-
-\frame[t]{\frametitle{Werte und Typen}
-  \floatbox{-250}{35}{\includegraphics[scale=0.25]{images/types.jpg}}%
-  \newcommand{\hatTyp}{\texttt{\synSym{::}}}%
-  \vspace{-\topsep}%
-  \begin{itemize}
-    \item Statische starke Typisierung; \\
-          jeder Wert ist von genau einem Typ.
-    \item Keine impliziten Typumwandlungen
-    \item Enorm hilfreich!
     \pause
     \item Primitive Typen:
       \begin{tabbing}
@@ -405,6 +396,7 @@
     \item Reader (vererbende Umgebung)
     \item State (veränderlicher Zustand)
     \item Writer (Logging)
+    \item Listen für Nichtdeterminismus und Logikprogrammierung
     \item Cont (Continuations)
     \item \ldots
   \end{itemize}
@@ -462,15 +454,15 @@
   \begin{minipage}{20cm}
     \texttt{%
       natürlicheZahlen \synSym{=}\ [\synLit{1}..] \\
-      \syncomment{-- natürlicheZahlen == [1,2,3,4,\ldots] } \\
+      \syncomment{-- [1,2,3,4,\ldots] } \\
       \ \\
       \pause
       ungeradeZahlen \synSym{=}\ filter odd [\synLit{1}..] \\
-      \syncomment{-- ungeradeZahlen == [1,3,5,7,\ldots] } \\
+      \syncomment{-- [1,3,5,7,\ldots] } \\
       \ \\
       \pause
       fibs \synSym{=}\ \synLit{0}\ \synOp{:}\ \synLit{1}\ \synOp{:}\ zipWith\ \synOp{(+)}\ fibs (tail fibs) \\
-      \syncomment{-- fibs == [0,1,1,2,3,5,8,13,21,34,\ldots]}
+      \syncomment{-- [0,1,1,2,3,5,8,13,21,34,\ldots]}
     }
   \end{minipage}
 }
@@ -546,12 +538,35 @@
 %  }
 }
 
+\subsection[Web]{Webprogrammierung}
+\frame[t]{\frametitle{Webprogrammierung}
+  \begin{itemize}
+    \item Wieso Haskell fürs Web?
+    
+    Effizienz, Sicherheit \& die üblichen Vorteile
+
+    \item Webframeworks: Happstack, Snap, Yesod
+
+    \item Leichtgewichtige Threads, asynchrone IO
+
+    \item Minimalbeispiel:
+
+          \texttt{%
+            mainLoop sock \synSym{=}\ forever \synSym{\$}\ \synSym{do} \\
+            \ \ \ \ conn \synSym{<-}\ accept sock \\
+            \ \ \ \ forkIO \synSym{\$}\ runConn conn
+          } \\
+          \ \\
+          \scriptsize\url{http://www.haskell.org/haskellwiki/Implement_a_chat_server}
+  \end{itemize}
+}
+
 \section{Gemeinschaft}
 \subsection{Hackage}
 \frame[t]{\frametitle{Paketarchiv Hackage}
   \vspace{-0.5em}%
   \begin{itemize}
-    \item Entstehung 2007, mittlerweile $2400^+$ Pakete
+    \item Entstehung 2007, mittlerweile $5000^+$ Pakete
     \item Installationswerkzeug cabal-install
   \end{itemize}
 
@@ -606,8 +621,8 @@
 }
 
 \frame{\begin{center}
-  \floatbox{-165}{120}{\includegraphics[scale=0.5]{images/thankyou.png}}%
-  \includegraphics[scale=0.7]{images/luga.png}
+  \floatbox{-140}{120}{\includegraphics[scale=0.5]{images/thankyou.png}}%
+  \includegraphics[scale=0.2]{images/haskell.png}
   \vspace{4em}
 
   \hyperlink{bonus}{\scalebox{2}{\beamergotobutton{Bonusfolien}}}
@@ -709,7 +724,7 @@
     \ \\
     \ \\
     \pause
-    \syncomment{-- Blätter inorder als Liste zurückgeben} \\
+    \syncomment{-- Blätter als Liste zurückgeben} \\
     inorder \synSym{::}\ \synType{Tree}\ a \synSym{->}\ [a] \\
     inorder (Leaf x)\ \ \ \ \ \ \ \ \ \ \ \  \synSym{=}\ [x] \\
     inorder (Fork links rechts) \synSym{=} \\
@@ -883,9 +898,9 @@
 
   \pause
   \texttt{%
-    \syncomment{-- Komponentenweise Vektor-Multiplikation} \\
-    mulP \synSym{::}\ (\synType{Num}\ a) \synSym{=>}\ [:a:] \synSym{->}\ [:a:] \synSym{->}\ [:a:] \\
-    mulP xs ys \synSym{=} \\
+    \syncomment{-- Komponentenweise Vektor-Addition} \\
+    addP \synSym{::}\ (\synType{Num}\ a) \synSym{=>}\ [:a:] \synSym{->}\ [:a:] \synSym{->}\ [:a:] \\
+    addP xs ys \synSym{=} \\
     \ \ \ \ [: x \synOp{+}\ y \synSym{|}\ x \synSym{<-}\ xs \synSym{|}\ y \synSym{<-}\ ys :] \\
     \ \\
     \syncomment{-- Skalarprodukt} \\
@@ -897,7 +912,7 @@
 \section{Bildquellen}
 \frame[t]{\frametitle{Bildquellen}
   \tiny
-  \vspace{-1em}
+  \vspace{-1.7em}
   \begin{itemize}
     \item \url{http://betr1ebsrat.files.wordpress.com/2009/10/zeitungs-logo-standard.jpg}
     \item \url{http://de.academic.ru/pictures/dewiki/100/dining_philosophers.png}
@@ -921,8 +936,8 @@
     \item \url{http://www.galois.com/files/Cryptol/Cryptol_logo_image.png}
     \item \url{http://www.homemortgagerates.us/variable-rates-636.jpg}
     \item \url{http://www.lakehousecreations.com/images/ThankYou/Thank\%20You\%202003\%20(12).jpg}
-    \item \url{http://www.luga.de/LUGA_Logo}
     \item \url{http://www.nataliedee.com/093009/death-is-a-side-effect-of-most-things.jpg}
+    \item \url{http://www.quickmeme.com/img/bd/bdb89c032c3c7c09a86897422bf3bd32a0bb65731c7fd38ba5ea67741621ad35.jpg}
     \item \url{http://www.simpsonsline.com/rb/fakten/vorspann/02_kasse.jpg}
     \item \url{http://www.sketchybeast.com/wp-content/uploads/2007/12/input_output.jpg}
     \item \url{http://www.sopaed-lern.uni-wuerzburg.de/uploads/pics/Pruefung.jpg}
