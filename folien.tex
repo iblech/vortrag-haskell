@@ -4,7 +4,7 @@
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage[ngerman]{babel}
-\usepackage{ulem}  % sout
+\usepackage[normalem]{ulem}  % sout
 \usepackage{multicol}
 
 % Manual syntax highlighting
@@ -129,7 +129,7 @@
   \only<2>{
     \texttt{%
       \syncomment{-- Haskell} \\
-      main =\\
+      main \synSym{=}\\
       \ \ \ \ \synKey{let}\ radius\ \ \ \ \synSym{=}\ \synLit{42} \\
       \ \ \ \ \ \ \ \ quadriert \synSym{=}\ radius\synOp{\^{}}\synLit{2} \\
       \ \ \ \ \ \ \ \ flaeche\ \ \ \synSym{=}\ quadriert \synOp{*}\ pi \\
@@ -140,7 +140,7 @@
   \only<3>{
     \texttt{%
       \syncomment{-- Haskell} \\
-      main =\\
+      main \synSym{=}\\
       \ \ \ \ \synKey{let}\ flaeche\ \ \ \synSym{=}\ quadriert \synOp{*}\ pi \\
       \ \ \ \ \ \ \ \ quadriert \synSym{=}\ radius\synOp{\^{}}\synLit{2} \\
       \ \ \ \ \ \ \ \ radius\ \ \ \ \synSym{=}\ \synLit{42} \\
@@ -151,7 +151,7 @@
   \only<4>{
     \texttt{%
       \syncomment{-- Haskell} \\
-      main = print\ flaeche \\
+      main \synSym{=}\ print\ flaeche \\
       \ \ \ \ \synKey{where} \\
       \ \ \ \ flaeche\ \ \ \synSym{=}\ quadriert \synOp{*}\ pi \\
       \ \ \ \ quadriert \synSym{=}\ radius\synOp{\^{}}\synLit{2} \\
@@ -220,6 +220,19 @@
     \item Aktionen $\neq$ Werte
     \item Explizite Unterscheidung \\
           durchs Typsystem (s. gleich)
+  \end{itemize}
+}
+
+\frame[t,plain]{
+  \begin{itemize}
+    \item Mit \texttt{\synSym{let}} werden nur Abkürzungen eingeführt.
+    \item Die linke Seite einer solchen Zuweisung darf man daher überall durch
+          die rechte ersetzen.
+    \item Bei dem angegebenen Beispiel mit \texttt{getLine}
+          wäre diese Erwartung verletzt.
+    \item Zum Glück werden aber beide Code-Schnipsel wegen eines Typfehlers
+          vom Compiler abgelehnt.
+    \item Die Ausführung von Aktionen muss man in Haskel \emph{explizit} angeben.
   \end{itemize}
 }
 
@@ -393,12 +406,99 @@
   \begin{itemize}
     \item IO (Eingabe/Ausgabe)
     \item Parser
+    \item Maybe (Behandlung von Fehlerfällen)
     \item Reader (vererbende Umgebung)
     \item State (veränderlicher Zustand)
     \item Writer (Logging)
     \item Listen für Nichtdeterminismus und Logikprogrammierung
     \item Cont (Continuations)
     \item \ldots
+  \end{itemize}
+}
+
+\frame[t,plain]{
+  \scriptsize
+  \begin{itemize}
+    \item Das Fachwort für Aktionen ist \emph{Monaden}.
+    \item In der Kategorientheorie, einem abstrakten Teilgebiet der Mathematik,
+          waren Monaden schon seit etwa den 1950er Jahren bekannt.
+    \item In die Informatik kamen sie hauptsächlich durch einen wegweisenden
+          Artikel von Eugenio Moggi im Jahr 1991.
+    \item Funktionen können auch \emph{polymorph} in der Monade sein, wenn
+          sie keine Besonderheiten einer bestimmten Monade ausnutzen.
+    \item Monadische Werte sind wie andere Werte auch \emph{first-class},
+          können also etwa in Datenstrukturen gespeichert werden.
+          \vspace{1em}
+
+          \texttt{%
+            main \synSym{=}\ sequence\textunderscore\ [putStrLn "{}abc", putStrLn "{}def"] \\
+            \ \\
+            \syncomment{-- aus der Standardbibliothek} \\
+            sequence\textunderscore\ \synSym{::}\ (Monad m) \synSym{=>}\ [m a] \synSym{->}\ m () \\
+            sequence\textunderscore\ []\ \ \ \ \ \synSym{=}\ return () \\
+            sequence\textunderscore\ (x\synSym{:}xs) \synSym{=}\ \synSym{do} \\
+            \ \ \ \ x \\
+            \ \ \ \ sequence\textunderscore\ xs \\
+            \syncomment{-- oder: sequence\textunderscore\ (x:xs) = x >> sequence\textunderscore\ xs}
+          }
+  \end{itemize}
+}
+
+\frame[t]{\frametitle{State-Aktionen}
+  \begin{itemize}
+    \item Veränderlicher Zustand kann man dadurch emulieren,
+          indem man in explizit durchfädelt:
+          \vspace{1em}
+
+          \small
+          \texttt{%
+            -- Zustand von irgendeinem Typ St. \\
+            foo :: St \synSym{->}\ Integer \synSym{->}\ (St, Double) \\
+            bar :: St \synSym{->}\ Double\ \ \synSym{->}\ (St, String) \\
+            \ \\
+            baz :: St \synSym{->}\ Integer \synSym{->}\ (St, String) \\
+            baz s x = \\
+            \ \ \ \ let (s',\ \ y) = foo s  x \\
+            \ \ \ \ \ \ \ \ (s'', z) = bar s' y \\
+            \ \ \ \ in\ \ (s'',z)
+          }
+
+    \item Das ist aber umständlich und fehleranfällig (wenn man
+          aus Versehen alten Zustand wiederverwendet).
+  \end{itemize}
+}
+
+\frame[t]{\frametitle{State-Aktionen (Forts.)}
+  \begin{itemize}
+    \item Eleganter geht es mit der State-Aktion:
+          \vspace{1em}
+          
+          \texttt{%
+            import Control.Monad.State \\
+            \ \\
+            foo :: Integer \synSym{->}\ State St Double \\
+            bar :: Double\ \ \synSym{->}\ State St String \\
+            \ \\
+            baz :: Integer \synSym{->}\ State St String \\
+            baz x = \synSym{do} \\
+            \ \ \ \ y \synSym{<-}\ foo x \\
+            \ \ \ \ z \synSym{<-}\ bar y \\
+            \ \ \ \ return z \\
+            \syncomment{-- oder: baz x = foo x >>= bar}
+          }
+  \end{itemize}
+}
+
+\frame[t,plain]{
+  \begin{itemize}
+    \item Ein Wert vom Typ \texttt{State s a} ist eine Aktion,
+          die einen Wert vom Typ \texttt{a} berechnet und als Nebeneffekt eine
+          Zustandsvariable vom Typ \texttt{s} verändert.
+
+    \item \texttt{get :: State s s}
+    \item \texttt{put :: s -> State s ()}
+
+    \item \texttt{evalState :: State s a -> s -> a}
   \end{itemize}
 }
 
@@ -622,7 +722,7 @@
 
 \frame{\begin{center}
   \floatbox{-140}{120}{\includegraphics[scale=0.5]{images/thankyou.png}}%
-  \includegraphics[scale=0.2]{images/haskell.png}
+  \includegraphics[scale=0.6]{images/haskell-logo.png}
   \vspace{4em}
 
   \hyperlink{bonus}{\scalebox{2}{\beamergotobutton{Bonusfolien}}}
@@ -645,13 +745,13 @@
 
       \texttt{%
         \visible<2->{%
-          add37 \synSym{::}\ \visible<3->{\colorbox{backblue}{(Num a) =>}} a \synSym{->}\ a
+          add37 \synSym{::}\ \visible<3->{\colorbox{backblue}{(Num a) \synSym{=>}}} a \synSym{->}\ a
         } \\
         add37 x \synSym{=}\ x \synOp{+}\ 37 \\
         \syncomment{-- Bsp.: add37 5 == 42} \\
         \ \\
         \visible<5->{%
-          min \synSym{::}\ \colorbox{backblue}{(Ord a) =>} a \synSym{->}\ a \synSym{->}\ a
+          min \synSym{::}\ \colorbox{backblue}{(Ord a) \synSym{=>}} a \synSym{->}\ a \synSym{->}\ a
         } \\
         \visible<4->{%
           min x y \synSym{=}\ \synKey{if}\ x \synOp{<=}\ y \synKey{then}\ x \synKey{else}\ y \\
@@ -669,6 +769,27 @@
         \ \ \ \ \synOp{(*)}\ \synSym{::}\ a \synSym{->}\ a \synSym{->}\ a \\
         \ \ \ \ \ldots
       }
+  \end{itemize}
+}
+
+\frame[t,plain]{
+  \begin{itemize}
+    \item Keine impliziten Casts zwischen \texttt{\synType{Integer}},
+          \texttt{\synType{Float}}, \texttt{\synType{Double}}, \ldots
+    \item Aber: Zahlliterale sind automatisch von dem Typ, den der Kontext
+          erwartet.
+    \item \texttt{\synLit{7}} ist syntaktischer Zucker für
+          \texttt{fromInteger \synLit{7}}:
+
+          \texttt{fromInteger :: (\synType{Num}\ a) \synSym{=>}\ \synType{Integer}\ -> a}
+    \item So ist etwa \texttt{x + 7} auch für \texttt{x :: \synType{Double}}
+          okay.
+    \item Für Casts müssen weder Quell- noch Zieltyp angegeben werden:
+          \vspace{1em}
+
+          \scriptsize
+          \texttt{fromIntegral :: (\synType{Integral}\ a, \synType{Num}\ b) \synSym{=>}\
+          a \synSym{->}\ b}
   \end{itemize}
 }
 
