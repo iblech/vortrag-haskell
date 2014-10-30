@@ -50,6 +50,7 @@
 \usefonttheme{serif}
 \useinnertheme{rectangles}
 \usepackage{bookman}
+%\usepackage{kurier}
 \setbeamercovered{invisible}
 
 \setbeamertemplate{navigation symbols}{}
@@ -447,7 +448,7 @@
 \frame[t]{\frametitle{State-Aktionen}
   \begin{itemize}
     \item Veränderlicher Zustand kann man dadurch emulieren,
-          indem man in explizit durchfädelt:
+          indem man ihn explizit durchfädelt:
           \vspace{1em}
 
           \small
@@ -458,9 +459,9 @@
             \ \\
             baz :: St \synSym{->}\ Integer \synSym{->}\ (St, String) \\
             baz s x = \\
-            \ \ \ \ let (s',\ \ y) = foo s  x \\
+            \ \ \ \ let (s',\ \ y) = foo s\ \ x \\
             \ \ \ \ \ \ \ \ (s'', z) = bar s' y \\
-            \ \ \ \ in\ \ (s'',z)
+            \ \ \ \ in\ \ (s'', z)
           }
 
     \item Das ist aber umständlich und fehleranfällig (wenn man
