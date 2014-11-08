@@ -1,4 +1,5 @@
 \documentclass[12pt,compress,ngerman]{beamer}
+\usepackage{ragged2e}
 \usepackage{amsmath}
 \usepackage{url}
 \usepackage{ucs}
@@ -6,6 +7,7 @@
 \usepackage[ngerman]{babel}
 \usepackage[normalem]{ulem}  % sout
 \usepackage{multicol}
+\usepackage[protrusion=true,expansion=false]{microtype}
 
 % Manual syntax highlighting
 \newcommand{\synfunc}   [1]{\color{blue!50!black}#1\color{black}}
@@ -67,6 +69,49 @@
 
   Fragen zu jeder Zeit willkommen!
 \end{center}}
+
+\frame[plain]{\justifying\fontsize{7pt}{8.4}\selectfont
+  \setlength{\columnsep}{2em}
+  \begin{multicols}{2}
+  Was ist schneller als C++, prägnanter als Perl, regelmäßiger als Python,
+  flexibler als Ruby, typisierter als C\#, robuster als Java und hat
+  absolut nichts mit PHP gemeinsam? Es ist Haskell!
+  \medskip
+
+  Haskell ist eine moderne und innovative Programmiersprache, die sich von
+  bekannten imperativen Sprachen in vielerlei Hinsicht deutlich
+  unterscheidet: Ein Haskell-Programm besteht nicht etwa aus einer Abfolge
+  von auszuführenden Anweisungen, sondern aus einer Ansammlung von
+  Deklarationen, deren Reihenfolge keine Rolle spielt. Auch gibt es keine
+  veränderlichen Variablen, und ausgewertet wird nur, was wirklich
+  benötigt wird; unendliche Datenstrukturen sind möglich und sinnvoll.
+  \medskip
+
+  Dieses Denkparadigma mag anfangs sehr ungewohnt sein, zieht jedoch eine
+  Reihe von Vorteilen mit sich: Da es keine Nebeneffekte wie
+  beispielsweise globale Variablen gibt, kann man Code rein lokal
+  verstehen. Damit wird es einfacher, modular Komponenten zusammenzubauen,
+  sich Datenflüsse klarzumachen und Code auf seine Korrektheit hin zu
+  überprüfen. Insbesondere vereinfacht sich die Programmierung mit Threads
+  enorm.
+  \medskip
+
+  Ferner ist Haskells starkes statisches Typsystem eine große Hilfe beim
+  Programmieren und verhindert viel mehr Fehler schon während des
+  Kompilierens, als man vielleicht aus anderen Sprachen gewohnt ist.
+  Es gibt das Motto, dass, wenn Haskell-Code erst einmal kompiliert, er dann
+  auch schon korrekt ist. Das ist sicherlich übertrieben, hat aber einen
+  erstaunlich wahren Kern.
+  \medskip
+
+  Der Vortrag wird einen subjektiven Überblick über die Fähigkeiten und
+  typischen Anwendungsgebiete von Haskell geben. Beim Erlernen von Haskell
+  lernt man viele neue Herangehensweisen kennen, die auch in anderen
+  Sprachen nützlich sind; das ist einer der Hauptvorteile an Haskell, der
+  auch dann noch relevant ist, wenn man aus verschiedenen Gründen nicht in
+  Haskell programmieren möchte.
+  \end{multicols}
+}
 
 %\frame[t]{\begin{multicols}{2}\small\tableofcontents\end{multicols}}
 \frame[t]{\scriptsize\tableofcontents}
