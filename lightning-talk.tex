@@ -1,0 +1,77 @@
+% Kompilieren mit: TEXINPUTS=minted/source: xelatex -shell-escape %
+\documentclass[12pt,compress,ngerman,utf8,t]{beamer}
+\usepackage[ngerman]{babel}
+\usepackage{minted}
+\setminted{linenos}
+\usepackage[protrusion=true,expansion=false]{microtype}
+
+\title{Haskell, eine rein funktionale Programmiersprache}
+\author{Ingo Blechschmidt \texttt{<iblech@web.de>}}
+\date{Augsburger NerdNight am 13. März 2015}
+
+\usetheme{Warsaw}
+
+\useinnertheme{rectangles}
+
+\usecolortheme{seahorse}
+\definecolor{mypurple}{RGB}{150,0,255}
+\setbeamercolor{structure}{fg=mypurple}
+
+\usefonttheme{serif}
+\usepackage{fontspec}
+\defaultfontfeatures{Mapping=tex-text}
+\setmainfont{Linux Libertine O}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+\setbeamertemplate{frametitle}[default][colsep=-2bp,rounded=false,shadow=false,center]
+
+\renewcommand*\insertshorttitle{%
+  Erste Augsburger Nerdnight im OpenLab am 13. M\"arz 2015}
+
+\newcommand{\hil}[1]{{\usebeamercolor[fg]{item}{\textbf{#1}}}}
+
+\begin{document}
+
+\frame[plain]{\begin{center}
+  \includegraphics[scale=0.35]{images/learn-you-a-haskell-for-great-good.png}
+\end{center}}
+
+% Was ist schneller als C++, prägnanter als Perl, regelmäßiger als Python,
+% flexibler als Ruby, typisierter als C#, robuster als Java und hat
+% absolut nichts mit PHP gemeinsam? Es ist Haskell!
+
+\begin{frame}[fragile]\frametitle{Haskell, eine rein funktionale Sprache}
+  \large\vspace{-0.5em}
+  \begin{minted}{haskell}
+qsort []     = []
+qsort (x:xs) =
+    qsort kleinere ++ [x] ++ qsort groessere
+    where
+    kleinere  = [y | y <- xs, y <= x]
+    groessere = [y | y <- xs, y > x]
+  \end{minted}
+  \vfill
+
+  \pause
+  Die Fibonaccizahlen: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, \ldots
+  \begin{minted}{haskell}
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+  \end{minted}
+
+  \pause
+  \begin{center}
+  \hil{Statisches Typsystem mit Typerschlie\ss ung} \\
+  \hil{rein funktional} \textbullet{}
+  \hil{nebenl\"aufig} \textbullet{}
+  \hil{lazy} \textbullet{}
+  \hil{7000\textsuperscript{+} Pakete}
+  \end{center}
+\end{frame}
+
+% <audreyt>
+% Perl: "Easy things are easy, hard things are possible"
+% Haskell: "Hard things are easy, the impossible just happened"
+
+\end{document}

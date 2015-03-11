@@ -1,0 +1,3 @@
+[submodule "minted"]
+	path = minted
+	url = https://github.com/gpoore/minted.git
