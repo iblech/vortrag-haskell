@@ -42,6 +42,154 @@
 % flexibler als Ruby, typisierter als C#, robuster als Java und hat
 % absolut nichts mit PHP gemeinsam? Es ist Haskell!
 
+\begin{frame}[fragile]\frametitle{Quicksort in C}
+  \scriptsize\vspace{-0.5em}
+  \begin{minted}{c}
+// von rosettacode.org
+void quick_sort (int *a, int n) {
+    int i, j, p, t;
+    if (n < 2)
+        return;
+    p = a[n / 2];
+    for (i = 0, j = n - 1;; i++, j--) {
+        while (a[i] < p)
+            i++;
+        while (p < a[j])
+            j--;
+        if (i >= j)
+            break;
+        t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+    quick_sort(a, i);
+    quick_sort(a + i, n - i);
+}
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Quicksort in C\#}
+  \tiny\vspace{-0.5em}
+  \begin{minted}{csharp}
+// von rosettacode.org
+namespace Sort {
+  using System;
+ 
+  class QuickSort<T> where T : IComparable {
+    #region Constants
+    private const Int32 insertionLimitDefault = 16;
+    private const Int32 pivotSamples = 5;
+    #endregion
+ 
+    #region Properties
+    public Int32 InsertionLimit { get; set; }
+    protected Random Random { get; set; }
+    #endregion
+ 
+    #region Constructors
+    public QuickSort()
+      : this(insertionLimitDefault, new Random()) {
+    }
+ 
+    public QuickSort(Int32 insertionLimit, Random random) {
+      InsertionLimit = insertionLimit;
+      Random = random;
+    }
+    #endregion
+ 
+    #region Sort Methods
+    public void Sort(T[] entries) {
+      Sort(entries, 0, entries.Length - 1);
+    }
+ 
+    public void Sort(T[] entries, Int32 first, Int32 last) {
+      var length = last + 1 - first;
+      // Elide tail recursion by looping over the longer partition
+      while (length > 1) {
+        if (length < InsertionLimit) {
+          InsertionSort<T>.Sort(entries, first, last);
+          return;
+        }
+ 
+        var median = pivot(entries, first, last);
+ 
+        var left = first;
+        var right = last;
+        partition(entries, median, ref left, ref right);
+ 
+        var leftLength = right + 1 - first;
+        var rightLength = last + 1 - left;
+ 
+        if (leftLength < rightLength) {
+          Sort(entries, first, right);
+          first = left;
+          length = rightLength;
+        }
+        else {
+          Sort(entries, left, last);
+          last = right;
+          length = leftLength;
+        }
+      }
+    }
+ 
+    private T pivot(T[] entries, Int32 first, Int32 last) {
+      var length = last + 1 - first;
+      var sampleSize = Math.Min(pivotSamples, length);
+      var right = first + sampleSize - 1;
+      for (var left = first; left <= right; left++) {
+        // Random sampling avoids pathological cases
+        var random = Random.Next(left, last + 1);
+        // Sample without replacement
+        if (left != random)
+          Swap(entries, left, random);
+      }
+ 
+      InsertionSort<T>.Sort(entries, first, right);
+      return entries[first + sampleSize / 2];
+    }
+ 
+    private static void partition(T[] entries, T pivot, ref Int32 left, ref Int32 right) {
+      while (left <= right) {
+        while (pivot.CompareTo(entries[left]) > 0)
+          left++;                       // pivot follows entry
+        while (pivot.CompareTo(entries[right]) < 0)
+          right--;                      // pivot precedes entry
+ 
+        if (left < right)               // Move entries to their correct partition
+          Swap(entries, left++, right--);
+        else if (left == right) {       // No swap needed
+          left++;
+          right--;
+        }
+      }
+    }
+ 
+    public static void Swap(T[] entries, Int32 index1, Int32 index2) {
+      var entry = entries[index1];
+      entries[index1] = entries[index2];
+      entries[index2] = entry;
+    }
+    #endregion
+  }
+ 
+  #region Insertion Sort
+  static class InsertionSort<T> where T : IComparable {
+    public static void Sort(T[] entries, Int32 first, Int32 last) {
+      for (var i = first + 1; i <= last; i++) {
+        var entry = entries[i];
+        var j = i;
+        while (j > first && entries[j - 1].CompareTo(entry) > 0)
+          entries[j] = entries[--j];
+        entries[j] = entry;
+      }
+    }
+  }
+  #endregion
+}
+  \end{minted}
+\end{frame}
+
 \begin{frame}[fragile]\frametitle{Haskell, eine rein funktionale Sprache}
   \large\vspace{-0.5em}
   \begin{minted}{haskell}
