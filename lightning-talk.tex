@@ -1,9 +1,14 @@
 % Kompilieren mit: TEXINPUTS=minted/source: xelatex -shell-escape %
 \documentclass[12pt,compress,ngerman,utf8,t]{beamer}
 \usepackage[ngerman]{babel}
+\usepackage{comment}
 \usepackage{minted}
 \setminted{linenos}
 \usepackage[protrusion=true,expansion=false]{microtype}
+
+\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
+\DeclareMathSymbol{\varheart}{\mathalpha}{extraup}{86}
+\DeclareMathSymbol{\vardiamond}{\mathalpha}{extraup}{87}
 
 \title{Haskell, eine rein funktionale Programmiersprache}
 \author{Ingo Blechschmidt \texttt{<iblech@web.de>}}
@@ -43,8 +48,10 @@
 % absolut nichts mit PHP gemeinsam? Es ist Haskell!
 
 \begin{frame}[fragile]\frametitle{Quicksort in C}
-  \scriptsize\vspace{-0.5em}
-  \begin{minted}{c}
+  \begin{columns}
+    \begin{column}[b]{0.6\textwidth}
+      \scriptsize
+      \begin{minted}{c}
 // von rosettacode.org
 void quick_sort (int *a, int n) {
     int i, j, p, t;
@@ -65,9 +72,17 @@ void quick_sort (int *a, int n) {
     quick_sort(a, i);
     quick_sort(a + i, n - i);
 }
-  \end{minted}
+      \end{minted}
+    \end{column}
+
+    \begin{column}{0.2\textwidth}
+      % http://freephotos.atguru.in/hdphotos/sad-cat/sad-cat-13555.jpg
+      \includegraphics[scale=0.3,flip]{images/sad-cat.jpg}
+    \end{column}
+  \end{columns}
 \end{frame}
 
+\begin{comment}
 \begin{frame}[fragile]\frametitle{Quicksort in C\#}
   \tiny\vspace{-0.5em}
   \begin{minted}{csharp}
@@ -189,6 +204,7 @@ namespace Sort {
 }
   \end{minted}
 \end{frame}
+\end{comment}
 
 \begin{frame}[fragile]\frametitle{Haskell, eine rein funktionale Sprache}
   \large\vspace{-0.5em}
@@ -202,6 +218,13 @@ qsort (x:xs) =
   \end{minted}
   \vfill
 
+  \only<1>{
+    \vspace{1em}
+    \begin{center}
+      \includegraphics[scale=0.35]{images/katze.jpg}
+    \end{center}
+  }
+
   \pause
   Die Fibonaccizahlen: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, \ldots
   \begin{minted}{haskell}
@@ -210,7 +233,7 @@ fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
   \pause
   \begin{center}
-  \hil{Statisches Typsystem mit Typerschlie\ss ung} \\
+  \hil{$\varheart$ Statisches Typsystem mit Typerschlie\ss ung $\varheart$} \\
   \hil{rein funktional} \textbullet{}
   \hil{nebenl\"aufig} \textbullet{}
   \hil{lazy} \textbullet{}
