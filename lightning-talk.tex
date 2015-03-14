@@ -246,3 +246,32 @@ fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 % Haskell: "Hard things are easy, the impossible just happened"
 
 \end{document}
+
+Achtung. Bei der Nerdnacht hatte ich vergessen zu erklären, dass das
+Quicksort-Beispiel Pattern Matching verwendet. Das hätte nicht passieren
+dürfen!
+
+Diese Folien waren für fünf oder sechs Minuten konzipiert. Für einen
+10-minütigen Lightning Talk könnte man das ganze besser machen:
+
+* Live-Coding statt fertiger Code auf der Folie.
+
+* Bessere Erklärung des Fibonacci-Beispiels, zum Beispiel so:
+
+  fibs      = 0 :  1  : ???
+  tail fibs = 1 : ???
+
+  zipWith (+) fibs (tail fibs)
+            = 1 : ???
+
+  Danach aktualisiert man die Folie:
+
+  fibs      = 0 :  1  :  1  : ???
+  tail fibs = 1 :  1  : ???
+
+  zipWith (+) fibs (tail fibs)
+            = 1 : 2 : ???
+
+  Und so weiter.
+
+* Stichwörter, wo Haskell eingesetzt wird.
