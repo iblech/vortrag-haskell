@@ -5,6 +5,7 @@ import Control.Monad.State
 import qualified Data.Map as M
 import Data.Char
 import Text.ParserCombinators.Parsec
+import System.IO
 
 data Stmt
     = IncPtr | DecPtr | IncVal | DecVal
@@ -57,6 +58,9 @@ run input = do
     case parseBrainfuck input of
         Right ss -> evalStateT (mapM_ eval ss) initialSt
         Left  e  -> putStrLn . show $ e
+
+main :: IO ()
+main = hSetBuffering stdout NoBuffering >> getContents >>= run
 
 parseStmt :: GenParser Char st Stmt
 parseStmt = choice [parseSimpleStmt, parseWhileStmt, parseDummy]

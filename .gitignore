@@ -5,3 +5,6 @@
 *.snm
 *.toc
 *.vrb
+*.hi
+*.o
+brainfuck
