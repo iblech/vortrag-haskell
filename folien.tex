@@ -88,7 +88,7 @@
   \medskip
 
   Dieses Denkparadigma mag anfangs sehr ungewohnt sein, zieht jedoch eine
-  Reihe von Vorteilen mit sich: Da es keine Nebeneffekte wie
+  Reihe von Vorteilen mit sich: Da es keine Nebenwirkungen wie
   beispielsweise globale Variablen gibt, kann man Code rein lokal
   verstehen. Damit wird es einfacher, modular Komponenten zusammenzubauen,
   sich Datenflüsse klarzumachen und Code auf seine Korrektheit hin zu
@@ -136,7 +136,7 @@
   \begin{itemize}
     \item \textcolor{white}{keine} Anweisungen
     \item \textcolor{white}{keine} veränderliche Variablen
-    \item \textcolor{white}{keine} Nebeneffekte
+    \item \textcolor{white}{keine} Nebenwirkungen
   \end{itemize}
 }
 
@@ -146,7 +146,7 @@
   \begin{itemize}
     \item keine Anweisungen
     \item keine veränderliche Variablen
-    \item keine Nebeneffekte
+    \item keine Nebenwirkungen
   \end{itemize}
 }
 
@@ -206,8 +206,8 @@
   }
 }
 
-\subsection[Nebeneffekte]{Keine Nebeneffekte}
-\frame[t]{\frametitle{Keine Nebeneffekte}
+\subsection[Nebenwirkungen]{Keine Nebenwirkungen}
+\frame[t]{\frametitle{Keine Nebenwirkungen}
   \floatbox{-280}{190}{\includegraphics[scale=0.9]{images/tablette.png}}%
   \vspace{-2em}\setlength{\columnsep}{0pt}%
   \begin{multicols*}{2}
@@ -538,7 +538,7 @@
 \frame[t,plain]{
   \begin{itemize}
     \item Ein Wert vom Typ \texttt{State s a} ist eine Aktion,
-          die einen Wert vom Typ \texttt{a} berechnet und als Nebeneffekt eine
+          die einen Wert vom Typ \texttt{a} berechnet und als Nebenwirkung eine
           Zustandsvariable vom Typ \texttt{s} verändert.
 
     \item \texttt{get :: State s s}
