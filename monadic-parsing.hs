@@ -60,6 +60,7 @@ oneOf = choice . map char
   Parsen von Termen mit unterschiedlichen Operatorpräzedenzen.
 
   Siehe auch:
+  https://www.cs.nott.ac.uk/~gmh/monparsing.pdf
   http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.24.5200
   http://cs.anu.edu.au/people/Clem.Baker-Finch/parsec.pdf
   http://www.staff.science.uu.nl/~swier101/Papers/1996/DetErrCorrComPars.pdf
