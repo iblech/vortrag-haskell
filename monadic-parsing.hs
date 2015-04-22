@@ -3,6 +3,7 @@ module Main where
 
 import Data.List
 import Control.Monad
+import Data.Maybe
 
 newtype Parser a = MkParser { runParser :: String -> Maybe (String, a) }
     deriving (Functor)
@@ -14,6 +15,45 @@ instance Monad Parser where
         case runParser m s of
             Nothing     -> Nothing
             Just (s',x) -> runParser (f x) s'
+
+
+
+----------- Beispielanwendung: S-Ausdrücke parsen
+
+data Exp
+    = Atom String
+    | List [Exp]
+    deriving (Show,Eq)
+
+parseExp :: Parser Exp
+parseExp = choice [ parseSymbol, parseList ]
+
+parseSymbol :: Parser Exp
+parseSymbol = fmap Atom $ many1 alphaNum' `andThen` spaces
+    where
+    alphaNum' = choice [ alphaNum, char '+', char '*' ]
+
+parseList :: Parser Exp
+parseList = do
+    token "("
+    elems <- many parseExp
+    token ")"
+    return $ List elems
+
+-- Wenn wir schon dabei sind, können wir Ausdrücke auch noch auswerten.
+eval :: Exp -> Integer
+eval (Atom x) = read x
+eval (List ((Atom "+"):xs)) = sum     $ map eval xs
+eval (List ((Atom "*"):xs)) = product $ map eval xs
+
+run :: String -> Integer
+run = eval . snd . fromJust . runParser (parseExp `andThen` eof)
+
+example = run "(+ 1 (* 2 3))"
+
+
+
+----------- Parserkombinatoren
 
 eof :: Parser ()
 eof = MkParser $ \s -> if null s then Just (s, ()) else Nothing
@@ -45,6 +85,32 @@ many1 m = liftM2 (:) m (many m)
 
 oneOf :: [Char] -> Parser Char
 oneOf = choice . map char
+
+satisfy :: (Char -> Bool) -> Parser Char
+satisfy f = MkParser $ \s ->
+    case s of
+        (c:cs)    -> if f c then Just (cs,c) else Nothing
+        otherwise -> Nothing
+
+digit :: Parser Char
+digit = satisfy $ \c -> c >= '0' && c <= '9'
+
+alphaNum :: Parser Char
+alphaNum = satisfy $ \c -> (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+
+skipMany :: Parser a -> Parser ()
+skipMany m = many m >> return ()
+
+spaces = skipMany $ satisfy (`elem` " \t\n")
+
+andThen :: Parser a -> Parser b -> Parser a
+andThen m n = do
+    x <- m
+    n
+    return x
+
+token :: String -> Parser String
+token x = string x `andThen` spaces
 
 {-
   Probleme an solch naivem Parsing:
