@@ -249,19 +249,14 @@ qsort (x:xs) =
 fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
   \end{minted}
 
+  \pause
+
+  {\renewcommand{\hil}[1]{{\usebeamercolor[fg]{item}{#1}}}
   \newcommand{\lbox}[1]{\framebox{#1}}
   \newcommand{\lboxhil}[1]{\hil{\framebox{#1}}}
-  \only<2>{\begin{tabbing}
+  \only<3>{\begin{tabbing}
     \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \kill
     \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> ?? \\
-    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> ?? \\[-0.5em]
-    \rule{\linewidth}{\arrayrulewidth} \\
-    \> $+$ \' \> \lbox{2} \> \texttt{:} \> ??
-  \end{tabbing}}
-  \only<3>{\begin{tabbing}
-    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \kill
-    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \>
-    \texttt{:} \> \lboxhil{2} \> \hil{\texttt{:}} \> \hil{??} \\
     \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> ?? \\[-0.5em]
     \rule{\linewidth}{\arrayrulewidth} \\
     \> $+$ \' \> \lbox{2} \> \texttt{:} \> ??
@@ -270,8 +265,7 @@ fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
     \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \kill
     \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \>
     \texttt{:} \> \lboxhil{2} \> \hil{\texttt{:}} \> \hil{??} \\
-    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lboxhil{2}
-    \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> ?? \\[-0.5em]
     \rule{\linewidth}{\arrayrulewidth} \\
     \> $+$ \' \> \lbox{2} \> \texttt{:} \> ??
   \end{tabbing}}
@@ -282,19 +276,21 @@ fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
     \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lboxhil{2}
     \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
     \rule{\linewidth}{\arrayrulewidth} \\
-    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??}
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> ??
   \end{tabbing}}
   \only<6>{\begin{tabbing}
-    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \lbox{3} \= \texttt{:} \= \kill
-    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\
-    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> ?? \\[-0.5em]
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \>
+    \texttt{:} \> \lboxhil{2} \> \hil{\texttt{:}} \> \hil{??} \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lboxhil{2}
+    \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
     \rule{\linewidth}{\arrayrulewidth} \\
-    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> ??
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??}
   \end{tabbing}}
   \only<7>{\begin{tabbing}
     \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \lbox{3} \= \texttt{:} \= \kill
     \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\
-    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> ?? \\[-0.5em]
     \rule{\linewidth}{\arrayrulewidth} \\
     \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> ??
   \end{tabbing}}
@@ -303,15 +299,22 @@ fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
     \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\
     \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
     \rule{\linewidth}{\arrayrulewidth} \\
-    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lboxhil{5} \> \hil{\texttt{:}} \> \hil{??}
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> ??
   \end{tabbing}}
   \only<9>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \lbox{3} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lboxhil{5} \> \hil{\texttt{:}} \> \hil{??}
+  \end{tabbing}}
+  \only<10>{\begin{tabbing}
     \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \lbox{3} \= \texttt{:} \= \lbox{05} \= \texttt{:} \= \lbox{08} \= \texttt{:} \= \lbox{13} \= \texttt{:} \= \kill
     \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lbox{\phantom{0}5} \> \texttt{:} \> \lbox{\phantom{0}8} \> \texttt{:} \> \lbox{13} \> \texttt{:} \> \ldots \\
     \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lbox{5} \> \texttt{:} \> \lbox{\phantom{0}8} \> \texttt{:} \> \lbox{13} \> \texttt{:} \> \lbox{21} \> \texttt{:} \> \ldots \\[-0.5em]
     \rule{\linewidth}{\arrayrulewidth} \\
     \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lbox{5} \> \texttt{:} \> \lbox{8} \> \texttt{:} \> \lbox{13} \> \texttt{:} \> \lbox{21} \> \texttt{:} \> \lbox{34} \> \texttt{:} \> \ldots
-  \end{tabbing}}
+  \end{tabbing}}}
 
   \pause
   \pause
@@ -335,34 +338,3 @@ fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
 % Haskell: "Hard things are easy, the impossible just happened"
 
 \end{document}
-
-Achtung. Bei der Nerdnacht hatte ich vergessen zu erklären, dass das
-Quicksort-Beispiel Pattern Matching verwendet. Das hätte nicht passieren
-dürfen! Beim Thema Typsystem hätte ich außerdem einen Kommentar der Art
-"Tatsächlich ist das Typsystem so stark, dass es folgendes Motto gibt: Code,
-der einmal kompiliert, ist bereits korrekt."
-
-Diese Folien waren für fünf oder sechs Minuten konzipiert. Für einen
-10-minütigen Lightning Talk könnte man das ganze besser machen:
-
-* Live-Coding statt fertiger Code auf der Folie.
-
-* Bessere Erklärung des Fibonacci-Beispiels, zum Beispiel so:
-
-  fibs      = 0 :  1  : ???
-  tail fibs = 1 : ???
-
-  zipWith (+) fibs (tail fibs)
-            = 1 : ???
-
-  Danach aktualisiert man die Folie:
-
-  fibs      = 0 :  1  :  1  : ???
-  tail fibs = 1 :  1  : ???
-
-  zipWith (+) fibs (tail fibs)
-            = 1 : 2 : ???
-
-  Und so weiter.
-
-* Stichwörter, wo Haskell eingesetzt wird.
