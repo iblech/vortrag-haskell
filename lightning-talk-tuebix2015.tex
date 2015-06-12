@@ -1,0 +1,368 @@
+% Kompilieren mit: TEXINPUTS=minted/source: xelatex -shell-escape %
+\documentclass[12pt,compress,ngerman,utf8,t]{beamer}
+\usepackage[ngerman]{babel}
+\usepackage{comment}
+\usepackage{minted}
+\setminted{linenos}
+\usepackage[protrusion=true,expansion=false]{microtype}
+
+\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
+\DeclareMathSymbol{\varheart}{\mathalpha}{extraup}{86}
+\DeclareMathSymbol{\vardiamond}{\mathalpha}{extraup}{87}
+
+\usepackage{etex}
+\makeatletter
+\globdimenblk\@firsttab{20}
+\mathchardef\@maxtab=\numexpr\@firsttab+20-1\relax
+\makeatother
+
+\title{Haskell, eine rein funktionale Programmiersprache}
+\author{Ingo Blechschmidt \texttt{<iblech@web.de>}}
+\date{T\"ubinger Linuxtag am 13. Juni 2015}
+
+\usetheme{Warsaw}
+
+\useinnertheme{rectangles}
+
+\usecolortheme{seahorse}
+\definecolor{mypurple}{RGB}{150,0,255}
+\setbeamercolor{structure}{fg=mypurple}
+
+\usefonttheme{serif}
+\usepackage{fontspec}
+\defaultfontfeatures{Mapping=tex-text}
+\setmainfont{Linux Libertine O}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+\setbeamertemplate{frametitle}[default][colsep=-2bp,rounded=false,shadow=false,center]
+
+\renewcommand*\insertshorttitle{%
+  T\"ubinger Linuxtag}
+
+\newcommand{\hil}[1]{{\usebeamercolor[fg]{item}{\textbf{#1}}}}
+
+\begin{document}
+
+\frame[plain]{\begin{center}
+  \includegraphics[scale=0.35]{images/learn-you-a-haskell-for-great-good.png}
+\end{center}}
+
+% Was ist schneller als C++, prägnanter als Perl, regelmäßiger als Python,
+% flexibler als Ruby, typisierter als C#, robuster als Java und hat
+% absolut nichts mit PHP gemeinsam? Es ist Haskell!
+
+\frame[plain]{\begin{center}
+  \includegraphics[scale=0.55]{images/haskell-spock}
+
+  \vfill
+  \begin{itemize}
+    \item \ \\[-1.1em]\mbox{\hil{Nicht:} Anweisungen, die nacheinander ausgef\"uhrt
+    werden.}
+    \pause
+    \item "`Besteht ein Programm die Typpr\"ufung, so ist es korrekt."'
+  \end{itemize}
+\end{center}}
+
+\begin{frame}[fragile]\frametitle{Quicksort in C}
+  \begin{columns}
+    \begin{column}[b]{0.6\textwidth}
+      \scriptsize
+      \begin{minted}{c}
+// von rosettacode.org
+void quick_sort (int *a, int n) {
+    int i, j, p, t;
+    if (n < 2)
+        return;
+    p = a[n / 2];
+    for (i = 0, j = n - 1;; i++, j--) {
+        while (a[i] < p)
+            i++;
+        while (p < a[j])
+            j--;
+        if (i >= j)
+            break;
+        t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+    quick_sort(a, i);
+    quick_sort(a + i, n - i);
+}
+      \end{minted}
+    \end{column}
+
+    \begin{column}{0.2\textwidth}
+      % http://freephotos.atguru.in/hdphotos/sad-cat/sad-cat-13555.jpg
+      \includegraphics[scale=0.3,flip]{images/sad-cat.jpg}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{comment}
+\begin{frame}[fragile]\frametitle{Quicksort in C\#}
+  \tiny\vspace{-0.5em}
+  \begin{minted}{csharp}
+// von rosettacode.org
+namespace Sort {
+  using System;
+ 
+  class QuickSort<T> where T : IComparable {
+    #region Constants
+    private const Int32 insertionLimitDefault = 16;
+    private const Int32 pivotSamples = 5;
+    #endregion
+ 
+    #region Properties
+    public Int32 InsertionLimit { get; set; }
+    protected Random Random { get; set; }
+    #endregion
+ 
+    #region Constructors
+    public QuickSort()
+      : this(insertionLimitDefault, new Random()) {
+    }
+ 
+    public QuickSort(Int32 insertionLimit, Random random) {
+      InsertionLimit = insertionLimit;
+      Random = random;
+    }
+    #endregion
+ 
+    #region Sort Methods
+    public void Sort(T[] entries) {
+      Sort(entries, 0, entries.Length - 1);
+    }
+ 
+    public void Sort(T[] entries, Int32 first, Int32 last) {
+      var length = last + 1 - first;
+      // Elide tail recursion by looping over the longer partition
+      while (length > 1) {
+        if (length < InsertionLimit) {
+          InsertionSort<T>.Sort(entries, first, last);
+          return;
+        }
+ 
+        var median = pivot(entries, first, last);
+ 
+        var left = first;
+        var right = last;
+        partition(entries, median, ref left, ref right);
+ 
+        var leftLength = right + 1 - first;
+        var rightLength = last + 1 - left;
+ 
+        if (leftLength < rightLength) {
+          Sort(entries, first, right);
+          first = left;
+          length = rightLength;
+        }
+        else {
+          Sort(entries, left, last);
+          last = right;
+          length = leftLength;
+        }
+      }
+    }
+ 
+    private T pivot(T[] entries, Int32 first, Int32 last) {
+      var length = last + 1 - first;
+      var sampleSize = Math.Min(pivotSamples, length);
+      var right = first + sampleSize - 1;
+      for (var left = first; left <= right; left++) {
+        // Random sampling avoids pathological cases
+        var random = Random.Next(left, last + 1);
+        // Sample without replacement
+        if (left != random)
+          Swap(entries, left, random);
+      }
+ 
+      InsertionSort<T>.Sort(entries, first, right);
+      return entries[first + sampleSize / 2];
+    }
+ 
+    private static void partition(T[] entries, T pivot, ref Int32 left, ref Int32 right) {
+      while (left <= right) {
+        while (pivot.CompareTo(entries[left]) > 0)
+          left++;                       // pivot follows entry
+        while (pivot.CompareTo(entries[right]) < 0)
+          right--;                      // pivot precedes entry
+ 
+        if (left < right)               // Move entries to their correct partition
+          Swap(entries, left++, right--);
+        else if (left == right) {       // No swap needed
+          left++;
+          right--;
+        }
+      }
+    }
+ 
+    public static void Swap(T[] entries, Int32 index1, Int32 index2) {
+      var entry = entries[index1];
+      entries[index1] = entries[index2];
+      entries[index2] = entry;
+    }
+    #endregion
+  }
+ 
+  #region Insertion Sort
+  static class InsertionSort<T> where T : IComparable {
+    public static void Sort(T[] entries, Int32 first, Int32 last) {
+      for (var i = first + 1; i <= last; i++) {
+        var entry = entries[i];
+        var j = i;
+        while (j > first && entries[j - 1].CompareTo(entry) > 0)
+          entries[j] = entries[--j];
+        entries[j] = entry;
+      }
+    }
+  }
+  #endregion
+}
+  \end{minted}
+\end{frame}
+\end{comment}
+
+\begin{frame}[fragile]\frametitle{Haskell, eine rein funktionale Sprache}
+  \large\vspace{-0.5em}
+  \begin{minted}{haskell}
+qsort []     = []
+qsort (x:xs) =
+    qsort kleinere ++ [x] ++ qsort groessere
+    where
+    kleinere  = [y | y <- xs, y <= x]
+    groessere = [y | y <- xs, y > x]
+  \end{minted}
+  \vfill
+
+  \only<1>{
+    \vspace{1em}
+    \begin{center}
+      \includegraphics[scale=0.35]{images/katze.jpg}
+    \end{center}
+  }
+
+  \pause
+  Die Fibonaccizahlen: 1, 1, 2, 3, 5, 8, 13, 21, 34, \ldots
+  \begin{minted}{haskell}
+fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
+  \end{minted}
+
+  \newcommand{\lbox}[1]{\framebox{#1}}
+  \newcommand{\lboxhil}[1]{\hil{\framebox{#1}}}
+  \only<2>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> ?? \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> ?? \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> ??
+  \end{tabbing}}
+  \only<3>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \>
+    \texttt{:} \> \lboxhil{2} \> \hil{\texttt{:}} \> \hil{??} \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> ?? \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> ??
+  \end{tabbing}}
+  \only<4>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \>
+    \texttt{:} \> \lboxhil{2} \> \hil{\texttt{:}} \> \hil{??} \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lboxhil{2}
+    \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> ??
+  \end{tabbing}}
+  \only<5>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \>
+    \texttt{:} \> \lboxhil{2} \> \hil{\texttt{:}} \> \hil{??} \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lboxhil{2}
+    \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??}
+  \end{tabbing}}
+  \only<6>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \lbox{3} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> ?? \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> ??
+  \end{tabbing}}
+  \only<7>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \lbox{3} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> ??
+  \end{tabbing}}
+  \only<8>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \lbox{3} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lboxhil{3} \> \hil{\texttt{:}} \> \hil{??} \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lboxhil{5} \> \hil{\texttt{:}} \> \hil{??}
+  \end{tabbing}}
+  \only<9>{\begin{tabbing}
+    \texttt{tail fibs} \= \texttt{=} \= \lbox{1} \= \texttt{:} \= \lbox{1} \= \texttt{:} \= \lbox{2} \= \texttt{:} \= \lbox{3} \= \texttt{:} \= \lbox{05} \= \texttt{:} \= \lbox{08} \= \texttt{:} \= \lbox{13} \= \texttt{:} \= \kill
+    \> \texttt{fibs} \' \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lbox{\phantom{0}5} \> \texttt{:} \> \lbox{\phantom{0}8} \> \texttt{:} \> \lbox{13} \> \texttt{:} \> \ldots \\
+    \texttt{tail fibs} \> \texttt{=} \> \lbox{1} \> \texttt{:} \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lbox{5} \> \texttt{:} \> \lbox{\phantom{0}8} \> \texttt{:} \> \lbox{13} \> \texttt{:} \> \lbox{21} \> \texttt{:} \> \ldots \\[-0.5em]
+    \rule{\linewidth}{\arrayrulewidth} \\
+    \> $+$ \' \> \lbox{2} \> \texttt{:} \> \lbox{3} \> \texttt{:} \> \lbox{5} \> \texttt{:} \> \lbox{8} \> \texttt{:} \> \lbox{13} \> \texttt{:} \> \lbox{21} \> \texttt{:} \> \lbox{34} \> \texttt{:} \> \ldots
+  \end{tabbing}}
+
+  \pause
+  \pause
+  \pause
+  \pause
+  \pause
+  \pause
+  \pause
+  \pause
+  \begin{center}
+  \hil{$\varheart$ Statisches Typsystem mit Typerschlie\ss ung $\varheart$} \\
+  \hil{rein funktional} \textbullet{}
+  \hil{nebenl\"aufig} \textbullet{}
+  \hil{lazy} \textbullet{}
+  \hil{7000\textsuperscript{+} Pakete}
+  \end{center}
+\end{frame}
+
+% <audreyt>
+% Perl: "Easy things are easy, hard things are possible"
+% Haskell: "Hard things are easy, the impossible just happened"
+
+\end{document}
+
+Achtung. Bei der Nerdnacht hatte ich vergessen zu erklären, dass das
+Quicksort-Beispiel Pattern Matching verwendet. Das hätte nicht passieren
+dürfen! Beim Thema Typsystem hätte ich außerdem einen Kommentar der Art
+"Tatsächlich ist das Typsystem so stark, dass es folgendes Motto gibt: Code,
+der einmal kompiliert, ist bereits korrekt."
+
+Diese Folien waren für fünf oder sechs Minuten konzipiert. Für einen
+10-minütigen Lightning Talk könnte man das ganze besser machen:
+
+* Live-Coding statt fertiger Code auf der Folie.
+
+* Bessere Erklärung des Fibonacci-Beispiels, zum Beispiel so:
+
+  fibs      = 0 :  1  : ???
+  tail fibs = 1 : ???
+
+  zipWith (+) fibs (tail fibs)
+            = 1 : ???
+
+  Danach aktualisiert man die Folie:
+
+  fibs      = 0 :  1  :  1  : ???
+  tail fibs = 1 :  1  : ???
+
+  zipWith (+) fibs (tail fibs)
+            = 1 : 2 : ???
+
+  Und so weiter.
+
+* Stichwörter, wo Haskell eingesetzt wird.
