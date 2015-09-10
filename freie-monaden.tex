@@ -1,9 +1,12 @@
 % Kompilieren mit: TEXINPUTS=minted/source: xelatex -shell-escape %
 \documentclass[12pt,compress,ngerman,utf8,t]{beamer}
 \usepackage[ngerman]{babel}
+\usepackage{ragged2e}
 \usepackage{comment}
 \usepackage{minted}
 \usepackage{wasysym}
+\usepackage{tikz}
+\usetikzlibrary{calc}
 \usepackage[all]{xy}
 \usepackage[protrusion=true,expansion=false]{microtype}
 
@@ -28,6 +31,14 @@
 \usefonttheme{serif}
 \usepackage[T1]{fontenc}
 \usepackage{libertine}
+
+\definecolor{darkred}{RGB}{220,0,0}
+\newcommand{\hcancel}[5]{%
+    \tikz[baseline=(tocancel.base)]{
+        \node[inner sep=0pt,outer sep=0pt] (tocancel) {#1};
+        \draw[darkred, line width=1mm] ($(tocancel.south west)+(#2,#3)$) -- ($(tocancel.north east)+(#4,#5)$);
+    }%
+}%
 
 \renewcommand{\C}{\mathcal{C}}
 \newcommand{\D}{\mathcal{D}}
@@ -71,6 +82,8 @@
 \begin{document}
 
 \frame{\titlepage}
+
+\frame{\tableofcontents}
 
 \section{Monoide}
 
@@ -190,30 +203,49 @@ class Monoid m where
     X \ar[rr] \ar[rd] && M \\
     & F(X) \ar@{-->}[ru]
   } \]
-  \pause
-
-  Der Funktor~$F : \mathrm{Set} \to \mathrm{Mon}$ ist \hil{linksadjungiert} zum
-  Vergissfunktor~$\mathrm{Mon} \to \mathrm{Set}$.
 \end{frame}
 
-\note{
+\begin{frame}\frametitle{Freie Monoide}
+  \begin{center}\Large
+    Freie Monaden sind \ldots
+
+    \only<1>{\ldots{} frei wie in Freibier?}%
+    \only<2->{\hcancel{\ldots{} frei wie in Freibier?}{0pt}{3pt}{0pt}{-2pt}}
+
+    \only<3>{\ldots{} frei wie in Redefreiheit?}%
+    \only<4->{\hcancel{\ldots{} frei wie in Redefreiheit?}{0pt}{3pt}{0pt}{-2pt}}
+
+    \only<5->{\ldots{} frei wie in \hil{linksadjungiert}! $\checkmark$}
+
+  \end{center}
+
+  \only<6>{Der Funktor~$F : \mathrm{Set} \to \mathrm{Mon}$ ist \hil{linksadjungiert}
+  zum Vergissfunktor~$\mathrm{Mon} \to \mathrm{Set}$.}
+\end{frame}
+
+\note{\justifying
   In~$F(X)$ sollen neben den Elementen aus~$X$ nur so viele
   weitere Elemente enthalten sein, sodass man eine Verknüpfung~$({\circ})$ und
   ein Einselement definieren kann.
+  \medskip
 
   In~$F(X)$ sollen nur die Rechenregeln gelten, die von den Monoidaxiomen
   gefordert werden.
+  \medskip
 
-  Die universelle Eigenschaft kann man schön in Haskell demonstrieren.
+  Die universelle Eigenschaft kann man schön in Haskell demonstrieren:
   \inputminted{haskell}{images/universal-property-free-monoid.hs}
 
   Wenn man tiefer in das Thema einsteigt, erkennt man, dass endliche Listen
   noch nicht der Weisheit letzter Schluss sind:
   \url{http://comonad.com/reader/2015/free-monoids-in-haskell/}
+  \par
 }
 
 
-\section{Funktoren als Container}
+\section{Funktoren}
+
+\subsection{Definition und Beispiele}
 
 \begin{frame}[fragile]\frametitle{Funktoren}
   Ein \hil{Funktor}~$F : \C \to \D$ zwischen Kategorien~$\C$ und~$\D$ ordnet
@@ -260,24 +292,31 @@ instance Functor Pair where
   \end{minted}
 \end{frame}
 
+
+\subsection{Funktoren als Container}
+
 \begin{frame}[fragile]\frametitle{Funktoren als Container}
   Ist~\texttt{f} ein Funktor, so stellen wir uns den
   Typ~\texttt{f a} als einen Typ von Containern von Werten vom
   Typ~\texttt{a} vor.
+  \medskip
 
   Je nach Funktor haben die Container eine andere Form.
 \end{frame}
 
-\note{
+\note{\justifying
   Die Vorstellung ist aus folgendem Grund plausibel: Aus einer
   Funktion~\texttt{a -> b} können wir mit \texttt{fmap} eine Funktion~\texttt{f
   a -> f b} machen. Also stecken wohl in einem Wert vom Typ~\texttt{f a}
   irgendwelche Werte vom Typ~\texttt{a}, die mit der gelifteten Funktion dann
   in Werte vom Typ~\texttt{b} umgewandelt werden.
+  \par
 }
 
 
 \section{Monaden}
+
+\subsection{Definition und Beispiele}
 
 \begin{frame}[fragile]\frametitle{Monaden}
   Eine \hil{Monade} besteht aus
@@ -352,6 +391,9 @@ instance Monad State where
   \end{block}
 \end{frame}
 
+
+\subsection{"`Monoid in einer Kategorie von Endofunktoren"'}
+
 \begin{frame}\frametitle{Die Monadenaxiome}
   {\scriptsize
   Sprechweise: Ein Wert vom Typ~\texttt{m (m (m a))} ist ein (äußerer) Container von
@@ -359,16 +401,66 @@ instance Monad State where
   Typ~\texttt{a}.\par}
 
   \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
-    M \circ M \circ M \ar[r]^{\text{innen join}} \ar[d]_{\text{außen join}} & M \circ M
-    \ar[d]^{\text{join}} \\
-    M \times M \ar[r]_{\text{join}} & M
+    M \circ M \circ M \ar@{=>}[r]^{\text{innen join}} \ar@{=>}[d]_{\text{außen join}} & M \circ M
+    \ar@{=>}[d]^{\text{join}} \\
+    M \times M \ar@{=>}[r]_{\text{join}} & M
   } \]
   \medskip
   \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
     & M \\
-    M \ar[r]_{\text{return}}\ar[ru] & M \circ M \ar[u]_{\text{join}} & \ar[l]^{\text{innen
-    return}}\ar[lu] M
+    M \ar@{=>}[r]_{\text{return}}\ar@{=>}[ru] & M \circ M \ar@{=>}[u]_{\text{join}} & \ar@{=>}[l]^{\text{innen
+    return}}\ar@{=>}[lu] M
   } \]
+\end{frame}
+
+% Mündlich: Wieso Pair keine Monade wird.
+% Und das Motto rezipieren.
+
+
+\section{Freie Monaden}
+
+\subsection{Definition}
+
+\begin{frame}[fragile]\frametitle{Freie Monaden}
+  Gegeben ein Funktor~\texttt{f} ohne weitere Struktur. Wie können wir auf
+  möglichst ökonomische Art und Weise daraus eine
+  Monade~\mintinline{haskell}{Free f} konstruieren?
+  \[ \xymatrix{
+    F \ar@{=>}[rr] \ar@{=>}[rd] && M \\
+    & \operatorname{Free} F \ar@{==>}[ru]
+  } \]
+  \begin{minted}{haskell}
+can :: (Functor f, Monad m)
+    => (forall a. f a -> m a)
+    -> (forall a. Free f a -> m a)
+  \end{minted}
+\end{frame}
+
+
+\subsection{Konstruktion}
+
+\note{
+  \scriptsize
+  \inputminted{haskell}{images/definition-free-monad.hs}
+}
+
+\note{
+  \begin{itemize}
+    \item Free Void ist die Maybe-Monade.
+    \item Free Pair ist die Tree-Monade.
+  \end{itemize}
+}
+
+
+\subsection{Nutzen}
+
+\begin{frame}\frametitle{Anwendungen freier Monaden}
+  \begin{itemize}
+    \item Viele wichtige Monaden sind frei.
+    \item Freie Monaden kapseln das "`Interpreter"'-Muster.
+    \item Freie Monaden können zur Konstruktion weiterer Monaden genutzt
+    werden, etwa zum Koprodukt zweier Monaden.
+  \end{itemize}
 \end{frame}
 
 \end{document}
