@@ -3,18 +3,18 @@
 \usepackage[ngerman]{babel}
 \usepackage{comment}
 \usepackage{minted}
-\setminted{linenos}
 \usepackage{wasysym}
+\usepackage[all]{xy}
 \usepackage[protrusion=true,expansion=false]{microtype}
 
 \DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
 \DeclareMathSymbol{\varheart}{\mathalpha}{extraup}{86}
 \DeclareMathSymbol{\vardiamond}{\mathalpha}{extraup}{87}
 
-\title{\smiley{} Freie Monaden \smiley}
+\title[Freie Monaden]{\smiley{} Freie Monaden \smiley}
 \author[Augsburger Curry Club]{
   \includegraphics[scale=0.1]{images/a-monad-is-just} \\\ \\
-  Ingo Blechschmidt \\ \scriptsize\texttt{iblech@speicherleck.de}}
+  Ingo Blechschmidt \\[0.1em] \scriptsize\texttt{<iblech@speicherleck.de>}}
 \date[2015-09-10]{\vspace*{-1.5em}\scriptsize Augsburger Curry-Club \\ 10. September 2015}
 
 \usetheme{Warsaw}
@@ -26,7 +26,14 @@
 \setbeamercolor{structure}{fg=mypurple}
 
 \usefonttheme{serif}
+\usepackage[T1]{fontenc}
 \usepackage{libertine}
+
+\renewcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\Hask}{\mathrm{Hask}}
 
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{headline}{}
@@ -40,10 +47,329 @@
   \oldmacro\hfill\insertframenumber\,/\,\inserttotalframenumber\hfill}
 
 \newcommand{\hil}[1]{{\usebeamercolor[fg]{item}{\textbf{#1}}}}
+\setbeamertemplate{frametitle}{%
+  \vskip1em%
+  \leavevmode%
+  \begin{beamercolorbox}[dp=1ex,center]{}%
+      \usebeamercolor[fg]{item}{\textbf{\textsf{\Large \insertframetitle}}}
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hfill%
+  \begin{beamercolorbox}[ht=2.25ex,dp=1ex,right]{}%
+    \usebeamerfont{date in head/foot}
+    \insertframenumber\,/\,\inserttotalframenumber\hspace*{1ex}
+  \end{beamercolorbox}%
+  \vskip0pt%
+}
+
+\setbeameroption{show notes}
+\setbeamertemplate{note page}[plain]
 
 \begin{document}
 
 \frame{\titlepage}
+
+\section{Monoide}
+
+\subsection{Definition und Beispiele}
+
+\begin{frame}[fragile]\frametitle{Monoide}
+  Ein \hil{Monoid} besteht aus
+  \begin{itemize}
+    \item einer Menge~$M$,
+    \item einer Abbildung~$({\circ}) : M \times M \to M$ und
+    \item einem ausgezeichneten Element~$1 \in M$,
+  \end{itemize}
+  sodass die \hil{Monoidaxiome} gelten: Für alle~$x,y,z \in M$
+  \begin{itemize}
+    \item $x \circ (y \circ z) = (x \circ y) \circ z$,
+    \item $1 \circ x = x$,
+    \item $x \circ 1 = x$.
+  \end{itemize}
+
+  \visible<2>{\begin{center}
+    \hil{Beispiele:} \\
+    natürliche Zahlen, Listen, Endomorphismen,
+    Matrizen, \ldots
+    \\[1em]
+    \hil{Nichtbeispiele:} \\
+    natürliche Zahlen mit Subtraktion,
+    nichtleere Listen, \ldots
+  \end{center}}
+
+  \vspace*{-22em}
+  \begin{columns}
+    \begin{column}{0.65\textwidth}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \scriptsize\begin{block}{}
+      \begin{minted}{haskell}
+class Monoid m where
+    (<>) :: m -> m -> m
+    unit :: m
+      \end{minted}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}\frametitle{Axiome in Diagrammform}
+  \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
+    M \times M \times M \ar[r]^{\id \times ({\circ})} \ar[d]_{({\circ}) \times \id} & M \times M
+    \ar[d]^{({\circ})} \\
+    M \times M \ar[r]_{({\circ})} & M
+  } \]
+  \medskip
+  \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
+    & M \\
+    M \ar[r]\ar[ru] & M \times M \ar[u] & \ar[l]\ar[lu] M
+  } \]
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Monoidhomomorphismen}
+  Eine Abbildung~$\varphi : M \to N$ zwischen Monoiden heißt genau dann
+  \hil{Monoidhomomorphismus}, wenn
+  \begin{itemize}
+    \item $\varphi(1) = 1$ und
+    \item $\varphi(x \circ y) = \varphi(x) \circ \varphi(y)$ für alle~$x,y \in M$.
+  \end{itemize}
+
+  \begin{center}
+    \hil{Beispiele:} \\
+    \mintinline{haskell}{length :: [a] -> Int} \\
+    \mintinline{haskell}{sum :: [Int] -> Int} \\[1em]
+    \hil{Nichtbeispiele:} \\
+    \mintinline{haskell}{reverse :: [a] -> [a]} \\
+    \mintinline{haskell}{head :: [a] -> a} \\
+  \end{center}
+\end{frame}
+
+\subsection{Nutzen}
+
+\begin{frame}\frametitle{Wozu?}
+  \begin{itemize}
+    \item Allgegenwärtigkeit
+    \item Gemeinsamkeite und Unterschiede
+    \item Generische Beweise
+    \item Generische Algorithmen
+  \end{itemize}
+\end{frame}
+
+\note{
+  \begin{itemize}
+    \item Monoide gibt es überall.
+    \item Das Monoidkonzept hilft, Gemeinsamkeiten und Unterschiede
+    zu erkennen und wertschätzen zu können.
+    \item Man kann generische Beweise für beliebige Monoide führen.
+    \item Man kann generische Algorithmen mit beliebigen Monoiden basteln.
+  \end{itemize}
+}
+
+
+\subsection{Freie Monoide}
+
+\begin{frame}\frametitle{Freie Monoide}
+  Gegeben eine Menge~$X$ ohne weitere Struktur.
+  Wie können wir auf möglichst ökonomische Art und Weise daraus einen
+  Monoid~$F(X)$ gewinnen?
+  \medskip
+  \pause
+
+  Spoiler: Der \hil{freie Monoid}~$F(X)$ auf~$X$ ist der Monoid der
+  \hil{Listen} mit Elementen aus~$X$.
+  \medskip
+  \pause
+  % auf der Konsole: Erzeuger passen und Relationen passen.
+
+  Essenz der Freiheit: Jede beliebige Abbildung~$X \to M$ in einen Monoid~$M$
+  stiftet genau einen Homomorphismus $F(X) \to M$.
+  \[ \xymatrix{
+    X \ar[rr] \ar[rd] && M \\
+    & F(X) \ar@{-->}[ru]
+  } \]
+  \pause
+
+  Der Funktor~$F : \mathrm{Set} \to \mathrm{Mon}$ ist \hil{linksadjungiert} zum
+  Vergissfunktor~$\mathrm{Mon} \to \mathrm{Set}$.
+\end{frame}
+
+\note{
+  In~$F(X)$ sollen neben den Elementen aus~$X$ nur so viele
+  weitere Elemente enthalten sein, sodass man eine Verknüpfung~$({\circ})$ und
+  ein Einselement definieren kann.
+
+  In~$F(X)$ sollen nur die Rechenregeln gelten, die von den Monoidaxiomen
+  gefordert werden.
+
+  Die universelle Eigenschaft kann man schön in Haskell demonstrieren.
+  \inputminted{haskell}{images/universal-property-free-monoid.hs}
+
+  Wenn man tiefer in das Thema einsteigt, erkennt man, dass endliche Listen
+  noch nicht der Weisheit letzter Schluss sind:
+  \url{http://comonad.com/reader/2015/free-monoids-in-haskell/}
+}
+
+
+\section{Funktoren als Container}
+
+\begin{frame}[fragile]\frametitle{Funktoren}
+  Ein \hil{Funktor}~$F : \C \to \D$ zwischen Kategorien~$\C$ und~$\D$ ordnet
+  \begin{itemize}
+    \item jedem Objekt~$X \in \C$ ein Objekt~$F(X) \in \D$ und
+    \item jedem Morphismus~$f : X \to Y$ in~$\C$ ein Morphismus~$F(f) : F(X)
+    \to F(Y)$ in~$\D$ zu,
+  \end{itemize}
+  sodass die \hil{Funktoraxiome} erfüllt sind:
+  \begin{itemize}
+    \item $F(\id_X) = \id_{F(X)}$,
+    \item $F(f \circ g) = F(f) \circ F(g)$.
+  \end{itemize}
+  \vfill
+
+  In Haskell kommen Funktoren~$\Hask \to \Hask$ vor:
+  \begin{minted}{haskell}
+class Functor f where
+    fmap :: (a -> b) -> (f a -> f b)
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Beispiele für Funktoren}
+  \vspace*{-1em}
+  \small
+  \begin{minted}{haskell}
+class Functor f where
+    fmap :: (a -> b) -> (f a -> f b)
+
+instance Functor [] where fmap f = map f
+
+data Maybe a = Nothing | Just a
+instance Functor Maybe where
+    fmap f Nothing  = Nothing
+    fmap f (Just x) = Just (f x)
+
+data Id a = MkId a
+instance Functor Id where
+    fmap f (MkId x) = MkId (f x)
+
+data Pair a = MkPair a a
+instance Functor Pair where
+    fmap f (MkPair x y) = MkPair (f x) (f y)
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Funktoren als Container}
+  Ist~\texttt{f} ein Funktor, so stellen wir uns den
+  Typ~\texttt{f a} als einen Typ von Containern von Werten vom
+  Typ~\texttt{a} vor.
+
+  Je nach Funktor haben die Container eine andere Form.
+\end{frame}
+
+\note{
+  Die Vorstellung ist aus folgendem Grund plausibel: Aus einer
+  Funktion~\texttt{a -> b} können wir mit \texttt{fmap} eine Funktion~\texttt{f
+  a -> f b} machen. Also stecken wohl in einem Wert vom Typ~\texttt{f a}
+  irgendwelche Werte vom Typ~\texttt{a}, die mit der gelifteten Funktion dann
+  in Werte vom Typ~\texttt{b} umgewandelt werden.
+}
+
+
+\section{Monaden}
+
+\begin{frame}[fragile]\frametitle{Monaden}
+  Eine \hil{Monade} besteht aus
+  \begin{itemize}
+    \item einem Funktor~$M$,
+    \item einer natürlichen Transformation~$M \circ M \Rightarrow M$ und
+    \item einer natürlichen Transformation~$\Id \Rightarrow M$,
+  \end{itemize}
+  sodass die \hil{Monadenaxiome} gelten.
+  \pause
+
+  \begin{minted}{haskell}
+class (Functor m) => Monad m where
+    join   :: m (m a) -> m a
+    return :: a -> m a
+  \end{minted}
+
+  \begin{columns}
+    \begin{column}{0.42\textwidth}
+      \begin{block}{Listen}
+        \scriptsize
+        \begin{minted}{haskell}
+concat    :: [[a]] -> [a]
+singleton :: a     -> [a]
+        \end{minted}
+      \end{block}
+    \end{column}
+    \begin{column}{0.62\textwidth}
+      \begin{block}{Maybe}
+        \scriptsize
+        \begin{minted}{haskell}
+join :: Maybe (Maybe a) -> Maybe a
+Just :: a -> Maybe a
+        \end{minted}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \medskip
+  Kein Beispiel: \mintinline{haskell}{Pair} von eben.
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Weitere Beispiele}
+  \begin{minted}{haskell}
+class (Functor m) => Monad m where
+    join   :: m (m a) -> m a
+    return :: a -> m a
+  \end{minted}
+
+  \begin{block}{Reader}
+    \scriptsize
+    \begin{minted}{haskell}
+type Reader env a = env -> a
+
+instance Functor Reader where
+    fmap f k = f . k
+
+instance Monad Reader where
+    return x = \_   -> x
+    join   k = \env -> k env env
+    \end{minted}
+  \end{block}
+
+  \begin{block}{State}
+    \scriptsize
+    \begin{minted}{haskell}
+type State s a = s -> (a,s)
+
+instance Monad State where
+    return x = \s -> (x,s)
+    join   k = \s -> let (k',s') = k s in k' s'
+    \end{minted}
+  \end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Die Monadenaxiome}
+  {\scriptsize
+  Sprechweise: Ein Wert vom Typ~\texttt{m (m (m a))} ist ein (äußerer) Container von
+  (inneren) Containern von (ganz inneren) Containern von Werten vom
+  Typ~\texttt{a}.\par}
+
+  \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
+    M \circ M \circ M \ar[r]^{\text{innen join}} \ar[d]_{\text{außen join}} & M \circ M
+    \ar[d]^{\text{join}} \\
+    M \times M \ar[r]_{\text{join}} & M
+  } \]
+  \medskip
+  \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
+    & M \\
+    M \ar[r]_{\text{return}}\ar[ru] & M \circ M \ar[u]_{\text{join}} & \ar[l]^{\text{innen
+    return}}\ar[lu] M
+  } \]
+\end{frame}
 
 \end{document}
 
