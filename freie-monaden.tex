@@ -1,0 +1,64 @@
+% Kompilieren mit: TEXINPUTS=minted/source: xelatex -shell-escape %
+\documentclass[12pt,compress,ngerman,utf8,t]{beamer}
+\usepackage[ngerman]{babel}
+\usepackage{comment}
+\usepackage{minted}
+\setminted{linenos}
+\usepackage{wasysym}
+\usepackage[protrusion=true,expansion=false]{microtype}
+
+\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
+\DeclareMathSymbol{\varheart}{\mathalpha}{extraup}{86}
+\DeclareMathSymbol{\vardiamond}{\mathalpha}{extraup}{87}
+
+\title{\smiley{} Freie Monaden \smiley}
+\author[Augsburger Curry Club]{
+  \includegraphics[scale=0.1]{images/a-monad-is-just} \\\ \\
+  Ingo Blechschmidt \\ \scriptsize\texttt{iblech@speicherleck.de}}
+\date[2015-09-10]{\vspace*{-1.5em}\scriptsize Augsburger Curry-Club \\ 10. September 2015}
+
+\usetheme{Warsaw}
+
+\useinnertheme{rectangles}
+
+\usecolortheme{seahorse}
+\definecolor{mypurple}{RGB}{150,0,255}
+\setbeamercolor{structure}{fg=mypurple}
+
+\usefonttheme{serif}
+\usepackage{libertine}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+\setbeamertemplate{title page}[default][colsep=-1bp,rounded=false,shadow=false]
+\setbeamertemplate{frametitle}[default][colsep=-2bp,rounded=false,shadow=false,center]
+
+\newcommand*\oldmacro{}%
+\let\oldmacro\insertshorttitle%
+\renewcommand*\insertshorttitle{%
+  \oldmacro\hfill\insertframenumber\,/\,\inserttotalframenumber\hfill}
+
+\newcommand{\hil}[1]{{\usebeamercolor[fg]{item}{\textbf{#1}}}}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\end{document}
+
+Monoide
+* Definition und Beispiele
+* Nutzen: Gemeinsamkeiten, generische Algorithmen, ...
+* Freie Monoide: Ökonomieprinzip, universelle Eigenschaft
+
+Funktoren als Container
+
+Monaden
+* Monaden als Container, die eine Art "join" unterstützen
+* Monadenaxiome (mit Gegenüberstellung Set vs. End(Hask))
+
+Freie Monaden
+* Herleitung/Definition
+* Universelle Eigenschaft
+* Ausblick: Performanceprobleme
