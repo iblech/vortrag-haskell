@@ -94,13 +94,13 @@
   \begin{itemize}
     \item einer Menge~$M$,
     \item einer Abbildung~$({\circ}) : M \times M \to M$ und
-    \item einem ausgezeichneten Element~$1 \in M$,
+    \item einem ausgezeichneten Element~$e \in M$,
   \end{itemize}
   sodass die \hil{Monoidaxiome} gelten: Für alle~$x,y,z \in M$
   \begin{itemize}
     \item $x \circ (y \circ z) = (x \circ y) \circ z$,
-    \item $1 \circ x = x$,
-    \item $x \circ 1 = x$.
+    \item $e \circ x = x$,
+    \item $x \circ e = x$.
   \end{itemize}
 
   \visible<2>{\begin{center}
@@ -129,6 +129,28 @@ class Monoid m where
   \end{columns}
 \end{frame}
 
+\note{
+  \begin{itemize}
+    \justifying
+    \item Die natürlichen Zahlen bilden mit der Addition als Verknüpfung und der
+    Null als ausgezeichnetes Element einen Monoid.
+    \item Die natürlichen Zahlen bilden mit der Multiplikation als Verknüpfung
+    und der Eins als ausgezeichnetes Element einen Monoid.
+    \item Die Menge~$X^\star$ der endlichen Listen mit Einträgen aus einer
+    Menge~$X$ (in Haskell also sowas wie~\texttt{[X]}, wobei da auch unendliche
+    und partiell definierte Listen dabei sind) bildet mit der Konkatenation von
+    Listen als Verknüpfung und der leeren Liste als ausgezeichnetes Element
+    einen Monoid.
+    \item Ist~$X$ irgendeine Menge, so bildet die Menge aller Abbildungen~$X
+    \to X$ mit der Abbildungskomposition als Verknüpfung und der
+    Identitätsabbildung als ausgezeichnetes Element einen Monoid.
+    \item Die natürlichen Zahlen bilden mit der Subtraktionen keinen Monoid, da
+    die Differenz zweier natürlicher Zahlen nicht immer wieder eine natürliche
+    Zahl ist. Auch mit den ganzen Zahlen klappt es nicht, da die Subtraktion
+    nicht assoziativ ist: $1 - (2 - 3) \neq (1 - 2) - 3$.
+  \end{itemize}
+}
+
 \begin{frame}\frametitle{Axiome in Diagrammform}
   \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
     M \times M \times M \ar[r]^{\id \times ({\circ})} \ar[d]_{({\circ}) \times \id} & M \times M
@@ -142,11 +164,68 @@ class Monoid m where
   } \]
 \end{frame}
 
+\note{\justifying
+  Beide Diagramme sind Diagramme in der Kategorie der Mengen, d.\,h. die
+  beteiligten Objekte~$M$, $M \times M$ und~$M \times M \times M$ sind Mengen
+  und die vorkommenden Pfeile sind Abbildungen. Wer möchte, kann aber auch
+  vorgeben, dass~$M$ ein Typ in Haskell ist (statt~$M \times M$ muss man
+  dann~\texttt{(M,M)} denken) und dass die Pfeile Haskell-Funktionen sind.
+  \medskip
+
+  Das obere Diagramm ist wie folgt zu lesen.
+  \medskip
+
+  Ein beliebiges Element aus~$M \times M \times M$ hat die Form~$(x,y,z)$,
+  wobei~$x$, $y$ und~$z$ irgendwelche Elemente aus~$M$ sind. Bilden wir ein
+  solches Element nach rechts ab, so erhalten wir~$(x,y \circ z)$. Bilden wir
+  dieses weiter nach unten ab, so erhalten wir~$x \circ (y \circ z)$.
+  \medskip
+
+  Wir können aber auch den anderen Weg gehen: Bilden wir~$(x,y,z)$ erst nach
+  unten ab, so erhalten wir~$(x \circ y,z)$. Bilden wir dieses Element weiter
+  nach rechts ab, so erhalten wir~$(x \circ y) \circ z$.
+  \medskip
+
+  Fazit: Genau dann \emph{kommutiert das Diagramm} -- das heißt beide Wege
+  liefern gleiche Ergebnisse -- wenn die Rechenregel $x \circ (y \circ z) = (x
+  \circ y) \circ z$ für alle Elemente~$x,y,z \in M$ erfüllt ist.
+  \par
+}
+
+\note{\justifying
+  Die Pfeile auf dem unteren Diagramm sind nicht beschriftet. Hier die
+  Erklärung, was gemeint ist.
+  \medskip
+
+  Wir betrachten dazu ein beliebiges Element~$x \in M$ (untere linke Ecke im
+  Diagramm). Nach rechts abgebildet erhalten wir~$(e,x)$. Dieses Element weiter
+  nach oben abgebildet ergibt~$e \circ x$.
+  \medskip
+
+  Der direkte Weg mit dem Nordost verlaufenden Pfeil ergibt~$x$.
+  \medskip
+
+  Das linke Teildreieck kommutiert also genau dann, wenn die Rechenregel~$e
+  \circ x = x$ für alle~$x \in M$ erfüllt ist. Analog kommutiert das rechte
+  Teildreieck genau dann, wenn~$x \circ e = x$ für alle~$x \in M$.
+  \par
+}
+
+\note{\justifying
+  Wieso der Umstand mit der Diagrammform der Axiome? Das hat verschiedene
+  schwache Gründe (es ist cool), aber auch einen starken inhaltlichen: Ein
+  Diagramm dieser Art kann man nicht nur in der Kategorie interpretieren, in
+  der es ursprünglich gedacht war (also der Kategorie der Mengen). Man kann es
+  auch in anderen Kategorien interpretieren. Wählt man dazu speziell eine
+  Kategorie von Endofunktoren, so erhält man die Definition einer Monade.
+  \par
+}
+
 \begin{frame}[fragile]\frametitle{Monoidhomomorphismen}
   Eine Abbildung~$\varphi : M \to N$ zwischen Monoiden heißt genau dann
   \hil{Monoidhomomorphismus}, wenn
   \begin{itemize}
-    \item $\varphi(1) = 1$ und
+    \item $\varphi(e) = e$ und
     \item $\varphi(x \circ y) = \varphi(x) \circ \varphi(y)$ für alle~$x,y \in M$.
   \end{itemize}
 
@@ -159,6 +238,39 @@ class Monoid m where
     \mintinline{haskell}{head :: [a] -> a} \\
   \end{center}
 \end{frame}
+
+\note{\scriptsize
+  \begin{itemize}
+    \justifying
+    \item Es gelten die Rechenregeln
+    \begin{align*}
+      \texttt{length []} &= \texttt{0}, \\
+      \texttt{length (xs ++ ys)} &= \texttt{length xs + length ys}
+    \end{align*}
+    für alle Listen~\texttt{xs} und~\texttt{ys}.
+    Das ist der Grund, wieso die Längenfunktion ein Monoidhomomorphismus ist.
+
+    Achtung: Bevor man eine solche Aussage trifft, muss man eigentlich genauer
+    spezifizieren, welche Monoidstrukturen man in Quelle und Ziel meint. Auf
+    dem Typ~\texttt{[a]} soll die Monoidverknüpfung durch Konkatenation gegeben
+    sein, auf dem Typ~\texttt{Int} durch Addition.
+
+    \item Es gilt die Rechenregel
+    \begin{equation*}
+      \texttt{sum (xs ++ ys) = sum xs + sum ys}
+    \end{equation*}
+    für alle Listen~\texttt{xs} und~\texttt{ys} von Ints.
+    Das ist die halbe Miete zur Begründung, wieso~\texttt{sum} ein
+    Monoidhomomorphismus ist.
+
+    \item Die Rechenregel
+    \begin{equation*}
+      \texttt{reverse (xs ++ ys) = reverse xs ++ reverse ys}.
+    \end{equation*}
+    gilt \emph{nicht} für alle Listen~\texttt{xs} und~\texttt{ys}. Daher
+    ist~\texttt{reverse} kein Monoidhomomorphismus.
+  \end{itemize}
+}
 
 \subsection{Nutzen}
 
@@ -186,13 +298,13 @@ class Monoid m where
 
 \begin{frame}\frametitle{Freie Monoide}
   Gegeben eine Menge~$X$ ohne weitere Struktur.
-  Wie können wir auf möglichst ökonomische Art und Weise daraus einen
+  Wie können wir auf möglichst unspektakuläre Art und Weise daraus einen
   Monoid~$F(X)$ gewinnen?
   \medskip
   \pause
 
-  Spoiler: Der \hil{freie Monoid}~$F(X)$ auf~$X$ ist der Monoid der
-  \hil{Listen} mit Elementen aus~$X$.
+  Spoiler: Der gesuchte \hil{freie Monoid}~$F(X)$ auf~$X$ ist der Monoid der
+  endlichen \hil{Listen} mit Elementen aus~$X$.
   \medskip
   \pause
   % auf der Konsole: Erzeuger passen und Relationen passen.
@@ -200,14 +312,85 @@ class Monoid m where
   Essenz der Freiheit: Jede beliebige Abbildung~$X \to M$ in einen Monoid~$M$
   stiftet genau einen Homomorphismus $F(X) \to M$.
   \[ \xymatrix{
-    X \ar[rr] \ar[rd] && M \\
-    & F(X) \ar@{-->}[ru]
+    X \ar[rr]^{\texttt{phi}} \ar[rd]_{\texttt{inj}} && M \\
+    & F(X) \ar@{-->}[ru]_{\texttt{cata phi}}
   } \]
 \end{frame}
 
+\note{\justifying
+  In~$F(X)$ sollen neben den Elementen aus~$X$ gerade nur so viele
+  weitere Elemente enthalten sein, sodass man eine Verknüpfung~$({\circ})$ und
+  ein Einselement definieren kann.
+  Es soll sich also jedes Element aus~$F(X)$ über die Monoidoperationen aus
+  denen von~$X$ bilden lassen.
+  \medskip
+
+  In~$F(X)$ sollen nur die Rechenregeln gelten, die von den Monoidaxiomen
+  gefordert werden.
+  \medskip
+
+  Die nach "`Essenz der Freiheit"' angegebene Forderung heißt auch
+  \emph{universelle Eigenschaft}. Man kann sie schön in Haskell demonstrieren:
+  \inputminted{haskell}{images/universal-property-free-monoid.hs}
+
+  Ist~\texttt{phi} irgendeine Abbildung~\texttt{a -> m}, so ist~\texttt{cata
+  phi} eine Abbildung~\texttt{[a] -> m}. Diese ist nicht nur irgendeine
+  Abbildung, sondern wie gefordert ein Monoidhomomorphismus. Und mehr noch:
+  Das Diagramm kommutiert tatsächlich, das heißt~\texttt{cata phi}
+  und~\texttt{phi} haben in folgendem präzisen Sinn etwas miteinander zu
+  tun: \texttt{cata phi . inj = phi}. Dabei ist~\texttt{inj :: a -> [a]} die
+  Abbildung mit~\texttt{inj x = [x]}.
+  \par
+}
+
+\note{\justifying
+  Unsere Definition von "`unspektakulär"' soll sein: Alle Elemente in~$F(X)$
+  setzen sich mit den Monoidoperationen aus denen aus~$X$ zusammen, und
+  in~$F(X)$ gelten nur die Rechenregeln, die von den Monoidaxiomen erzwungen
+  werden, aber keine weiteren.
+  \medskip
+
+  Das ist bei der Konstruktion von~$F(X)$ als Monoid der endlichen Listen
+  über~$X$ auch in der Tat der Fall: Jede endliche Liste mit Einträgen aus~$X$
+  ergibt sich als wiederholte Verknüpfung (Konkatenation) von Listen der
+  Form~\texttt{inj x} mit~\texttt{x} aus~$X$. Und willkürliche Rechenregeln
+  wie~\texttt{[a,b] ++ [b,a] == [c]} gelten, wie es auch sein soll,
+  \emph{nicht}.
+  \medskip
+
+  Wieso fängt die universelle Eigenschaft genau diese Definition von
+  Unspektakularität ein? Wenn man zu~$F(X)$ noch weitere Elemente hinzufügen
+  würde (zum Beispiel unendliche Listen), so wird es mehrere oder keinen
+  Kandidaten für~\texttt{cata phi} geben, aber nicht mehr nur einen. Genauso
+  wenn man in~$F(X)$ durch Identifikation gewisser Elemente weitere
+  Rechenregeln erzwingen würde.
+  \par
+}
+
+\note{\justifying
+  Wenn man tiefer in das Thema einsteigt, erkennt man, dass endliche Listen
+  noch nicht der Weisheit letzter Schluss sind:
+  \url{http://comonad.com/reader/2015/free-monoids-in-haskell/}
+  \medskip
+
+  Kurz zusammengefasst: Es stimmt schon, dass der Monoid der endlichen Listen
+  über~$X$ der freie Monoid auf~$X$ ist, sofern man als Basiskategorie in der
+  Kategorie der Mengen arbeitet. Wenn man dagegen in~$\Hask$ arbeitet, der
+  Kategorie der Haskell-Typen und -Funktionen, so benötigt man eine leicht
+  andere Konstruktion.
+  \medskip
+
+  Fun Fact: Die in dem Blog-Artikel angegebene Konstruktion ergibt sich
+  \emph{unmittelbar} aus der universellen Eigenschaft. Es ist keine Überlegung
+  und manuelle Suche nach einem geeigneten Kandidaten für~$F(X)$ nötig.
+  (Bemerkung für Kategorientheorie-Fans: Das es so einfach geht, liegt an einer
+  gewissen Vollständigkeitseigenschaft von~$\Hask$.)
+  \par
+}
+
 \begin{frame}\frametitle{Freie Monoide}
   \begin{center}\Large
-    Freie Monaden sind \ldots
+    Freie Monoide sind \ldots
 
     \only<1>{\ldots{} frei wie in Freibier?}%
     \only<2->{\hcancel{\ldots{} frei wie in Freibier?}{0pt}{3pt}{0pt}{-2pt}}
@@ -223,24 +406,7 @@ class Monoid m where
   zum Vergissfunktor~$\mathrm{Mon} \to \mathrm{Set}$.}
 \end{frame}
 
-\note{\justifying
-  In~$F(X)$ sollen neben den Elementen aus~$X$ nur so viele
-  weitere Elemente enthalten sein, sodass man eine Verknüpfung~$({\circ})$ und
-  ein Einselement definieren kann.
-  \medskip
-
-  In~$F(X)$ sollen nur die Rechenregeln gelten, die von den Monoidaxiomen
-  gefordert werden.
-  \medskip
-
-  Die universelle Eigenschaft kann man schön in Haskell demonstrieren:
-  \inputminted{haskell}{images/universal-property-free-monoid.hs}
-
-  Wenn man tiefer in das Thema einsteigt, erkennt man, dass endliche Listen
-  noch nicht der Weisheit letzter Schluss sind:
-  \url{http://comonad.com/reader/2015/free-monoids-in-haskell/}
-  \par
-}
+\end{document}
 
 
 \section{Funktoren}
@@ -317,6 +483,14 @@ instance Functor Pair where
 \section{Monaden}
 
 \subsection{Definition und Beispiele}
+
+% Vorher: Gegenüberstellung Set und End(Hask).
+%
+% Menge M & Endofunktor M
+% Abbildung & natürliche Transformation
+% M x M & M . M
+% nur vordere Komponente ändern & nur äußere Schicht ändern
+% ...
 
 \begin{frame}[fragile]\frametitle{Monaden}
   Eine \hil{Monade} besteht aus
