@@ -1,4 +1,4 @@
-% Kompilieren mit: TEXINPUTS=minted/source: xelatex -shell-escape %
+% Kompilieren mit: TEXINPUTS=minted/source: pdflatex -shell-escape %
 \documentclass[12pt,compress,ngerman,utf8,t]{beamer}
 \usepackage[ngerman]{babel}
 \usepackage{ragged2e}
@@ -16,7 +16,7 @@
 
 \title[Freie Monaden]{\smiley{} Freie Monaden \smiley}
 \author[Augsburger Curry Club]{
-  \includegraphics[scale=0.1]{images/a-monad-is-just} \\\ \\
+  \includegraphics[scale=0.1]{images/a-monad-is-just-1} \\\ \\
   Ingo Blechschmidt \\[0.1em] \scriptsize\texttt{<iblech@speicherleck.de>}}
 \date[2015-09-10]{\vspace*{-1.5em}\scriptsize Augsburger Curry-Club \\ 10. September 2015}
 
@@ -74,6 +74,15 @@
     \insertframenumber\,/\,\inserttotalframenumber\hspace*{1ex}
   \end{beamercolorbox}%
   \vskip0pt%
+}
+
+\newcommand{\backupstart}{
+  \newcounter{framenumberpreappendix}
+  \setcounter{framenumberpreappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+  \addtocounter{framenumberpreappendix}{-\value{framenumber}}
+  \addtocounter{framenumber}{\value{framenumberpreappendix}}
 }
 
 \setbeameroption{show notes}
@@ -429,6 +438,8 @@ class Monoid m where
   \begin{minted}{haskell}
 class Functor f where
     fmap :: (a -> b) -> (f a -> f b)
+-- fmap id      = id
+-- fmap (g . f) = fmap g . fmap f
   \end{minted}
 \end{frame}
 
@@ -500,6 +511,26 @@ data Pair  a = MkPair a a
 % M x M & M . M
 % nur vordere Komponente ändern & nur äußere Schicht ändern
 % ...
+
+\begin{frame}\frametitle{Monoidale Kategorien}
+  \small
+  \begin{tabular}{@{}r|l@{}}
+    $\mathrm{Set}$ & $\mathrm{End}(\Hask)$ \\\hline
+    Menge $M$ & Funktor $M$ \\
+    Abbildung $M \to N$ & natürliche Transformation $\forall a. M a \to N a$ \\
+    $M \times N$ & $M \circ N$ mit $(M \circ N) a = M (N a)$ \\
+    nur linke Komponente ändern & nur äußere Schicht ändern \\
+    nur rechte Komponente ändern & nur innere Schicht ändern \\
+    \pause
+    Monoid & Monade
+  \end{tabular}
+
+  \begin{center}
+    \includegraphics[height=3.3cm]{images/a-monad-is-just-4}
+    \qquad
+    \includegraphics[height=3.3cm]{images/a-monad-is-just-5}
+  \end{center}
+\end{frame}
 
 \begin{frame}[fragile]\frametitle{Monaden}
   Eine \hil{Monade} besteht aus
@@ -645,6 +676,22 @@ can :: (Functor f, Monad m)
     werden, etwa zum Koprodukt zweier Monaden.
   \end{itemize}
 \end{frame}
+
+\backupstart
+\begin{frame}[plain]
+  \begin{center}
+  \includegraphics[scale=0.55]{images/a-monad-is-just-2}
+  \end{center}
+
+  \small\justifying
+  Nach der Schule trifft Barbie Paul und Peter in der Bibliothek. "`Funktionale
+  Programmierung ist fantastisch!"', freut sich Barbie. "`Ich weiß nicht", sagt
+  Paul, "`was zum Teufel ist eine Monade noch mal?"'. "`Eine Monade ist einfach
+  ein Monoid in einer Kategorie von Endofunktoren -- wo liegt das Problem?"',
+  antwortet Barbie.
+  \par
+\end{frame}
+\backupend
 
 \end{document}
 
