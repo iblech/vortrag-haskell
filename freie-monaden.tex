@@ -406,8 +406,6 @@ class Monoid m where
   zum Vergissfunktor~$\mathrm{Mon} \to \mathrm{Set}$.}
 \end{frame}
 
-\end{document}
-
 
 \section{Funktoren}
 
@@ -468,6 +466,17 @@ instance Functor Pair where
   \medskip
 
   Je nach Funktor haben die Container eine andere Form.
+
+  \vfill
+  \begin{minted}{haskell}
+class Functor f where
+    fmap :: (a -> b) -> (f a -> f b)
+
+data List  a = Nil     | Cons a [a]
+data Maybe a = Nothing | Just a
+data Id    a = MkId   a
+data Pair  a = MkPair a a
+  \end{minted}
 \end{frame}
 
 \note{\justifying
