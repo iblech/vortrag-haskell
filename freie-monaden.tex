@@ -19,6 +19,7 @@
   \includegraphics[scale=0.1]{images/a-monad-is-just-1} \\\ \\
   Ingo Blechschmidt \\[0.1em] \scriptsize\texttt{<iblech@speicherleck.de>}}
 \date[2015-09-10]{\vspace*{-1.5em}\scriptsize Augsburger Curry-Club \\ 10. September 2015}
+% XXX: Zweites Datum fehlt noch.
 
 \usetheme{Warsaw}
 
@@ -443,6 +444,12 @@ class Functor f where
   \end{minted}
 \end{frame}
 
+\note{\justifying
+  Fun Fact am Rande: Ein Theorem für lau garantiert, dass das zweite
+  Funktoraxiom aus dem ersten folgt.
+  \par
+}
+
 \begin{frame}[fragile]\frametitle{Beispiele für Funktoren}
   \vspace*{-1em}
   \small
@@ -487,6 +494,8 @@ data List  a = Nil     | Cons a [a]
 data Maybe a = Nothing | Just a
 data Id    a = MkId   a
 data Pair  a = MkPair a a
+data Unit  a = MkUnit
+data Void  a
   \end{minted}
 \end{frame}
 
@@ -504,13 +513,20 @@ data Pair  a = MkPair a a
 
 \subsection{Definition und Beispiele}
 
-% Vorher: Gegenüberstellung Set und End(Hask).
-%
-% Menge M & Endofunktor M
-% Abbildung & natürliche Transformation
-% M x M & M . M
-% nur vordere Komponente ändern & nur äußere Schicht ändern
-% ...
+\note{\justifying
+  Im Folgenden ist~$\Hask$ eine geeignete Kategorie von Haskell-Typen und
+  -Funktionen. Die Objekte sollen also Haskell-Typen sein, und Morphismen
+  zwischen je zwei Typen sollen durch Haskell-Funktionen des entsprechenden
+  Typs gegeben sein.
+  \medskip
+
+  Die Kategorie~$\mathrm{End}(\Hask)$ ist die Kategorie der
+  \emph{Endofunktoren} von~$\Hask$. Deren Objekte sind Funktoren~$\Hask \to
+  \Hask$ (also das, was man in Haskell gewöhnlich als "`Funktor"' bezeichnet)
+  und deren Morphismen sind natürliche Transformationen (siehe übernächste
+  Folie).
+  \par
+}
 
 \begin{frame}\frametitle{Monoidale Kategorien}
   \small
@@ -522,7 +538,7 @@ data Pair  a = MkPair a a
     nur linke Komponente ändern & nur äußere Schicht ändern \\
     nur rechte Komponente ändern & nur innere Schicht ändern \\
     \pause
-    Monoid & Monade
+    \hil{Monoid} & \hil{Monade}
   \end{tabular}
 
   \begin{center}
@@ -531,6 +547,56 @@ data Pair  a = MkPair a a
     \includegraphics[height=3.3cm]{images/a-monad-is-just-5}
   \end{center}
 \end{frame}
+
+\note{\justifying
+  In der Kategorientheorie ist eine natürliche Transformation~$\eta : F
+  \Rightarrow G$ zwischen zwei Funktoren~$F, G : \C \to \D$ eine Familie von
+  Morphismen~$\eta_X : F(X) \to G(X)$ (ein Morphismus für jedes Objekt~$X \in
+  \C$), sodass für jeden Morphismus~$f : X \to Y$ in~$\C$ das Diagramm
+  \[ \xymatrix{
+    F(X) \ar[r]^{\eta_X} \ar[d]_{F(f)} & G(X) \ar[d]^{G(f)} \\
+    F(Y) \ar[r]_{\eta_Y} & G(Y)
+  } \]
+  kommutiert.\par
+}
+
+\note{\justifying
+  Spezialisiert auf den Spezialfall~$\C = \D = \Hask$ [und ein externes Hom in
+  ein internes verwandelt, was auch immer das heißt] ist eine natürliche
+  Transformation~$\texttt{eta} : F \Rightarrow G$ eine polymorphe
+  Haskell-Funktion
+  \begin{center}\inputminted{haskell}{images/natural-transformation.hs}\end{center}
+  mit
+  \begin{center}\inputminted{haskell}{images/natural-transformation-law.hs}\end{center}
+  für alle Funktionen~\texttt{f :: a -> b}.
+  \medskip
+
+  Ein Theorem für lau garantiert aber, dass jede Funktion~\texttt{eta} des
+  richtigen Typs automatisch diese Kompatibilitätsbedingung mit dem
+  \texttt{fmap} von~\texttt{F} bzw. dem von~\texttt{G} erfüllt, weswegen man
+  diese Bedingung nicht explizit fordern muss. (Vereinfacht gesprochen liegt
+  der Grund dafür darin, dass eine Haskell-Funktion nicht in Abhängigkeit der
+  konkreten Instanz der Typvariablen~\texttt{a} ihr Verhalten ändern kann.)
+  \par
+}
+
+\note{\justifying
+  Die Kategorien~$\mathrm{Set}$ und~$\mathrm{End}(\Hask)$ können beide mit
+  einer \emph{monoidalen Struktur} versehen werden. In der Kategorie der Mengen
+  ist das die Operation~$(M,N) \mapsto M \times N$. In der Kategorie der
+  Endofunktoren von~$\Hask$ ist es~$(M,N) \mapsto M \circ N$.
+  \medskip
+
+  In jeder monoidalen Kategorie (also einer Kategorie zusammen mit einer
+  monoidalen Struktur) kann man von \emph{Monoid-Objekten} sprechen.
+  Monoid-Objekte in~$\mathrm{Set}$ sind einfach ganz gewöhnliche Monoide.
+  Monoid-Objekte in~$\mathrm{End}(\Hask)$ sind Monaden.
+  \medskip
+
+  Siehe auch: \\
+  \url{http://blog.sigfpe.com/2008/11/from-monoids-to-monads.html}.
+  \par
+}
 
 \begin{frame}[fragile]\frametitle{Monaden}
   Eine \hil{Monade} besteht aus
@@ -568,11 +634,19 @@ Just :: a -> Maybe a
       \end{block}
     \end{column}
   \end{columns}
-  \medskip
-  Kein Beispiel: \mintinline{haskell}{Pair} von eben.
 \end{frame}
 
+\note{\justifying
+  Anschauliche Interpretation: Monaden sind spezielle Containertypen, die zwei
+  Zusatzfähigkeiten haben: Ein Container von Containern von Werten soll man zu
+  einem einfachen Container von Werten "`flatten"' können (\texttt{join}), und
+  einen einzelnen Wert soll man in einen Container packen können
+  (\texttt{return}).
+  \par
+}
+
 \begin{frame}[fragile]\frametitle{Weitere Beispiele}
+  \vspace*{-1em}
   \begin{minted}{haskell}
 class (Functor m) => Monad m where
     join   :: m (m a) -> m a
@@ -605,6 +679,13 @@ instance Monad State where
   \end{block}
 \end{frame}
 
+\note{\justifying
+  Auch \texttt{State} und \texttt{Reader} passen in die "`Container mit
+  Zusatzfähigkeit"'-Intuition, wenn man sich hinreichend verbiegt. Schaffst du
+  das?
+  \par
+}
+
 
 \subsection{"`Monoid in einer Kategorie von Endofunktoren"'}
 
@@ -617,7 +698,7 @@ instance Monad State where
   \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
     M \circ M \circ M \ar@{=>}[r]^{\text{innen join}} \ar@{=>}[d]_{\text{außen join}} & M \circ M
     \ar@{=>}[d]^{\text{join}} \\
-    M \times M \ar@{=>}[r]_{\text{join}} & M
+    M \circ M \ar@{=>}[r]_{\text{join}} & M
   } \]
   \medskip
   \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
@@ -627,8 +708,7 @@ instance Monad State where
   } \]
 \end{frame}
 
-% Mündlich: Wieso Pair keine Monade wird.
-% Und das Motto rezipieren.
+% Mündlich: Das Motto rezipieren.
 
 
 \section{Freie Monaden}
@@ -658,24 +738,55 @@ can :: (Functor f, Monad m)
   \inputminted{haskell}{images/definition-free-monad.hs}
 }
 
-\note{
-  \begin{itemize}
-    \item Free Void ist die Maybe-Monade.
-    \item Free Pair ist die Tree-Monade.
+\note{\justifying
+  \texttt{Free f a} ist der Typ der "`\texttt{f}-förmigen"' Bäume mit Blättern
+  vom Typ~\texttt{a}. Dabei flattened \texttt{join} einen~\texttt{f}-förmigen
+  Baum von~\texttt{f}-förmigen Bäumen von irgendwelchen Werten zu einem
+  einfachen~\texttt{f}-förmigen Baum dieser Werte.
+
+  \begin{itemize}\justifying
+    \item \texttt{Free Void} ist die \texttt{Id}-Monade.
+    \item \texttt{Free Unit} ist die \texttt{Maybe}-Monade. Hier hat jeder
+    Mutterknoten kein einziges Kind. Die Bezeichnung "`Mutterknoten"' ist also
+    etwas euphemistisch.
+    \item \texttt{Free Pair} ist die \texttt{Tree}-Monade. Hier hat jeder
+    Mutterknoten genau zwei Kinder.
+    \item \texttt{Free Id}   ist die \texttt{(Writer Nat)}-Monade. Hier hat
+    jeder Mutterknoten genau ein Kind.
   \end{itemize}
+
+  Die Listen-Monade ist übrigens nicht frei. Übungsaufgabe: Beweise das!
+  \par
 }
 
 
 \subsection{Nutzen}
 
 \begin{frame}\frametitle{Anwendungen freier Monaden}
-  \begin{itemize}
+  \begin{itemize}\justifying
     \item Viele wichtige Monaden sind frei.
-    \item Freie Monaden kapseln das "`Interpreter"'-Muster.
+    \item Freie Monaden kapseln das "`Interpreter-Muster"'.
     \item Freie Monaden können zur Konstruktion weiterer Monaden genutzt
-    werden, etwa zum Koprodukt zweier Monaden.
+    werden, etwa zum Koprodukt zweier Monaden, welches die Fähigkeiten zweier
+    gegebenen Monaden vereint.
   \end{itemize}
 \end{frame}
+
+\note{\justifying
+  Die in diesen Folien gegebene Konstruktion der freien Monade hat ein
+  Effizienzproblem -- genau wie bei der linksgeklammerten Verkettung von
+  Listen. Mit der sog. Kodichtemonade, einer speziellen Links-Kan-Erweiterung,
+  kann man das Problem lösen.
+  \medskip
+
+  Mehr zum Interpreter-Muster gibt es in einem Folgevortrag zu Effektsystemen.
+  Kurz zusammengefasst: Wenn man maßgeschneidert eine Monade konstruieren
+  möchte, welche genau einen gewissen Satz von Nebenwirkungen unterstützt, dann
+  kann man das über freie Monaden. Und noch einfacher über "`freiere
+  Monaden"' (da ist der Ausgangspunkt nur ein Typkonstruktor~\texttt{F}, der
+  \emph{kein} Funktor sein muss).
+  \par
+}
 
 \backupstart
 \begin{frame}[plain]

@@ -1,0 +1,214 @@
+Sei X die Menge { a, b, c }.
+
+Im freien Monoid über X sind dann enthalten:
+       ^
+        \
+         \
+          +--------- Monoid der endlichen Listen über X,
+                      also nicht ganz [X] in Haskell
+
+    [ a, b, b, b, a ]    -- a b b b a
+    [ ]
+
+In der freien Gruppe über X sind dann enthalten:
+
+    a b b b a
+    a^(-1) b a b
+    a a^(-1) b a b = b a b
+
+type FreeGroup x = [Either x x]
+                 = [(x, Bool)]   (aber jeweils nur mit
+                                  sozialem Vertrag mit
+                                  dem Programmier)
+
+    [ (a, False), (a, True), (b, False) ] /= [ (b,False) ]
+        Diese beide Elemente sind in den beiden Listenmodellen nicht gleich.
+        In FreeGroup x sollten sie es aber sein.
+
+In der freien abelschen Gruppe über X sind enthalten:
+
+    a b b b a = a a b b b
+    a^(-1) b a^(-1) a = a^(-1) a^(-1) a b = a^(-1) b
+    -- will man im freien Objekt nicht haben: a b b = b
+    -- nicht im freien Objekt enthalten: a b c d e f g ...
+
+type FreeAbelianGroup x = der Untertyp von (x -> Integer),
+                          wo die Funktionen nur auf
+                          endlich vielen Elementen
+                          nicht Null sind.
+-- Achtung! Diese Definition funktioniert nicht in
+-- konstruktiver Mathematik.
+
+
+
+Beispiele für natürliche Trafos:
+
+maybeToList :: Maybe a -> [a]
+maybeToList Nothing  = []
+maybeToList (Just x) = [x]
+
+eitherToMaybe :: Either e a -> Maybe a
+
+listToMaybe :: [a] -> Maybe a
+listToMaybe []    = Nothing
+listToMaybe (x:_) = Just x
+
+sequence :: [IO a] -> IO [a]
+
+
+
+Ein eta :: F a -> G a heißt in der Kategorientheorie
+genau dann natürliche Trafo, wenn gilt:
+
+    fmap f . eta = eta . fmap f
+
+        für alle f :: a -> b.
+
+
+
+(List o Maybe) a = [Maybe a]
+    hier: äußere Schicht: Liste von Sachen
+          innere Schicht: viele Maybes
+
+(Maybe o List) a = Maybe [a]
+(IO . List)    a = IO [a]
+(List . IO)    a = [IO a]
+
+
+
+
+Sei f : M --> M'.
+Diese Abbildung induziert eine Abbildung
+
+    first f : M x N ---> M' x N
+              (x,y) |--> (f(x),y)       
+
+Das meinen wir mit "nur linke Komponente ändern".
+
+
+
+Sei g : N --> N'.
+Diese Abbildung induziert eine Abbildung
+
+    second g : M x N ---> M x N'
+               (x,y) |--> (x,g(y))
+
+Das meinen wir mit "nur rechte Komponente ändern".
+
+
+
+F o G
+f :: F a --> F' a
+Das induziert:
+
+    F (G a) --> F' (G a)
+          x |-> f x
+
+Das meinen wir mit "nur äußere Schicht ändern".
+
+
+
+g :: G a --> G' a
+Das induziert:
+
+    F (G a) --> F (G' a)
+          x |-> fmap g x
+
+Das meinen wir mit "nur innere Schicht ändern".
+
+
+
+Ein Element einer Menge X
+ist "dasselbe" wie eine Abbildung
+
+    E = { * } --> X
+
+Das Besondere an E:
+X x E ~~ X
+(x,*) |-> x
+(x,*) <-| x
+
+
+In der Kategorie End(Hask) statt Set nimmt die Rolle von E der
+Identitätsfunktor ein, denn:
+F o Id = F
+Id o F = F
+
+
+
+
+data Pair a = MkPair a a
+            = Bool -> a
+            = Reader Bool a
+
+
+-- Folgende Definition erfüllt nicht die Monadenaxiome:
+return :: a -> Pair a
+return x = MkPair x x
+
+join :: Pair (Pair a) -> Pair a
+join (MkPair (MkPair x y) (MkPair x' y'))
+    = MkPair x x'
+
+-- Aber folgende schon.
+join (MkPair (MkPair x y) (MkPair x' y'))
+    = MkPair x y'
+
+
+
+
+Richi redet vom Monoid der Teilmengen von X:
+neutrales Element: {}
+Komposition:       M o N = M cup N
+
+
+
+module Main where
+
+data Free f a
+    = Pure a
+    | Roll (f (Free f a))
+-- Free f a ist der Typ der "f-förmigen" Bäume (mit Werte nur an den Blättern).
+
+-- Free f a ist ein Datentyp, d.h. vom Kind *.
+-- Free f ist vom Kind * -> *.
+-- Free ist vom Kind (* -> *) -> (* -> *).
+-- Für einen gegebenen Funktor f ist Free f ein neuer Funktor. Und sogar eine
+-- Monade.
+
+-- In GADT-Schreibweise:
+data Free :: (* -> *) -> (* -> *) where
+    Pure :: a -> Free f a
+    Roll :: f (Free f a) -> Free f a
+
+
+-- Beispiele!
+data Unit a = MkUnit
+instance Functor Unit where
+    fmap f MkUnit = MkUnit
+
+-- Was ist Free Unit?
+-- Genauer: Was ist Free Unit a?
+-- Antwort: Maybe! Free Unit a = Maybe a
+
+data Maybe a = Just a | Nothing
+iso :: Maybe a -> Free Unit a
+iso (Just x) = Pure x
+iso Nothing  = Roll MkUnit
+
+
+-- Noch ein Beispiel!
+data Pair a = MkPair a a
+-- Free Pair ist der Typ der Binärbäume:
+-- data Tree a = Leaf a | Fork (Tree a) (Tree a)
+-- Dann gilt: Free Pair a = Tree a.
+
+-- Was ist Free Id?
+-- Mögliche Werte in Free Id sind:
+-- Pure 7, Roll (Pure 7), Roll (Roll (Pure 7)), Roll (Roll (Roll (Pure 7)))
+-- Also: Free Id a = (Nat,a) = Writer Nat a.
+
+
+-- Es gibt jeweils nur eine mögliche Definition, die den richtigen Typ hat.
+instance (Functor f) => Functor (Free f) where ...
+instance (Functor f) => Monad   (Free f) where ...
