@@ -605,6 +605,33 @@ data Void  a
 }
 
 \note{\justifying
+  Beispiele für natürliche Transformationen gibt es in Haskell viele:
+  \begin{itemize}\justifying
+  \item \texttt{maybeToList :: Maybe a -> [a]}
+
+  \item \texttt{eitherToMaybe :: Either E a -> Maybe a}
+  
+  Dabei ist \texttt{E} ein bestimmter fester Typ.
+
+  \item \texttt{listToMaybe :: [a] -> Maybe a}
+  
+  Dieses Beispiel zeigt, dass natürliche Transformationen durchaus
+  Informationen vernichten dürfen.
+
+  \item \texttt{sequence :: [M a] -> M [a]}
+  
+  Dabei ist \texttt{M} eine bestimmte feste Monade.
+
+  \item \texttt{tail :: [a] -> [a]}
+
+  \item \texttt{length :: [a] -> Int}
+  
+  Dabei steht auf der rechten Seite die Anwendung von \texttt{a} auf den
+  \emph{konstanten Funktor bei \texttt{Int}}.
+  \end{itemize}
+}
+
+\note{\justifying
   Die Kategorien~$\mathrm{Set}$ und~$\mathrm{End}(\Hask)$ können beide mit
   einer \emph{monoidalen Struktur} versehen werden. In der Kategorie der Mengen
   ist das die Operation~$(M,N) \mapsto M \times N$. In der Kategorie der
