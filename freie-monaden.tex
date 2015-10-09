@@ -18,8 +18,8 @@
 \author[Augsburger Curry Club]{
   \includegraphics[scale=0.1]{images/a-monad-is-just-1} \\\ \\
   Ingo Blechschmidt \\[0.1em] \scriptsize\texttt{<iblech@speicherleck.de>}}
-\date[2015-09-10]{\vspace*{-1.5em}\scriptsize Augsburger Curry-Club \\ 10. September 2015}
-% XXX: Zweites Datum fehlt noch.
+\date[2015-09-10]{\vspace*{-1.5em}\scriptsize Augsburger Curry-Club \\ 10.
+September 2015 und 8. Oktober 2015}
 
 \usetheme{Warsaw}
 
@@ -340,12 +340,32 @@ class Monoid m where
   \medskip
 
   Die nach "`Essenz der Freiheit"' angegebene Forderung heißt auch
-  \emph{universelle Eigenschaft}. Man kann sie schön in Haskell demonstrieren:
+  \emph{universelle Eigenschaft}. Präzise formuliert lautet sie wie folgt:
+  Ein Paar~$(F,\texttt{inj})$ bestehend aus einem Monoid~$F$ und einer
+  Abbildung~$\texttt{inj} : X \to F$ heißt genau dann \emph{freier Monoid
+  auf~$X$}, wenn für jedes Paar~$(M,\texttt{phi})$ bestehend aus einem
+  Monoid~$M$ und einer Abbildung~$\texttt{phi} : X \to M$ genau ein
+  Monoidhomomorphismus~$\texttt{cata phi} : F \to M$ existiert,
+  sodass~$\texttt{phi} = \texttt{cata phi} . \texttt{inj}$.
+  \medskip
+
+  Man kann zeigen -- über ein kategorielles Standard-Argument -- dass je zwei
+  Paare~$(F,\texttt{inj})$, welche diese universelle Eigenschaft erfüllen,
+  vermöge eines eindeutigen Isomorphismus zueinander isomorph sind. Das
+  rechtfertigt, von \emph{dem} freien Monoid über~$X$ zu sprechen.
+  \par
+}
+
+\note{\justifying
+  Man kann die universelle Eigenschaft schön in Haskell demonstrieren:
   \inputminted{haskell}{images/universal-property-free-monoid.hs}
 
   Ist~\texttt{phi} irgendeine Abbildung~\texttt{a -> m}, so ist~\texttt{cata
   phi} eine Abbildung~\texttt{[a] -> m}. Diese ist nicht nur irgendeine
-  Abbildung, sondern wie gefordert ein Monoidhomomorphismus. Und mehr noch:
+  Abbildung, sondern wie gefordert ein Monoidhomomorphismus.
+  \medskip
+
+  Und mehr noch:
   Das Diagramm kommutiert tatsächlich, das heißt~\texttt{cata phi}
   und~\texttt{phi} haben in folgendem präzisen Sinn etwas miteinander zu
   tun: \texttt{cata phi . inj = phi}. Dabei ist~\texttt{inj :: a -> [a]} die
@@ -445,7 +465,7 @@ class Functor f where
 \end{frame}
 
 \note{\justifying
-  Fun Fact am Rande: Ein Theorem für lau garantiert, dass das zweite
+  Fun Fact am Rande: Ein Theorem für lau garantiert, dass in Haskell das zweite
   Funktoraxiom aus dem ersten folgt.
   \par
 }
@@ -615,7 +635,7 @@ class (Functor m) => Monad m where
   \end{minted}
 
   \begin{columns}
-    \begin{column}{0.42\textwidth}
+    \begin{column}{0.38\textwidth}
       \begin{block}{Listen}
         \scriptsize
         \begin{minted}{haskell}
@@ -624,7 +644,7 @@ singleton :: a     -> [a]
         \end{minted}
       \end{block}
     \end{column}
-    \begin{column}{0.62\textwidth}
+    \begin{column}{0.50\textwidth}
       \begin{block}{Maybe}
         \scriptsize
         \begin{minted}{haskell}
@@ -725,7 +745,7 @@ instance Monad State where
   } \]
   \begin{minted}{haskell}
 can :: (Functor f, Monad m)
-    => (forall a. f a -> m a)
+    => (forall a. f a      -> m a)
     -> (forall a. Free f a -> m a)
   \end{minted}
 \end{frame}
@@ -785,6 +805,10 @@ can :: (Functor f, Monad m)
   kann man das über freie Monaden. Und noch einfacher über "`freiere
   Monaden"' (da ist der Ausgangspunkt nur ein Typkonstruktor~\texttt{F}, der
   \emph{kein} Funktor sein muss).
+  \medskip
+
+  Ein Vorgeschmack in Form von Haskell-Code gibt es unter
+  \url{https://github.com/iblech/vortrag-haskell/blob/master/freie-monaden.hs}.
   \par
 }
 
