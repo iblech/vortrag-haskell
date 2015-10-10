@@ -440,6 +440,29 @@ class Monoid m where
   zum Vergissfunktor~$\mathrm{Mon} \to \mathrm{Set}$.}
 \end{frame}
 
+\note{\justifying
+  Für jede algebraische Struktur \emph{Mumble} gibt es das Konzept des
+  \emph{freien Mumbles über einer Menge}. Beispiele:
+  \begin{itemize}\justifying
+  \item Der freie Monoid über~$X$ ist der Monoid der endlichen Listen mit
+  Einträgen aus~$X$.
+  \item Der freie abelsche Monoid über~$X$ ist der abelsche Monoid der
+  endlichen Multimengen von Elementen aus~$X$.
+  \item Die freie Halbgruppe über~$X$ ist die Halbgruppe der nichtleeren Listen
+  mit Einträgen aus~$X$.
+  \item Das freie Magma über~$X$ ist das Magma der binären Bäume mit Elementen
+  aus~$X$ an den Blättern.
+  \item Der freie Ring über~$X$ ist der Ring der Polynome mit ganzzahligen
+  Koeffizienten und den Elementen aus~$X$ als Polynomvariablen.
+  \end{itemize}
+
+  \scriptsize
+  Zur Erinnerung: Eine Halbgruppe ist wie ein Monoid, nur, dass es nicht
+  unbedingt ein neutrales Element geben muss. Ein Magna ist wie eine
+  Halbgruppe, nur, dass die Verknüpfung nicht assoziativ sein muss. Ein Ring
+  ist wie ein Körper, nur dass man keinerlei multiplikative Inverse fordert.
+  \par
+}
 
 \section{Funktoren}
 
