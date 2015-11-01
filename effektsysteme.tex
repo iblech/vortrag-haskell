@@ -1,0 +1,274 @@
+% Kompilieren mit: TEXINPUTS=minted/source: pdflatex -shell-escape %
+\documentclass[12pt,compress,ngerman,utf8,t]{beamer}
+\usepackage[ngerman]{babel}
+\usepackage{ragged2e}
+\usepackage{comment}
+\usepackage{minted}
+\usepackage{wasysym}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage[all]{xy}
+\usepackage[protrusion=true,expansion=false]{microtype}
+
+\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
+\DeclareMathSymbol{\varheart}{\mathalpha}{extraup}{86}
+\DeclareMathSymbol{\vardiamond}{\mathalpha}{extraup}{87}
+
+\DeclareUnicodeCharacter{2237}{$\dblcolon$}
+\DeclareUnicodeCharacter{21D2}{$\Rightarrow$}
+\DeclareUnicodeCharacter{2192}{$\rightarrow$}
+
+\title[Effektsysteme]{\smiley{} Effektsysteme \smiley}
+\author[Augsburger Curry Club]{
+  Ingo Blechschmidt \\[0.1em] \scriptsize\texttt{<iblech@speicherleck.de>}}
+\date[2015-11-05]{\vspace*{-1.5em}\scriptsize Augsburger Curry-Club \\ 5.
+November 2015}
+
+\usetheme{Warsaw}
+
+\useinnertheme{rectangles}
+
+\usecolortheme{seahorse}
+\definecolor{mypurple}{RGB}{150,0,255}
+\setbeamercolor{structure}{fg=mypurple}
+
+\usefonttheme{serif}
+\usepackage[T1]{fontenc}
+\usepackage{libertine}
+
+\definecolor{darkred}{RGB}{220,0,0}
+\newcommand{\hcancel}[5]{%
+    \tikz[baseline=(tocancel.base)]{
+        \node[inner sep=0pt,outer sep=0pt] (tocancel) {#1};
+        \draw[darkred, line width=1mm] ($(tocancel.south west)+(#2,#3)$) -- ($(tocancel.north east)+(#4,#5)$);
+    }%
+}%
+
+\newcommand{\slogan}[1]{%
+  \begin{center}%
+    \setlength{\fboxrule}{2pt}%
+    \setlength{\fboxsep}{-3pt}%
+    {\usebeamercolor[fg]{item}\fbox{\usebeamercolor[fg]{normal
+    text}\parbox{0.9\textwidth}{\begin{center}#1\end{center}}}}%
+  \end{center}%
+}
+
+\renewcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\Hask}{\mathrm{Hask}}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+\setbeamertemplate{title page}[default][colsep=-1bp,rounded=false,shadow=false]
+\setbeamertemplate{frametitle}[default][colsep=-2bp,rounded=false,shadow=false,center]
+
+\newcommand*\oldmacro{}%
+\let\oldmacro\insertshorttitle%
+\renewcommand*\insertshorttitle{%
+  \oldmacro\hfill\insertframenumber\,/\,\inserttotalframenumber\hfill}
+
+\newcommand{\hil}[1]{{\usebeamercolor[fg]{item}{\textbf{#1}}}}
+\setbeamertemplate{frametitle}{%
+  \vskip1em%
+  \leavevmode%
+  \begin{beamercolorbox}[dp=1ex,center]{}%
+      \usebeamercolor[fg]{item}{\textbf{\textsf{\Large \insertframetitle}}}
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hfill%
+  \begin{beamercolorbox}[ht=2.25ex,dp=1ex,right]{}%
+    \usebeamerfont{date in head/foot}
+    \insertframenumber\,/\,\inserttotalframenumber\hspace*{1ex}
+  \end{beamercolorbox}%
+  \vskip0pt%
+}
+
+\newcommand{\backupstart}{
+  \newcounter{framenumberpreappendix}
+  \setcounter{framenumberpreappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+  \addtocounter{framenumberpreappendix}{-\value{framenumber}}
+  \addtocounter{framenumber}{\value{framenumberpreappendix}}
+}
+
+\setbeameroption{show notes}
+\setbeamertemplate{note page}[plain]
+
+\begin{document}
+
+\frame{\titlepage}
+
+\frame{\tableofcontents}
+
+\section{Spezifikation von Instruktionen}
+\begin{frame}[fragile]\frametitle{Gewünschte Instruktionen}
+  \begin{minted}{haskell}
+type St = ...
+data StateI :: * -> * where
+    Get :: StateI St
+    Put :: St -> StateI ()
+  \end{minted}
+
+  \vfill
+  \slogan{Freie Funktoren und freie Monaden liefern ein allgemeines
+  Konstruktionsrezept für Monaden mit gewünschter operationeller Semantik.}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Gewünschte Instruktionen}
+  \begin{minted}{haskell}
+type St = ...
+data StateI :: * -> * where
+    Get :: StateI St
+    Put :: St -> StateI ()
+
+type Env = ...
+data ReaderI :: * -> * where
+    Ask :: ReaderI Env
+
+type Log = ...
+data WriterI :: * -> * where
+    Tell :: Log -> WriterI ()
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Gewünschte Instruktionen}
+  \begin{minted}{haskell}
+type Err = ...
+data ErrorI :: * -> * where
+    Throw :: Err -> ErrorI a
+
+data IOI :: * -> * where
+    PutStrLn :: String -> IOI ()
+    GetLine  :: IOI String
+    Exit     :: IOI a
+  \end{minted}
+\end{frame}
+
+
+\section{Freie Funktoren}
+\begin{frame}[fragile]\frametitle{Freie Funktoren}
+  Wir können aus einem Typkonstruktor \verb|t :: * -> *| auf unspektakulärste
+  Art und Weise einen Funktor machen:
+
+  \begin{minted}{haskell}
+class Functor f where
+    fmap :: (a -> b) -> (f a -> f b)
+
+data FreeF t a = MkFreeT (exists r. (r -> a, t r))
+data FreeF t a = forall r. MkFreeT (r -> a) (t r)
+-- MkFreeT :: (r -> a) -> t r -> FreeF t a
+
+liftF :: t a -> FreeF t a
+liftF x = MkFreeT id x
+
+instance Functor (FreeF t) where
+    fmap phi (MkFreeT h x) = MkFreeT (phi . h) x
+  \end{minted}
+\end{frame}
+
+\note{\justifying
+  Das Paar bestehend aus dem \emph{freien Funktor~\texttt{FreeF t} über~\texttt{t}}
+  und der Funktion~\texttt{liftF} erfüllt folgende \emph{universelle
+  Eigenschaft}:
+  \medskip
+
+  Ist~\texttt{G} irgendein Funktor und~\texttt{phi :: t a -> G a} irgendeine
+  Funktion, so existiert genau eine Funktion~\texttt{phi' :: FreeF t a -> G a}
+  mit~\texttt{phi' . liftF = phi}.
+  \[ \xymatrix{
+    \texttt{t} \ar@{=>}[rr]^{\texttt{phi}} \ar@{=>}[rd]_{\texttt{liftF}} && G \\
+    & \texttt{FreeF t} \ar@{==>}[ru]_{\texttt{phi'}}
+  } \]
+}
+
+\begin{frame}[fragile]\frametitle{Freie Funktoren}
+  \begin{minted}{haskell}
+class Functor f where
+    fmap :: (a -> b) -> (f a -> f b)
+
+data FreeF t a = forall r. MkFreeT (r -> a) (t r)
+
+data StateI :: * -> * where
+    Get :: StateI St
+    Put :: St -> StateI ()
+
+-- FreeF StateI ist isomorph zu:
+data StateF a = Get (St -> a) | Put St a
+  \end{minted}
+\end{frame}
+
+
+\section{Freie Monaden}
+\begin{frame}[fragile]\frametitle{Freie Monaden}
+  Wir können aus einem Funktor \verb|f :: * -> *| auf unspektakulärste
+  Art und Weise eine Monade machen:
+  \begin{minted}{haskell}
+data FreeM f a = Pure a | Roll (f (FreeM f a))
+
+instance (Functor f) => Monad (FreeM f) where
+    return x = Pure x
+
+    Pure x >>= k = k x
+    Roll u >>= k = Roll (fmap (>>= k) u)
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Zusammengesetzt}
+  \begin{minted}{haskell}
+data FreeF t a = forall r. MkFreeF (r -> a) (t r)
+data FreeM f a = Pure a | Roll (f (FreeM f a))
+
+-- Also ist `FreeM (FreeF t) a` isomorph zu:
+data Prog t a =
+    Pure a | forall r. Step (t r) (r -> Prog t a)
+
+data StateI :: * -> * where
+    Get :: StateI St
+    Put :: St -> StateI ()
+-- `Prog StateI a` ist isomorph zu:
+data StateProg a
+    = Pure a
+    | Get    (St -> StateProg a)
+    | Put St (StateProg a)
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Operationelle Semantik}
+  \begin{minted}{haskell}
+data StateProg a
+    = Pure a
+    | Get    (St -> StateProg a)
+    | Put St (StateProg a)
+
+interpret :: StateProg a -> (St -> (a,St))
+interpret (Pure x)     st = (x, st)
+interpret (Get  k)     st = interpret (k st) st
+interpret (Put  st' u) st = interpret u      st'
+  \end{minted}
+\end{frame}
+
+\end{document}
+
+* Trick/Rezept, um aus Instruktionsspezifikationen Monaden zu erhalten.
+  Diese reflektieren aber noch nicht die möglicherweise geforderten Gesetze
+  (wie "put x >> put x' == put x'"), sondern sind ein rein syntaktischer
+  Ansatz. Zum Leben erweckt wird diese Konstruktion durch Angabe eines
+  Interpreters.
+
+* Man kann sehr leicht mehrere Instruktionsspezifikationen zu einer
+  kombinieren. Daraus erhält man dann eine Monade, in der man die Befehle der
+  Teilspezifikationen verwenden kann. Es ist auch möglich, die Interpreter der
+  Teilspezifikationen zu kombinieren.
+
+* Laufzeiteffizienzprobleme
+
+* Olegs Eff
+
+* Kan-Erweiterung
