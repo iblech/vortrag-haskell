@@ -732,10 +732,10 @@ class (Functor m) => Monad m where
     \begin{minted}{haskell}
 type Reader env a = env -> a
 
-instance Functor Reader where
+instance Functor (Reader env) where
     fmap f k = f . k
 
-instance Monad Reader where
+instance Monad (Reader env) where
     return x = \_   -> x
     join   k = \env -> k env env
     \end{minted}
@@ -746,7 +746,7 @@ instance Monad Reader where
     \begin{minted}{haskell}
 type State s a = s -> (a,s)
 
-instance Monad State where
+instance Monad (State s) where
     return x = \s -> (x,s)
     join   k = \s -> let (k',s') = k s in k' s'
     \end{minted}
@@ -754,7 +754,7 @@ instance Monad State where
 \end{frame}
 
 \note{\justifying
-  Auch \texttt{State} und \texttt{Reader} passen in die "`Container mit
+  Auch \texttt{State s} und \texttt{Reader env} passen in die "`Container mit
   Zusatzfähigkeit"'-Intuition, wenn man sich hinreichend verbiegt. Schaffst du
   das?
   \par
