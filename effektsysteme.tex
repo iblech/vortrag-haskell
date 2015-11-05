@@ -267,19 +267,86 @@ interpret (Put  st' u) st = interpret u      st'
   \end{minted}
 \end{frame}
 
+
+\section{In Kürze}
+\begin{frame}[fragile]\frametitle{In Kürze}
+  \begin{minted}{haskell}
+-- Die freie Monade über dem freien Funktor über t:
+data Prog t a =
+    Pure a | forall r. Step (t r) (r -> Prog t a)
+  \end{minted}
+
+  \begin{itemize}
+    \item Werte vom Typ \texttt{Prog t a} sind rein syntaktische Beschreibungen
+    von Aktionsfolgen.
+    \item Insbesondere gelten keinerlei besondere Rechenregeln, wie zum
+    Beispiel \texttt{Put x (Put x' m) == Put x' m}.
+    \item Erst durch Angabe eines Interpreters wird die Konstruktion zum Leben
+    erweckt.
+    \item Man kann leicht Instruktionsspezifikationen miteinander kombinieren!
+    \item In der naiven Implementierung: Effizienzproblem mit linksassoziativer
+    Verwendung von \texttt{(>>=)}
+  \end{itemize}
+\end{frame}
+
+\note{\justifying
+  Sind \texttt{m} und \texttt{n} Monaden, so kann man eine Monade bauen, die
+  die Fähigkeiten von \texttt{m} und \texttt{n} vereint. Diese heißt
+  \emph{Koprodukt} von \texttt{m} und \texttt{n}.
+  \medskip
+
+  \texttt{%
+...
+}
+}
+
+\begin{frame}[fragile]\frametitle{Effektsysteme}
+  \begin{minted}{haskell}
+type Env = ...
+data Reader :: * -> * where
+    Get :: Reader Env
+
+ask :: (Member Reader r) => Eff r Env
+ask = Roll (inj Get) (tsingleton Pure)
+
+runReader :: Env -> Eff (Reader ’: r) a -> Eff r a
+runReader e m = loop m where
+    loop (Pure x)   = return x
+    loop (Roll u q) = case decomp u of
+        Right Get -> loop $ qApp q i
+        Left  u   -> Roll u (tsingleton (qComp q loop))
+
+-- kürzer:
+runReader e = handleRelay return (\Get k -> k e)
+  \end{minted}
+\end{frame}
+
+\note{\justifying
+  \texttt{Eff r a} ist wie \texttt{Prog t a}, nur
+  \begin{itemize}
+    \item performant bezüglich \texttt{(>>=)} und
+    \item mit \texttt{r} als \emph{Liste} von möglichen Instruktionen (auf
+    Typebene) anstatt mit \texttt{t} als Instruktionen kodierenden
+    \emph{Typkonstruktor}.
+  \end{itemize}
+
+  Siehe unbedingt:
+  \begin{itemize}
+    \item Oleg Kiselyov, Hiromi Ishii. \emph{Freer Monads, More Extensible
+    Effects.} 2015
+
+    \url{http://okmij.org/ftp/Haskell/extensible/more.pdf}
+
+    \item Oleg Kiselyov, Amr Sabry, Cameron Swords.
+    \emph{Extensible Effects. An Alternative to Monad Transformers.} 2013
+
+    \url{http://okmij.org/ftp/Haskell/extensible/exteff.pdf}
+
+    \item Andrej Bauer, Matija Pretnar. \emph{Programming with Algebraic
+    Effects and Handlers.} 2012
+
+    \url{http://arxiv.org/abs/1203.1539}
+  \end{itemize}
+}
+
 \end{document}
-
-* Trick/Rezept, um aus Instruktionsspezifikationen Monaden zu erhalten.
-  Diese reflektieren aber noch nicht die möglicherweise geforderten Gesetze
-  (wie "put x >> put x' == put x'"), sondern sind ein rein syntaktischer
-  Ansatz. Zum Leben erweckt wird diese Konstruktion durch Angabe eines
-  Interpreters.
-
-* Man kann sehr leicht mehrere Instruktionsspezifikationen zu einer
-  kombinieren. Daraus erhält man dann eine Monade, in der man die Befehle der
-  Teilspezifikationen verwenden kann. Es ist auch möglich, die Interpreter der
-  Teilspezifikationen zu kombinieren.
-
-* Laufzeiteffizienzprobleme
-
-* Olegs Eff
