@@ -289,16 +289,32 @@ data Prog t a =
   \end{itemize}
 \end{frame}
 
-\note{\justifying
+\begin{frame}[fragile]\frametitle{Einschub: Koprodukt von Monaden}
   Sind \texttt{m} und \texttt{n} Monaden, so kann man eine Monade bauen, die
   die Fähigkeiten von \texttt{m} und \texttt{n} vereint. Diese heißt
   \emph{Koprodukt} von \texttt{m} und \texttt{n}.
   \medskip
 
-  \texttt{%
-...
-}
-}
+  \small
+  \begin{minted}{haskell}
+data Sum    m n a = Inl (m a) | Inr (n a)
+type Coprod m n a = Prog (Sum m n) a
+
+-- Coprod m n vereint m und n:
+inl :: m a -> Coprod m n a    inr :: n a -> Coprod m n a
+inl x = Step (Inl x) Pure     inr x = Step (Inr r) Pure
+
+-- Ausführung mit/universelle Eigenschaft:
+elim :: (Monad m, Monad n, Monad s)
+     => (m a -> s a) -> (n a -> s a)
+     -> (Coprod m n a -> s a)
+elim = ...
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Beispiel: State $\amalg$ IO}
+  XXX
+\end{frame}
 
 \begin{frame}[fragile]\frametitle{Effektsysteme}
   \begin{minted}{haskell}
@@ -313,9 +329,8 @@ runReader :: Env -> Eff (Reader ’: r) a -> Eff r a
 runReader e m = loop m where
     loop (Pure x)   = return x
     loop (Roll u q) = case decomp u of
-        Right Get -> loop $ qApp q i
+        Right Get -> loop $ qApp q e
         Left  u   -> Roll u (tsingleton (qComp q loop))
-
 -- kürzer:
 runReader e = handleRelay return (\Get k -> k e)
   \end{minted}
