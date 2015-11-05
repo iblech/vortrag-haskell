@@ -81,7 +81,7 @@ evalReader (Roll u) e
 -- "Noch freier"
 
 data FreeFunctor f a = forall x. MkFreeF (f x) (x -> a)
--- Links-Kan-Erweiterung von f längs Identität.
+-- Links-Kan-Erweiterung von f längs der Inklusion Hask_0 --> Hask.
 -- Ist der "freie Funktor über f".
 
 univ :: (Functor g) => (forall a. f a -> g a) -> (FreeFunctor f a -> g a)

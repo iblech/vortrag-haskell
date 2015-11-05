@@ -10,14 +10,6 @@
 \usepackage[all]{xy}
 \usepackage[protrusion=true,expansion=false]{microtype}
 
-\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
-\DeclareMathSymbol{\varheart}{\mathalpha}{extraup}{86}
-\DeclareMathSymbol{\vardiamond}{\mathalpha}{extraup}{87}
-
-\DeclareUnicodeCharacter{2237}{$\dblcolon$}
-\DeclareUnicodeCharacter{21D2}{$\Rightarrow$}
-\DeclareUnicodeCharacter{2192}{$\rightarrow$}
-
 \title[Effektsysteme]{\smiley{} Effektsysteme \smiley}
 \author[Augsburger Curry Club]{
   Ingo Blechschmidt \\[0.1em] \scriptsize\texttt{<iblech@speicherleck.de>}}
@@ -154,22 +146,22 @@ data IOI :: * -> * where
 
 \section{Freie Funktoren}
 \begin{frame}[fragile]\frametitle{Freie Funktoren}
-  Wir können aus einem Typkonstruktor \verb|t :: * -> *| auf unspektakulärste
+  Wir können aus einem Typkonstruktor \texttt{t :: * -> *} auf unspektakulärste
   Art und Weise einen Funktor machen:
 
   \begin{minted}{haskell}
 class Functor f where
     fmap :: (a -> b) -> (f a -> f b)
 
-data FreeF t a = MkFreeT (exists r. (r -> a, t r))
-data FreeF t a = forall r. MkFreeT (r -> a) (t r)
--- MkFreeT :: (r -> a) -> t r -> FreeF t a
+data FreeF t a = MkFreeT (exists r. (t r, r -> a))
+data FreeF t a = forall r. MkFreeT (t r) (r -> a)
+-- MkFreeT :: t r -> (r -> a) -> FreeF t a
 
 liftF :: t a -> FreeF t a
-liftF x = MkFreeT id x
+liftF x = MkFreeT x id
 
 instance Functor (FreeF t) where
-    fmap phi (MkFreeT h x) = MkFreeT (phi . h) x
+    fmap phi (MkFreeT x h) = MkFreeT x (phi . h)
   \end{minted}
 \end{frame}
 
@@ -188,12 +180,33 @@ instance Functor (FreeF t) where
   } \]
 }
 
-\begin{frame}[fragile]\frametitle{Freie Funktoren}
+\note{\justifying
+  Einen Typkonstruktor~\texttt{t :: * -> *} kann man auch als einen
+  Funktor~$\Hask_0 \to \Hask$ auffassen. Dabei hat die Kategorie~$\Hask_0$
+  dieselben Objekte wie~$\Hask$, enthält aber nur Identitätsmorphismen.
+  \medskip
+
+  Der freie Funktor über~\texttt{t} ist dann die \emph{Links-Kan-Erweiterung}
+  von~\texttt{t} längs der Inklusion~$\Hask_0 \hookrightarrow \Hask$.
+  Die angegebene Definition von~\texttt{FreeF t} ist nichts anderes als die
+  \emph{Koendeformel} für Links-Kan-Erweiterungen.
+
+  \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
+    \Hask \ar@{-->}[rd]^{\texttt{FreeF t}} \\
+    \Hask_0 \ar[r]^{\texttt{t}} \ar@{^{(}->}[u] & \Hask
+  } \]
+
+  \[
+    \texttt{FreeF t a} = \int^{r \in \Hask_0} (\texttt{t r}, \texttt{r -> a})
+  \]
+}
+
+\begin{frame}[fragile]\frametitle{Beispiel: Zustand}
   \begin{minted}{haskell}
 class Functor f where
     fmap :: (a -> b) -> (f a -> f b)
 
-data FreeF t a = forall r. MkFreeT (r -> a) (t r)
+data FreeF t a = forall r. MkFreeT (t r) (r -> a)
 
 data StateI :: * -> * where
     Get :: StateI St
@@ -207,7 +220,7 @@ data StateF a = Get (St -> a) | Put St a
 
 \section{Freie Monaden}
 \begin{frame}[fragile]\frametitle{Freie Monaden}
-  Wir können aus einem Funktor \verb|f :: * -> *| auf unspektakulärste
+  Wir können aus einem Funktor \texttt{f :: * -> *} auf unspektakulärste
   Art und Weise eine Monade machen:
   \begin{minted}{haskell}
 data FreeM f a = Pure a | Roll (f (FreeM f a))
@@ -222,7 +235,7 @@ instance (Functor f) => Monad (FreeM f) where
 
 \begin{frame}[fragile]\frametitle{Zusammengesetzt}
   \begin{minted}{haskell}
-data FreeF t a = forall r. MkFreeF (r -> a) (t r)
+data FreeF t a = forall r. MkFreeF (t r) (r -> a)
 data FreeM f a = Pure a | Roll (f (FreeM f a))
 
 -- Also ist `FreeM (FreeF t) a` isomorph zu:
@@ -270,5 +283,3 @@ interpret (Put  st' u) st = interpret u      st'
 * Laufzeiteffizienzprobleme
 
 * Olegs Eff
-
-* Kan-Erweiterung
