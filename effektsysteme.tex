@@ -153,17 +153,37 @@ data IOI :: * -> * where
 class Functor f where
     fmap :: (a -> b) -> (f a -> f b)
 
-data FreeF t a = MkFreeT (exists r. (t r, r -> a))
-data FreeF t a = forall r. MkFreeT (t r) (r -> a)
+data FreeF t a = MkFreeF (exists r. (t r, r -> a))
+data FreeF t a = forall r. MkFreeF (t r) (r -> a)
 -- MkFreeT :: t r -> (r -> a) -> FreeF t a
 
 liftF :: t a -> FreeF t a
-liftF x = MkFreeT x id
+liftF x = MkFreeF x id
 
 instance Functor (FreeF t) where
-    fmap phi (MkFreeT x h) = MkFreeT x (phi . h)
+    fmap phi (MkFreeF x h) = MkFreeF x (phi . h)
   \end{minted}
 \end{frame}
+
+\note{\justifying
+  Wenn \texttt{t} ein Funktor \emph{wäre}, so könnte man eine Funktion
+  \texttt{r -> a} zu einer Funktion \texttt{t r -> t a} liften. Wenn \texttt{t}
+  kein Funktor ist, geht das nicht.
+  \medskip
+
+  Der freie Funktor \texttt{FreeF t} über \texttt{t} \emph{cheatet}: Ein Wert
+  vom Typ \texttt{Free t a} besteht aus einem Wert \texttt{x :: t r} zusammen
+  mit einer Funktion \texttt{f :: r -> a}. Anschaulich stellen wir uns diese
+  Kombination als das vor, was \texttt{fmap f x} ergäbe, wenn \texttt{t} ein
+  Funktor wäre.
+  \medskip
+
+  Die Implementierung von \texttt{fmap phi} für \texttt{FreeF t} ist dann rein
+  \emph{formal}: Anstatt \texttt{phi} wirklich auf einen Wert vom Typ \texttt{t
+  r} anzuwenden (was unmöglich ist), notieren wir uns nur die Information, dass
+  \texttt{phi} anzuwenden \emph{wäre}.
+  \par
+}
 
 \note{\justifying
   Das Paar bestehend aus dem \emph{freien Funktor~\texttt{FreeF t} über~\texttt{t}}
@@ -190,23 +210,30 @@ instance Functor (FreeF t) where
   von~\texttt{t} längs der Inklusion~$\Hask_0 \hookrightarrow \Hask$.
   Die angegebene Definition von~\texttt{FreeF t} ist nichts anderes als die
   \emph{Koendeformel} für Links-Kan-Erweiterungen.
-
+  \medskip
   \[ \xymatrixcolsep{4pc}\xymatrixrowsep{4pc}\xymatrix{
     \Hask \ar@{-->}[rd]^{\texttt{FreeF t}} \\
     \Hask_0 \ar[r]^{\texttt{t}} \ar@{^{(}->}[u] & \Hask
   } \]
+  \medskip
 
   \[
     \texttt{FreeF t a} = \int^{r \in \Hask_0} (\texttt{t r}, \texttt{r -> a})
   \]
 }
 
+\begin{frame}[plain]
+  \begin{center}
+    \includegraphics[height=\textheight]{images/kan-extension}
+  \end{center}
+\end{frame}
+
 \begin{frame}[fragile]\frametitle{Beispiel: Zustand}
   \begin{minted}{haskell}
 class Functor f where
     fmap :: (a -> b) -> (f a -> f b)
 
-data FreeF t a = forall r. MkFreeT (t r) (r -> a)
+data FreeF t a = forall r. MkFreeF (t r) (r -> a)
 
 data StateI :: * -> * where
     Get :: StateI St
@@ -233,6 +260,12 @@ instance (Functor f) => Monad (FreeM f) where
   \end{minted}
 \end{frame}
 
+\note{\justifying
+  Mehr zu freien Monaden in einem separaten Foliensatz:
+
+  \url{http://curry-club-augsburg.de/posts/2015-08-14-ankuendigung-siebtes-treffen.html}
+}
+
 \begin{frame}[fragile]\frametitle{Zusammengesetzt}
   \begin{minted}{haskell}
 data FreeF t a = forall r. MkFreeF (t r) (r -> a)
@@ -253,6 +286,23 @@ data StateProg a
   \end{minted}
 \end{frame}
 
+\note{\justifying
+  Auch ohne die Motivation über freie Funktoren und freie Monaden besitzt
+  \texttt{Prog} eine anschauliche Bedeutung. Wir können uns einen Wert vom
+  Typ~\texttt{Prog t a} als eine Folge von Instruktionen vorstellen, die
+  schlussendlich einen Wert vom Typ~\texttt{a} produziert. Welche Instruktionen
+  vorkommen können, entscheidet~\texttt{t}.
+  \medskip
+
+  Ein Wert vom Typ~\texttt{Prog t a} ist entweder von der Form~\texttt{Pure x},
+  also ein triviale Folge von Instruktionen mit Produktionswert~\texttt{x},
+  oder von der Form~\texttt{Step u k}. Dabei kodiert~\texttt{u} eine
+  Instruktion, die bei Ausführung einen Wert~\texttt{x :: r} produziert, und
+  die Continuation~\texttt{k :: r -> Prog t a} gibt an, wie es danach weitergehen
+  soll.
+  \par
+}
+
 \begin{frame}[fragile]\frametitle{Operationelle Semantik}
   \begin{minted}{haskell}
 data StateProg a
@@ -267,8 +317,6 @@ interpret (Put  st' u) st = interpret u      st'
   \end{minted}
 \end{frame}
 
-
-\section{In Kürze}
 \begin{frame}[fragile]\frametitle{In Kürze}
   \begin{minted}{haskell}
 -- Die freie Monade über dem freien Funktor über t:
@@ -279,15 +327,33 @@ data Prog t a =
   \begin{itemize}
     \item Werte vom Typ \texttt{Prog t a} sind rein syntaktische Beschreibungen
     von Aktionsfolgen.
-    \item Insbesondere gelten keinerlei besondere Rechenregeln, wie zum
+    Insbesondere gelten keinerlei besondere Rechenregeln, wie zum
     Beispiel \texttt{Put x (Put x' m) == Put x' m}.
     \item Erst durch Angabe eines Interpreters wird die Konstruktion zum Leben
     erweckt.
     \item Man kann leicht Instruktionsspezifikationen miteinander kombinieren!
     \item In der naiven Implementierung: Effizienzproblem mit linksassoziativer
-    Verwendung von \texttt{(>>=)}
+    Verwendung von \texttt{(>{}>=)}
   \end{itemize}
 \end{frame}
+
+\note{\justifying
+  Ein und dieselbe freie Monade kann mehrere verschiedene Interpreter zulassen.
+  Zum Beispiel kann man in Produktion einen Interpreter verwenden, der eine
+  Datenbank anspricht, und zum Testen einen, der fiktive Werte vortäuscht
+  (Mocking).
+  \medskip
+
+  Siehe unbedingt auch:
+  \begin{itemize}
+    \item Heinrich Apfelmus. \emph{The Operational Monad Tutorial}. 2010.
+
+    \url{http://apfelmus.nfshost.com/articles/operational-monad.html}
+  \end{itemize}
+}
+
+
+\section{Einschub: Koprodukt von Monaden}
 
 \begin{frame}[fragile]\frametitle{Einschub: Koprodukt von Monaden}
   Sind \texttt{m} und \texttt{n} Monaden, so kann man eine Monade bauen, die
@@ -302,9 +368,9 @@ type Coprod m n a = Prog (Sum m n) a
 
 -- Coprod m n vereint m und n:
 inl :: m a -> Coprod m n a    inr :: n a -> Coprod m n a
-inl x = Step (Inl x) Pure     inr x = Step (Inr r) Pure
+inl x = Step (Inl x) Pure     inr x = Step (Inr x) Pure
 
--- Ausführung mit/universelle Eigenschaft:
+-- Ausführung mit (universelle Eigenschaft):
 elim :: (Monad m, Monad n, Monad s)
      => (m a -> s a) -> (n a -> s a)
      -> (Coprod m n a -> s a)
@@ -312,11 +378,67 @@ elim = ...
   \end{minted}
 \end{frame}
 
-\begin{frame}[fragile]\frametitle{Beispiel: State $\amalg$ IO}
-  XXX
+\begin{frame}[fragile]\frametitle{Beispiel: State s $\amalg$ Error e}
+  \begin{minted}{haskell}
+type Err e = Either e
+
+ex :: Coprod (State Int) (Err String) Int
+ex = do
+    st <- inl get
+    if st <= 0 then inr (Left "Fehler") else do
+    inl $ put (st - 1)
+    return $ st^2 + st + 1
+  \end{minted}
 \end{frame}
 
+\note{\justifying
+  Ausführung durch Angabe einer Monade, in die man \texttt{State Int} und
+  \texttt{Err String} einbetten kann -- zum Beispiel \texttt{IO}:
+
+  \inputminted{haskell}{images/run-coproduct.hs}
+}
+
+
+\section{Effektsysteme}
+
 \begin{frame}[fragile]\frametitle{Effektsysteme}
+  \slogan{Effektsysteme lösen das Problem der fehlenden Kompositionalität von Monaden.}
+
+  Die Monade \texttt{Eff r} ist wie \texttt{Prog t}, nur
+  \medskip
+
+  \begin{itemize}
+    \item performant bezüglich \texttt{(>{}>=)} und
+    \item mit \texttt{r} als \emph{Liste} von möglichen Instruktionen (auf
+    Typebene) anstatt mit \texttt{t} als Instruktionen kodierenden
+    \emph{Typkonstruktor}.
+  \end{itemize}
+
+  \begin{minted}{haskell}
+    ask :: (Member (Reader env) r) => Eff r env
+    get :: (Member (State st)   r) => Eff r st
+    put :: (Member (State st)   r) => st -> Eff r ()
+    -- Typen schreiben r nicht eindeutig vor!
+  \end{minted}
+\end{frame}
+
+\note{\justifying
+  Wenn man nachträglich seinen Transformerstack ändert, muss man viele
+  Typsignaturen und gelegentlich auch einige Codefragmente anpassen (zum
+  Beispiel \texttt{lift} in \texttt{lift . lift} ändern). Das ist mühsam.
+  \medskip
+
+  Bei Verwendung von \texttt{Eff} muss man das nicht.
+  \medskip
+
+  Werte vom Typ \texttt{Eff r a} sind wie bei \texttt{Prog t a} auch nur
+  \emph{Beschreibungen} von auszuführenden Aktionen; erst durch Angabe von
+  Interpretern können sie ausgeführt werden. Interpreter können leicht
+  miteinander kombiniert werden.
+  \par
+}
+
+\begin{frame}[fragile]\frametitle{Interpreter}
   \begin{minted}{haskell}
 type Env = ...
 data Reader :: * -> * where
@@ -337,28 +459,20 @@ runReader e = handleRelay return (\Get k -> k e)
 \end{frame}
 
 \note{\justifying
-  \texttt{Eff r a} ist wie \texttt{Prog t a}, nur
-  \begin{itemize}
-    \item performant bezüglich \texttt{(>>=)} und
-    \item mit \texttt{r} als \emph{Liste} von möglichen Instruktionen (auf
-    Typebene) anstatt mit \texttt{t} als Instruktionen kodierenden
-    \emph{Typkonstruktor}.
-  \end{itemize}
-
   Siehe unbedingt:
   \begin{itemize}
     \item Oleg Kiselyov, Hiromi Ishii. \emph{Freer Monads, More Extensible
-    Effects.} 2015
+    Effects.} 2015.
 
     \url{http://okmij.org/ftp/Haskell/extensible/more.pdf}
 
     \item Oleg Kiselyov, Amr Sabry, Cameron Swords.
-    \emph{Extensible Effects. An Alternative to Monad Transformers.} 2013
+    \emph{Extensible Effects. An Alternative to Monad Transformers.} 2013.
 
     \url{http://okmij.org/ftp/Haskell/extensible/exteff.pdf}
 
     \item Andrej Bauer, Matija Pretnar. \emph{Programming with Algebraic
-    Effects and Handlers.} 2012
+    Effects and Handlers.} 2012.
 
     \url{http://arxiv.org/abs/1203.1539}
   \end{itemize}
