@@ -239,11 +239,20 @@ data StateI :: * -> * where
     Get :: StateI St
     Put :: St -> StateI ()
 
--- FreeF StateI ist isomorph zu:
+-- `FreeF StateI` ist isomorph zu:
 data StateF a = Get (St -> a) | Put St a
   \end{minted}
 \end{frame}
 
+\note{\justifying
+  Offensichtlich wird \texttt{StateF} zu einem Funktor. Das
+  zugehörige~\texttt{fmap} ist recht langweilig:
+
+  \inputminted{haskell}{images/statef-functor.hs}
+
+  Genauso langweilig sind die Funktor-Instanzen von anderen Typkonstruktoren
+  der Form~\texttt{FreeF t}.\par
+}
 
 \section{Freie Monaden}
 \begin{frame}[fragile]\frametitle{Freie Monaden}
@@ -262,6 +271,7 @@ instance (Functor f) => Monad (FreeM f) where
 
 \note{\justifying
   Mehr zu freien Monaden in einem separaten Foliensatz:
+  \medskip
 
   \url{http://curry-club-augsburg.de/posts/2015-08-14-ankuendigung-siebtes-treffen.html}
 }
@@ -350,6 +360,31 @@ data Prog t a =
 
     \url{http://apfelmus.nfshost.com/articles/operational-monad.html}
   \end{itemize}
+}
+
+\begin{frame}[fragile]\frametitle{Beispiel: Einfaches Multitasking}
+  \begin{minted}{haskell}
+data ProcessI :: (* -> *) -> * -> * where
+    Lift  :: m a -> ProcessI m a
+    Stop  :: ProcessI m a
+    Fork  :: ProcessI m Bool  -- wie in Unix
+    Yield :: ProcessI m ()
+
+-- Interpreter, der nur bei Aufruf von `Yield` die
+-- Kontrolle an den nächsten Prozess weitergibt
+runCoop   :: (Monad m) => Prog (ProcessI m) a -> m ()
+
+-- Interpreter, der nach jeder Aktion in der Basis-
+-- monade die Kontrolle weitergibt
+runForced :: (Monad m) => Prog (ProcessI m) a -> m ()
+  \end{minted}
+\end{frame}
+
+\note{\justifying
+  Siehe Beispielcode:
+  \medskip
+
+  \url{https://github.com/iblech/vortrag-haskell/blob/master/effektsysteme.hs}
 }
 
 

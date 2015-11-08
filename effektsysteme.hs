@@ -51,6 +51,65 @@ evalState = ((.) . (.)) fst runState
 
 
 --------------------------------------------------------------------------------
+-- Beispiel: Einfaches Multitasking (über einer Basismonade)
+
+data ProcessI :: (* -> *) -> * -> * where
+    Lift  :: m a -> ProcessI m a
+    Stop  :: ProcessI m a
+    Fork  :: ProcessI m Bool
+    Yield :: ProcessI m ()
+
+liftBase :: m a -> Prog (ProcessI m) a
+liftBase = lift . Lift
+
+-- Interpreter, der nach jeder Aktion in der Basismonade die Kontrolle
+-- an den nächsten Prozess weitergibt
+runProcessForced :: (Monad m) => Prog (ProcessI m) a -> m ()
+runProcessForced = schedule . (:[])
+    where
+    schedule []     = return ()
+    schedule (m:ms)
+        | Pure x           <- m = schedule ms
+        | Step (Lift u)  k <- m = u >>= \x -> schedule (ms ++ [k x])
+        | Step Stop      k <- m = schedule ms
+        | Step Fork      k <- m = schedule $ ms ++ [k True, k False]
+        | Step Yield     k <- m = schedule $ ms ++ [k ()]
+
+-- Interpreter, der nur bei Verwendung von Yield die Kontrolle an den
+-- nächsten Prozess übergibt
+runProcessCooperative :: (Monad m) => Prog (ProcessI m) a -> m ()
+runProcessCooperative = schedule . (:[])
+    where
+    schedule []     = return ()
+    schedule (m:ms)
+        | Pure x           <- m = schedule ms
+        | Step (Lift u)  k <- m = u >>= \x -> schedule (k x : ms)
+        | Step Stop      k <- m = schedule ms
+        | Step Fork      k <- m = schedule $ [k False] ++ ms ++ [k True]
+        | Step Yield     k <- m = schedule $ ms ++ [k ()]
+
+exProcess :: Prog (ProcessI IO) ()
+exProcess = do
+    liftBase $ putStrLn "Beginn."
+    inChild <- lift Fork
+    if inChild
+        then do
+            liftBase $ putStrLn "[K] Im Kindprozess."
+            forM_ [1..5] $ \n -> do
+                when (even n) $ lift Yield
+                liftBase $ putStrLn $ "[K] " ++ show n
+            liftBase $ putStrLn "[K] Fertig im Kind."
+            lift Stop
+        else do
+            liftBase $ putStrLn "[E] Im Elternprozess."
+            forM_ [10..15] $ \n -> do
+                when (even n) $ lift Yield
+                liftBase $ putStrLn $ "[E] " ++ show n
+            liftBase $ putStrLn "[E] Fertig im Elternprozess."
+    liftBase $ putStrLn "Ganz fertig."
+
+
+--------------------------------------------------------------------------------
 -- Koprodukt von Monaden
 
 data Sum    m n a = Inl (m a) | Inr (n a)
@@ -78,8 +137,8 @@ elim phi psi (Step (Inr n) k) = psi n >>= elim phi psi . k
 type Err e = Either e
 type M     = Coprod (State Int) (Err String)
 
-ex :: M Int
-ex = do
+exM :: M Int
+exM = do
     st <- inl get
     if st <= 0 then inr (Left "Fehler") else do
     inl $ put (st - 1)
