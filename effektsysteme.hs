@@ -92,21 +92,22 @@ exProcess :: Prog (ProcessI IO) ()
 exProcess = do
     liftBase $ putStrLn "Beginn."
     inChild <- lift Fork
+    let debug msg = liftBase $ putStrLn $ (if inChild then "[K]" else "[E]") ++ " " ++ msg
     if inChild
         then do
-            liftBase $ putStrLn "[K] Im Kindprozess."
+            debug "Im Kindprozess."
             forM_ [1..5] $ \n -> do
                 when (even n) $ lift Yield
-                liftBase $ putStrLn $ "[K] " ++ show n
-            liftBase $ putStrLn "[K] Fertig im Kind."
+                debug $ show n
+            debug "Fertig im Kind."
             lift Stop
         else do
-            liftBase $ putStrLn "[E] Im Elternprozess."
+            debug "Im Elternprozess."
             forM_ [10..15] $ \n -> do
                 when (even n) $ lift Yield
-                liftBase $ putStrLn $ "[E] " ++ show n
-            liftBase $ putStrLn "[E] Fertig im Elternprozess."
-    liftBase $ putStrLn "Ganz fertig."
+                debug $ show n
+            debug "Fertig im Elternprozess."
+    debug "Ganz fertig (nur der Elternprozess sollte hierhin gelangen)."
 
 
 --------------------------------------------------------------------------------
