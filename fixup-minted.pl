@@ -3,6 +3,9 @@
 use warnings;
 use strict;
 
-s/\\PYGdefault{err}{∷}/\\PYGdefault{o+ow}{∷}/g;
-s/\\PYGdefault{err}{⇒}/\\PYGdefault{o+ow}{⇒}/g;
-s/\\PYGdefault{err}{→}/\\PYGdefault{o+ow}{→}/g;
+s/::/\\ensuremath{::}/g;
+s/=>/\\ensuremath{\\Rightarrow}/g;
+s/->/\\ensuremath{\\rightarrow}/g;
+s/<-/\\ensuremath{\\leftarrow}/g;
+s/>=/\\ensuremath{\\geq}/g;
+s/<=/\\ensuremath{\\leq}/g;
