@@ -26,7 +26,7 @@ unendlich groß ist*.
 *** Hintergrund: Abzählbarkeit und Überabzählbarkeit
 
 Eine Menge heißt genau dann *abzählbar*, wenn es eine unendliche Liste gibt, in
-der alle Elemente der Liste vorkommen.
+der alle Elemente der Menge vorkommen.
 
 Prototypbeispiel: Die Menge N der natürlichen Zahlen ist abzählbar.
 
@@ -106,7 +106,7 @@ Sei `p :: [Bool] -> Bool` ein beliebiges Prädikat.
 Falls `p` erfüllbar ist, dann soll `exists p` ein Zeuge dieser Erfüllbarkeit
 sein (in einem Maybe verpackt), also eine 0/1-Folge `xs`, sodass `p xs`.
 
-Falls ``p nicht erfüllbar ist, soll `exists p` `Nothing` sein.
+Falls `p` nicht erfüllbar ist, soll `exists p` `Nothing` sein.
 
 > exists :: ([Bool] -> Bool) -> Maybe [Bool]
 > exists p = if p xs then Just xs else Nothing
