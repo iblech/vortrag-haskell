@@ -9,3 +9,4 @@ s/->/\\ensuremath{\\rightarrow}/g;
 s/<-/\\ensuremath{\\leftarrow}/g;
 s/>=/\\ensuremath{\\geq}/g;
 s/<=/\\ensuremath{\\leq}/g;
+s/>>/\\ensuremath{\\gg}/g;
