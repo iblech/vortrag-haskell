@@ -10,13 +10,7 @@
 \usepackage[all]{xy}
 \usepackage[protrusion=true,expansion=false]{microtype}
 
-\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
-\DeclareMathSymbol{\varheart}{\mathalpha}{extraup}{86}
-\DeclareMathSymbol{\vardiamond}{\mathalpha}{extraup}{87}
-
-\DeclareUnicodeCharacter{2237}{$\dblcolon$}
-\DeclareUnicodeCharacter{21D2}{$\Rightarrow$}
-\DeclareUnicodeCharacter{2192}{$\rightarrow$}
+\hypersetup{colorlinks=true}
 
 \title[Initiale Algebren]{\smiley{} Initiale Algebren \smiley}
 \author[Augsburger Curry Club]{}
@@ -134,7 +128,7 @@
 
   Wir klären heute folgende Frage: Was bedeutet
   \begin{minted}{haskell}
-     data Nat = Zero | Succ Nat
+             data Nat = Zero | Succ Nat
   \end{minted}
   eigentlich wirklich?
   \medskip
@@ -156,15 +150,13 @@
   \end{itemize}
 
   \begin{minted}{haskell}
--- Beispielfunktor
-data F a = Nil | Cons Int a
+data F a = Nil | Cons Int a  -- Beispielfunktor
 
 instance Functor F where
     fmap f Nil        = Nil
     fmap f (Cons x r) = Cons x (f r)
 
--- Beispielalgebra
-productA :: F Int -> Int
+productA :: F Int -> Int  -- Beispielalgebra
 productA Nil        = 1
 productA (Cons x r) = x * r
   \end{minted}
@@ -179,7 +171,7 @@ productA Nil        = 1
 productA (Cons x r) = x * r
 
 lengthA :: F Int -> Int
-lengthA Nil        = 0    
+lengthA Nil        = 0
 lengthA (Cons _ r) = 1 + r
 
 allNonzeroA :: F Bool -> Bool
@@ -188,13 +180,32 @@ allNonzeroA (Cons x r) = x /= 0 && r
   \end{minted}
 \end{frame}
 
+\note{\justifying
+  Eine Algebra für einen Funktor~$F$ kann man sich vorstellen wie die Anleitung
+  für einen~$F$-förmigen Rekursionsschritt. Die Rekursion selbst wird aber
+  nicht ausgeführt. Algebren machen Ideen, wie eine Rekursion zu führen sei,
+  zu first-class values.
+  \medskip
+
+  Eine Algebra muss keinerlei Axiome erfüllen (anders als bei Monoiden, Gruppen
+  oder Ringen). Das erklärt ihr universelles Vorkommen.
+  \medskip
+
+  Ist der verwendete Funktor~$F$ der zugrundeliegende Funktor einer Monade, so
+  kann man Axiome an die Algebra stellen. Dann spricht man von "`Algebren
+  für Monaden"'. In gewisser Hinsicht sind sie für die Mathematik, Logik und
+  Informatik noch wichtiger als Algebren für Funktoren. Sie sind aber nicht
+  Gegenstück dieses Vortrags.
+  \par
+}
+
 \begin{frame}[fragile]{Ein besonderes Beispiel}
   \begin{minted}{haskell}
 data F a = Nil | Cons Int a
 
-prodA :: F Int -> Int
-prodA Nil        = 1
-prodA (Cons x r) = x * r
+productA :: F Int -> Int
+productA Nil        = 1
+productA (Cons x r) = x * r
 
 allNonzeroA :: F Bool -> Bool
 allNonzeroA Nil        = True
@@ -214,7 +225,7 @@ initialA (Cons x r) = x : r
   $\alpha : F(A) \to A$ und $\beta : F(B) \to B$ ist ein Morphismus
   $g : A \to B$
   sodass das folgende Diagramm kommutiert.
-  \[ \xymatrix{
+  \[ \xymatrixcolsep{3pc}\xymatrixrowsep{3pc}\xymatrix{
     F(A) \ar[r]^\alpha\ar[d]_{\operatorname{fmap} g} & A \ar[d]^g \\
     F(B) \ar[r]_\beta & B
   } \]
@@ -224,7 +235,7 @@ data F a = Nil | Cons Int a
 
 g :: Int -> Bool
 g x = x /= 0
--- g . prodA = allNonzeroA . fmap g
+-- g . productA = allNonzeroA . fmap g
   \end{minted}
 \end{frame}
 
@@ -242,29 +253,53 @@ initialA :: F [Int] -> [Int]
 initialA Nil        = []
 initialA (Cons x r) = x : r
 
-cata :: (F a -> a) -> [Int] -> a
-cata g []     = g Nil
-cata g (x:xs) = g (Cons x (cata f xs))
--- cata g . initA = g . fmap (cata g)
+cata :: (F a -> a) -> ([Int] -> a)
+cata beta []     = beta Nil
+cata beta (x:xs) = beta (Cons x (cata f xs))
+-- cata beta . initialA = beta . fmap (cata beta)
 
 product :: [Int] -> Int
 product = cata productA
  \end{minted}
 \end{frame}
 
+\note{\justifying
+  Eine~$F$-Algebra~$A$ heißt genau dann \emph{initial}, wenn es genau einen
+  Algebrenmorphismus~$A \to B$ in jede~$F$-Algebra~$B$ gibt.
+  \medskip
+
+  Ist~\texttt{beta :: F a -> a} eine solche beliebige~\texttt{F}-Algebra, so
+  ist~\texttt{cata beta :: [Int] -> a} dieser eindeutige Morphismus.
+  \par
+}
+
+\note{\justifying
+  Viele (aber nicht alle) Datentypen "`von endlichen Dingen"' in Haskell
+  sind Beispiele für initiale Algebren:
+
+  \inputminted{haskell}{images/initial-algebras.hs}
+
+  Entsprechend sind viele (struturell-)rekursive Funktionen Beispiele für
+  Katamorphismen -- also Morphismen, die uns die universelle Eigenschaft der
+  initialen Algebren schenken.
+  \par
+}
+
 \begin{frame}[fragile]{Gibt es immer initiale Algebren?}
   Sei~$F : \C \to \C$ ein Funktor. Gibt es eine initiale~$F$-Algebra?
   \pause
-  Antwort: \hil{Manchmal.}
+  Antwort: \hil{Manchmal} (hängt von~$\C$ und~$F$ ab). Aber in
+  der Kategorie der Haskell-Typen und Haskell-Funktionen immer (zumindest
+  moralisch), denn man kann sie explizit konstruieren:
+  \medskip
 
   \begin{minted}{haskell}
 data Mu f = MkMu { outF :: f (Mu f) }
--- mit sozialer Vereinbarung
--- MkMu :: f (Mu f) -> Mu f
--- outF :: Mu f     -> f (Mu f)
+-- mit sozialer Vereinbarung, nur "endliche" Werte zu
+-- betrachten. Der Morphismenanteil der initialen
+-- Algebra ist MkMu :: f (Mu f) -> Mu f.
 
-cata :: (Functor f)
-     => (f a -> a) -> (Mu f -> a)
+cata :: (Functor f) => (f a -> a) -> (Mu f -> a)
 cata g (MkMu r) = g (fmap (cata g r))
   \end{minted}
   \pause
@@ -273,6 +308,20 @@ cata g (MkMu r) = g (fmap (cata g r))
   heraus durch Rekursion angeben kann.}
 \end{frame}
 
+\note{\justifying
+  Kategorielles Fun Fact: Ist eine Kategorie sowohl vollständig (besitzt für
+  jedes kleine Diagramm eines Limes) als auch "`algebraisch vollständig"'
+  (besitzt für jeden Endofunktor eine initiale Algebra), so ist sie schon dünn
+  (je zwei parallele Morphismen sind gleich), kommt also von einer Quasiordnung
+  her.
+  \medskip
+
+  Das ist ein
+  \href{https://cstheory.stackexchange.com/questions/21028/algebraically-compact-categories}{Theorem
+  von Freyd}.
+  \par
+}
+
 \begin{frame}{Endlichkeit}
   Initiale Algebren modellieren Datentypen, für die jeder Wert "`endlich"' ist.
   \medskip
@@ -280,7 +329,15 @@ cata g (MkMu r) = g (fmap (cata g r))
   Tatsächlich kann man in vielen Kategorien die initale Algebra eines
   Funktors~$F$ gewinnen als
   \[ \mu F = \operatorname{colim}(\emptyset \to F(\emptyset) \to F(F(\emptyset)) \to \cdots). \]
+  Dabei ist~$\emptyset$ das initiale Objekt (der leere Datentyp~\texttt{Void}).
 \end{frame}
+
+\note{\justifying
+  Ist~$F$ der Funktor der vorherigen Folien, so realisiert die gezeigte Formel
+  für~$\mu F$ als (Ko-)Limes der Datentypen der leeren Listen, der höchstens
+  einelementigen Listen, der höchstens zweielementigen Listen, und so
+  weiter.\par
+}
 
 
 \subsection{Lambeks Lemma}
@@ -290,9 +347,30 @@ cata g (MkMu r) = g (fmap (cata g r))
   Dann ist~$\alpha$ ein Isomorphismus (besitzt einen Umkehrmorphismus).
   \medskip
 
+  In diesem Sinn löst~$A$ die Fixpunkt"`gleichung"'
+  \[ X \cong F(X). \]
   Anschaulich: Mit~$\alpha$ konstruiert man neue Werte aus alten. \\
   Die Isomorphie bedeutet, dass jeder Wert aus anderen Werten konstruierbar ist.
+  \bigskip
+  \pause
+
+  \centering
+  \hil{Übungsaufgabe!} \\
+  Wie viele Hilfsmorphismen benötigst du?
+  \par
 \end{frame}
+
+\note{\justifying
+  Eine Art Umkehrung von Lambeks Lemma gilt nicht: Ist der
+  Strukturmorphismus~$F(A) \to A$ einer Algebra zufälligerweise ein
+  Isomorphismus, so heißt das noch nicht, dass sie eine initiale Algebra ist.
+  \medskip
+
+  Ist die Basiskategorie~$\C$ nämlich eine Partialordnung, so sind initiale
+  Algebren dasselbe wie kleinste Fixpunkte und terminale Koalgebren dasselbe
+  wie größte Fixpunkte. Aber nicht jeder Fixpunkt ist ein kleinster.
+  \par
+}
 
 
 \section{Terminale Koalgebren}
@@ -314,12 +392,48 @@ cata g (MkMu r) = g (fmap (cata g r))
 
   \begin{minted}{haskell}
 data Nu f = MkNu { outF :: f (Nu f) }
+-- ohne sozialen Vertrag!
 
-ana :: (Functor f)
-    => (a -> f a) -> (a -> Nu f)
-ana g x = MkNu (fmap (ana g) (g x))
+ana :: (Functor f) => (a -> f a) -> (a -> Nu f)
+ana alpha x = MkNu (fmap (ana alpha) (alpha x))
   \end{minted}
 \end{frame}
+
+\note{\justifying
+  Eine Koalgebra für einen Funktor~$F$ kann man sich vorstellen wie die Anleitung
+  für eine~$F$-förmige Beobachtung. Die Beobachtung wird aber nicht "`bis zum
+  Ende"', verschachtelt, korekursiv ausgeführt, sondern nur für einen Schritt
+  lang. Koalgebren machen also Ideen, wie eine Korekursion zu führen sei, zu
+  first-class values.
+  \medskip
+
+  Eine \emph{terminale Koalgebra} ist eine Koalgebra~$\beta : A \to F(A)$,
+  sodass für jede Koalgebra~$\alpha : Z \to F(Z)$ genau ein Morphismus~$g : Z
+  \to A$ mit $\beta \circ g = \operatorname{fmap} g \circ \alpha$ existiert.
+  \[ \xymatrixcolsep{3pc}\xymatrixrowsep{3pc}\xymatrix{
+    Z \ar[r]^\alpha\ar[d]_{g} & F(Z) \ar[d]^{\operatorname{fmap} g} \\
+    A \ar[r]_\beta & F(A)
+  } \]
+}
+
+\note{\justifying
+  Wir haben bereits gesehen, dass viele Datentypen "`von endlichen Dingen"' in
+  Haskell initiale Algebren sind. Viele Datentypen "`von nicht notwendigerweise
+  endlichen Dingen"' sind terminale Koalgebren:
+
+  \inputminted{haskell}{images/terminal-coalgebras.hs}
+
+  Entsprechend sind viele (struturell-)korekursive Funktionen Beispiele für
+  Anamorphismen -- also Morphismen, die uns die universelle Eigenschaft der
+  terminalen Koalgebren schenken.
+  \par
+}
+
+\note{\justifying
+  Übungsaufgabe: Wieso spricht niemand über terminale Algebren und initiale
+  Koalgebren?
+  \par
+}
 
 
 \section{Vergleich}
@@ -327,7 +441,7 @@ ana g x = MkNu (fmap (ana g) (g x))
 \begin{frame}[fragile]{Vergleich}
   Initiale Algebren modellieren Datentypen, für die man Funktionen
   heraus durch Rekursion angeben kann.
-  
+
   \begin{itemize}
     \item Konstruktion von Werten mittels $F(A) \to A$
     \item \mintinline{haskell}{cata :: (F a -> a) -> (Mu F -> a)}
@@ -346,6 +460,52 @@ ana g x = MkNu (fmap (ana g) (g x))
   \end{itemize}
 \end{frame}
 
+\note{\justifying
+  Das Wesentliche an einer initialen Algebra~$A$ ist, dass man vermöge der
+  mitgegebenen Funktion~$F(A) \to A$ Werte von~$A$ \emph{konstruieren} kann.
+  Wir stellen uns~$F(A)$ als den Datentyp der Konstruktionsbeschreibungen für
+  Werte von~$A$ vor; die Funktion~$F(A) \to A$ nimmt eine solche Beschreibung
+  und führt sie aus.
+  \medskip
+
+  \emph{Beispiel:} \texttt{initialA (Cons x xs)} konstruiert die verlängerte
+  Liste \texttt{x:xs}.
+  \medskip
+
+  Das Wesentliche an einer terminalen Koalgebra~$A$ ist, dass man vermöge der
+  mitgegebenen Funktion~$A \to F(A)$ Werte von~$A$ \emph{beobachten} kann.
+  Wir stellen uns~$F(A)$ als den Datentyp der möglichen Beobachtungen über
+  Werte von~$A$ vor.
+  \medskip
+
+  \emph{Beispiel:} \texttt{terminalCoA xs} beobachtet, ob die übergebene
+  Liste~\texttt{xs} leer ist oder eine Cons-Zelle ist (aus einem vorderen
+  Element~\texttt{x} und einer Restliste~\texttt{xs'} besteht).
+  \par
+}
+
+\note{\justifying
+  Lambeks Lemma garantiert, dass die zu einer initialen Algebra gehörige
+  Funktion~$F(A) \to A$ (bzw. die zu einer terminalen Koalgebra gehörige
+  Funktion~$A \to F(A)$) umkehrbar ist. Daher kann man aus einer initialen
+  Algebra eine Koalgebra (welche nur in pathologischen Fällen terminal
+  sein wird) und dual aus einer terminalen Koalgebra eine Algebra machen.
+  \medskip
+
+  \emph{Beispiel:} Das Wesentliche vom Datentyp der endlichen Listen ist, dass
+  man seine Werte aus Grundbestandteilen (\texttt{Nil} und \texttt{Cons x})
+  sukzessive kontruieren kann. Trotzdem kann man seine Werte auch beobachten
+  (prüfen, ob ein Wert \texttt{Nil} ist oder eine Cons-Zelle ist).
+  \medskip
+
+  \emph{Beispiel:} Das Wesentliche vom Datentyp der nicht notwendigerweise
+  endlichen Listen ist, dass man seine Werte beobachten kann (ist eine solche
+  Liste leer oder eine Cons-Zelle?). Trotzdem kann man aber auch seine Werte
+  konstruieren (etwa an eine gegebene beliebig lange Liste vorne ein Element
+  anfügen).
+  \par
+}
+
 
 \section{Ausblick}
 
@@ -361,10 +521,42 @@ ana g x = MkNu (fmap (ana g) (g x))
     \item Haskell: boldly going where no functor has gone before.
 
     \begin{minted}{haskell}
-data Seltsam = MkSeltsam
-    { f :: Seltsam -> Bool }
+data Seltsam = MkSeltsam (Seltsam -> Bool)
     \end{minted}
   \end{itemize}
 \end{frame}
+
+\note{\justifying
+  Die Theorie der initialen Algebren und terminalen Koalgebren ist nur der
+  Anfang. Für Datentypen, die durch eine kompliziertere Rekursionsgleichung
+  gegeben sind (etwa, wo der verwendete Funktor kontra- statt kovariant ist; wo
+  der verwendete Funktor in einem Argument ko- und in einem anderen
+  kontravariant ist; wo es gar keinen erkennbaren Funktor mehr gibt), benötigt
+  man eine leistungsfähigere Theorie.
+  \medskip
+
+  Die Kategorie der Domänen hat sich als sehr leistungsfähig erwiesen. In ihr
+  gibt es viel mehr als nur initiale Algebren und terminale Koalgebren.
+  \par
+}
+
+\note{\justifying
+  Mehr zum seltsamen Typ hat
+  \href{http://blog.sigfpe.com/2008/01/type-that-should-not-be.html}{Dan Piponi
+  zu berichten}. Der Typ ist durchaus beachtenswert, liefert er doch ein
+  Gegenbeispiel zu einer (internen Variante von) Cantors Theorem:
+  \medskip
+
+  In früheren Curry-Club-Vorträgen haben wir gesehen, dass keine Menge~$X$
+  isomorph zu ihrer Potenzmenge~$\mathcal{P}(X)$ sein kann. ("`Isomorph"' heißt
+  hier "`gleich mächtig"' und die Potenzmenge ist die Menge aller Teilmengen
+  von~$X$, verallgemeinerbarer formuliert als Menge aller Abbildungen von~$X$
+  nach~Bool.)
+  \medskip
+
+  Eine Domäne~$X$ kann aber durchaus isomorph zu ihrer "`Potenzdomäne"'~$(X \to
+  \mathrm{Bool})$ sein. Das ist etwa bei \texttt{Seltsam} der Fall.
+  \par
+}
 
 \end{document}
