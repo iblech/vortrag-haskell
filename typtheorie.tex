@@ -1,0 +1,704 @@
+\documentclass[12pt,compress,ngerman,utf8,t]{beamer}
+\usepackage{etex}
+\usepackage[ngerman]{babel}
+\usepackage{ragged2e}
+\usepackage{tabto}
+\usepackage{wasysym}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage[all]{xy}
+\usepackage[protrusion=true,expansion=false]{microtype}
+
+\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
+\DeclareMathSymbol{\varheart}{\mathalpha}{extraup}{86}
+\DeclareMathSymbol{\vardiamond}{\mathalpha}{extraup}{87}
+
+\DeclareUnicodeCharacter{2237}{$\dblcolon$}
+\DeclareUnicodeCharacter{21D2}{$\Rightarrow$}
+\DeclareUnicodeCharacter{2192}{$\rightarrow$}
+
+\title[Was sind und was sollen die Typen?]{\smiley{} Was sind und was sollen die Typen? \smiley}
+\author[Augsburger Curry Club]{\textcolor{white}{Ingo Blechschmidt \\ Curry Club Augsburg}}
+\date[2016-07-14]{\textcolor{white}{14. April 2016}}
+
+\usetheme{Warsaw}
+
+\useinnertheme{rectangles}
+
+\usecolortheme{seahorse}
+\definecolor{mypurple}{RGB}{150,0,255}
+\setbeamercolor{structure}{fg=mypurple}
+\definecolor{myred}{RGB}{150,0,0}
+\setbeamercolor*{title}{bg=myred,fg=white}
+\setbeamercolor*{titlelike}{bg=myred,fg=white}
+
+\usefonttheme{serif}
+\usepackage[T1]{fontenc}
+\usepackage{libertine}
+
+\newcommand{\slogan}[1]{%
+  \begin{center}%
+    \setlength{\fboxrule}{2pt}%
+    \setlength{\fboxsep}{8pt}%
+    {\usebeamercolor[fg]{item}\fbox{\usebeamercolor[fg]{normal text}\parbox{0.33\textwidth}{#1}}}%
+  \end{center}%
+}
+
+\definecolor{darkred}{RGB}{220,0,0}
+\newcommand{\hcancel}[5]{%
+    \tikz[baseline=(tocancel.base)]{
+        \node[inner sep=0pt,outer sep=0pt] (tocancel) {#1};
+        \draw[darkred, line width=1mm] ($(tocancel.south west)+(#2,#3)$) -- ($(tocancel.north east)+(#4,#5)$);
+    }%
+}%
+
+\renewcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\Hask}{\mathrm{Hask}}
+\newcommand{\defeq}{\vcentcolon=}
+\newcommand{\base}{\mathsf{base}}
+\newcommand{\lloop}{\mathsf{loop}}
+\newcommand{\surf}{\mathsf{surf}}
+\newcommand{\merid}{\mathsf{merid}}
+\renewcommand{\U}{\mathcal{U}}
+\newcommand{\ap}{\mathsf{ap}}
+\newcommand{\IsEquiv}{\mathsf{IsEquiv}}
+\newcommand{\fib}{\mathsf{fib}}
+\newcommand{\UIP}{\mathsf{UIP}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\inv}{\mathsf{inv}}
+\newcommand{\defeqv}{\vcentcolon\equiv}
+\newcommand{\IsContr}{\mathsf{IsContr}}
+\newcommand{\refl}{\mathsf{refl}}
+\newcommand{\IsMereProp}{\mathsf{IsMereProp}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ct}{%
+  \mathchoice{\mathbin{\raisebox{0.5ex}{$\displaystyle\centerdot$}}}%
+             {\mathbin{\raisebox{0.5ex}{$\centerdot$}}}%
+             {\mathbin{\raisebox{0.25ex}{$\scriptstyle\,\centerdot\,$}}}%
+             {\mathbin{\raisebox{0.1ex}{$\scriptscriptstyle\,\centerdot\,$}}}
+}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+\setbeamertemplate{title page}[default][colsep=-1bp,rounded=false,shadow=false]
+\setbeamertemplate{frametitle}[default][colsep=-2bp,rounded=false,shadow=false,center]
+
+\newcommand*\oldmacro{}%
+\let\oldmacro\insertshorttitle%
+\renewcommand*\insertshorttitle{%
+  \oldmacro\hfill\insertframenumber\,/\,\inserttotalframenumber\hfill}
+
+\newcommand{\hil}[1]{{\usebeamercolor[fg]{item}{\textbf{#1}}}}
+\setbeamertemplate{frametitle}{%
+  \vskip1em%
+  \leavevmode%
+  \begin{beamercolorbox}[dp=1ex,center]{}%
+      \usebeamercolor[fg]{item}{\textbf{\textsf{\Large \insertframetitle}}}
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hfill%
+  \begin{beamercolorbox}[ht=2.25ex,dp=1ex,right]{}%
+    \usebeamerfont{date in head/foot}
+    \insertframenumber\,/\,\inserttotalframenumber\hspace*{1ex}
+  \end{beamercolorbox}%
+  \vskip0pt%
+}
+
+\newcommand{\backupstart}{
+  \newcounter{framenumberpreappendix}
+  \setcounter{framenumberpreappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+  \addtocounter{framenumberpreappendix}{-\value{framenumber}}
+  \addtocounter{framenumber}{\value{framenumberpreappendix}}
+}
+
+\setbeameroption{hide notes}
+\setbeamertemplate{note page}[plain]
+
+\newcommand{\imgslide}[1]{{\usebackgroundtemplate{\parbox[c][\paperheight][c]{\paperwidth}{\centering\includegraphics[height=\paperheight]{#1}}}\begin{frame}[plain]\end{frame}}}
+
+\begin{document}
+
+% http://www.unoosa.org/res/timeline/index_html/space-2.jpg
+{\usebackgroundtemplate{\includegraphics[height=\paperheight]{images/space}}
+\frame{\titlepage}}
+
+{\usebackgroundtemplate{\includegraphics[height=\paperheight]{images/dedekind-titleslide}}
+\frame{}}
+
+\frame{\tableofcontents}
+
+
+\section{Vorgeschichte}
+
+\begin{frame}{Was sind Grundlagen?}
+  \begin{itemize}
+    \item Grundlagen liefern den logischen Rahmen für Mathe.
+    \item Ihre Details spielen oft keine Rolle.
+    \item Aber ihre wesentlichen Konzepte schon.
+  \end{itemize}
+
+  \bigskip
+  \centering
+  \includegraphics[scale=0.25]{images/bridge}
+  \par
+\end{frame}
+
+\note{
+  \begin{itemize}
+    \item\justifying Foundations allow us to be maximally precise.
+    \item A \emph{proof} as commonly understood is really a shorthand for a
+    (never spelled out) fully formal proof.
+    \item Unlike informal proofs, the correctness of a formal proof can be
+    checked mechanically.
+  \end{itemize}
+
+  %\img{0.5}{logicomix}{Logicomix: An Epic Search for Truth}
+}
+\note{
+  \begin{itemize}
+    \item\justifying There is no such theorem as ``the sun system is stable if
+    and only if the following large cardinal axiom holds''. Results depend only
+    very occasionally on special foundational axioms.
+
+    \item Bridges will continue to hold even if a logician discovers an
+    inconsistency in Zermelo--Fraenkel set theory.
+  \end{itemize}
+}
+
+
+\begin{frame}[plain,c]
+  \begin{columns}[c]
+    \begin{column}{0.6\textwidth}
+      \includegraphics[scale=0.8]{images/hilbert}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      Aus dem Paradies, das Cantor uns geschaffen, soll uns niemand vertreiben
+      können.\medskip
+
+      -- David Hilbert, 1926
+
+      \bigskip
+      \bigskip
+      \includegraphics[width=\textwidth]{images/ordinal-numbers}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+{\logo{\includegraphics[scale=0.3]{images/paradox}}
+\begin{frame}{Paradoxa}
+  \begin{itemize}
+    \item Paradox von Richard
+    \item Paradox von Curry
+    \item Die Russellsche Antinomie
+  \end{itemize}
+
+  Was ist all diesen Paradoxa gemein?
+  \pause
+
+  \hil{Selbstbezüglichkeit.}
+  \medskip
+
+  Lösungsvorschläge: \\
+  Mengenlehre, Typtheorie.
+\end{frame}}
+
+\imgslide{images/principia-mathematica}
+\imgslide{images/philosophiae-newton}
+\imgslide{images/principia-mathematica-1plus1}
+
+
+\section{Mengenlehre}
+
+\begin{frame}{Mengenlehre}
+  \slogan{Alles ist eine Menge.}
+  \bigskip
+
+  \begin{itemize}
+    \item $0 \defeq \emptyset$, \quad
+          $1 \defeq \{0\}$, \quad
+          $2 \defeq \{0,1\}$, \quad
+          $\ldots$
+    \item $(x,y) \defeq \{ \{x\}, \{x,y\} \}$ \quad (Kuratowski-Paarung)
+    \item $(x,y,z) \defeq (x,(y,z))$
+    \item Abbildungen sind Tupel $(X,Y,R)$ mit $R \subseteq X \times Y$ und
+    \ldots
+    \item \hil{Eingeschränktes Mengenkomprehensionsprinzip.}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Mengenlehre?}
+  Mengentheoretische Grundlagen \ldots
+  \begin{itemize}
+    \item spiegeln nicht die typisierte mathematische Praxis wieder,
+    \item respektieren nicht Äquivalenz von Strukturen und
+    \item benötigen komplexe Kodierungen von höheren Konzepten --
+    zum Nachteil interaktiver Beweisumgebungen.
+  \end{itemize}
+\end{frame}
+
+
+\section{Extensionale Typtheorie}
+
+{\logo{\includegraphics[scale=0.3]{images/typsystem}}
+\begin{frame}{Extensionale Typtheorie}
+  \begin{itemize}
+    \item In Typtheorie gibt es \hil{Werte} und \hil{Typen}.
+    \item Jeder Wert ist von genau einem Typ.
+    \item Es gibt kein globales Gleichheitsprädikat.
+  \end{itemize}
+
+  Aus meiner Sicht beschreibt extensionale Typtheorie genau die Vorstellung von
+  Mathematikerinnen.
+  \medskip
+
+  Wie spezifiert man ein Typsystem?
+\end{frame}}
+
+
+\section{Intensionale Typtheorie}
+
+{\logo{\includegraphics[scale=0.1]{images/torus}}
+\begin{frame}{Intensionale Typtheorie}
+  \begin{itemize}
+    \item Intensionale Typtheorie ist wie extensionale Typtheorie,
+    nur ohne das Konzept von Aussagen.
+    \item Homotopietyptheorie ist intensionale Typtheorie plus das
+    Univalenzaxiom.
+  \end{itemize}
+\end{frame}}
+
+%\frame[t]{\frametitle{What is homotopy type theory?}
+%  \begin{itemize}
+%    \item Homotopy type theory is a new foundational theory.
+%    \item Basic notions have a homotopy-theoretic flavour.
+%    \item One can start doing ``real mathematics'' right away, without complex encodings.
+%    \item Initiated by Voevodsky in 2005.
+%  \end{itemize}
+%
+%  %\img{0.2}{authors}{Some participants of the IAS special year}
+%}
+
+%\frame<1>[t,label=awesome]{\frametitle{What is homotopy type theory?}
+%  Homotopy type theory \ldots
+%  \begin{itemize}
+%    \item is elegant,
+%    \item reflects mathematical practice,
+%    \item contains wondrous new concepts,
+%    \item ensures that everything respects equivalences,
+%    \item simplifies the plumbing of homotopy theory,
+%    \item allows for accessible computer formalization.
+%  \end{itemize}
+%}
+%
+%\note{
+%  \begin{itemize}
+%    \item\justifying Homotopy type theory is approximately \emph{intensional Martin-Löf type
+%    theory} (existing since the 1970s) plus the new \emph{univalence axiom}.
+%    \item After repeatedly experiencing mistakes in his field going unnoticed
+%    for several years, Voevodsky wanted to work with proof assistants. He went
+%    public in 2009.
+%    \item Voevodsky: ``This story got me scared. Starting from 1993 multiple groups of
+%    mathematicians studied the [\ldots] paper at seminars and used it in their
+%    work and none of them noticed the mistake.
+%
+%    And it clearly was not an accident. A technical argument by a trusted author, which 
+%    is hard to check and looks similar to arguments known to be correct, is
+%    hardly ever checked in detail.''
+%  \end{itemize}
+%}
+
+
+\frame[t]{\frametitle{Gleichheitstypen}
+  Sei~$X$ eine Menge und seien~$x,y \in X$ Elemente.
+  \begin{itemize}
+    \item Dann ist ``$x=y$'' eine \hil{Aussage}.
+  \end{itemize}
+  \bigskip
+
+  Sei~$X$ ein Typ in intensionaler Typtheorie und seien~$x,y : X$ Werte.
+  \begin{itemize}
+    \item Es gibt einen \hil{Gleichheitstyp} $\Id_X(x,y)$ or $(x =_X y)$.
+    \item Um ``$x=y$'' nachzuweisen,
+    gib einen Wert von~$(x = y)$ an.
+    \item Wir haben $\refl_x : (x = x)$.
+    \item Gleichheitstypen können Null oder \hil{viele} Werte enthalten!
+  \end{itemize}
+  Intuition: $(x = y)$ ist der Typ der \hil{Beweise} von ``$x=y$''.
+
+  \pause
+  Intuition: $(x = y)$ ist der Typ der \hil{Pfade} $x \leadsto y$.
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying Note that we use logical terminology. A proposition is merely a
+    statement, not necessarily a true statement.
+    \item In an intensional type theory, propositions are not an extra part of
+    the language distinct from values and types.
+    \item Instead, \emph{propositions are types}.
+    \item To prove a proposition means to exhibit a value of it.
+    Such a value can be thought of as a \emph{proof} or \emph{witness}.
+    \item We have \emph{proof relevance}.
+    \item Types whose values are all equal -- types for which merely knowing that they
+    are inhabited is all there is to know -- are called \emph{mere propositions}. See below for
+    $\IsMereProp$.
+  \end{itemize}
+}
+
+\note{
+  \justifying
+  Examples for more complex propositions (types):
+  \begin{itemize}
+    \item ``$X$ is a subsingleton'': \tabto{4.9cm}
+    $\prod_{x:X} \prod_{y:X} (x=y)$
+    \item ``Addition is commutative'': \tabto{4.9cm}
+    $\prod_{n:\NN} \prod_{m:\NN} (n+m = m+n)$
+    \item ``Every number is even'': \tabto{4.9cm}
+    $\prod_{n:\NN} \sum_{m:\NN} (n=2m)$
+  \end{itemize}
+
+  By reading ``for all $x:X$'' for ``$\prod_{x:X}$'' and ``there exists $x:X$''
+  for~``$\sum_{x:X}$'', these types can be interpreted in a simple logical way.
+  But at the same time, they can be read in geometric/homotopy-theoretic terms;
+  see below.
+  \par
+}
+
+\note{
+  The type of monoid structures on a type~$X$ is
+  \begin{multline*}
+    \sum_{\circ:X \times X \to X}
+    \sum_{e:X}
+    \Biggl(
+      \Bigl(\prod_{x:X} (e \circ x = x)\Bigr) \times
+      \Bigl(\prod_{x:X} (x \circ e = x)\Bigr) \times \\
+      \Bigl(\prod_{x,y,z:X} \bigl((x \circ y) \circ z = x \circ (y \circ z)\bigr)\Bigr)\Biggr).
+  \end{multline*}
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying Identity witnesses can be composed: Let $p : (x = y)$ and $q :
+    (y = z)$. Then there exists a canonically defined witness~$p \ct q : (x = z)$.
+
+    \item Composition of identity witnesses is associative. The proof of this
+    fact is a value of the type
+    \[ (p \ct (q \ct r) = (p \ct q) \ct r). \]
+  \end{itemize}
+}
+
+
+%\section{Homotopy theory in HoTT}
+%
+%\subsection{How are types like spaces?}
+%
+%\frame[t]{\frametitle{How are types like spaces?}
+%  \begin{center}\begin{tabular}{ll}
+%    \toprule
+%    homotopy theory & type theory \\\midrule
+%    \hil{space} $X$ & type $X$ \\
+%    \hil{point} $x \in X$ & value $x:X$ \\
+%    \hil{path} $x \leadsto y$ & value of $(x = y)$ \\
+%    \hil{(continuous) map} & value of $X \to Y$ \\
+%    \bottomrule
+%  \end{tabular}\end{center}
+%
+%  \begin{itemize}
+%    \item A \hil{homotopy} between maps $f, g : X \to Y$ is a value of
+%    \[ (f \simeq g) \defeqv \prod_{x:X} (f(x) = g(x)). \]
+%    \item A space $X$ is \hil{contractible} iff
+%    \[ \IsContr(X) \defeqv \sum_{x:X} \prod_{y:X} (x=y). \]
+%  \end{itemize}
+%}
+%
+%%\note{
+%%  \begin{center}
+%%    \scalebox{0.6}{\input{images/paths.pspdftex}}
+%%  \end{center}
+%%  \vspace{-1.3em}
+%%
+%%  \begin{itemize}
+%%    \item\justifying This type has values $x, y : X$.
+%%    \item The paths~$p$, $q$, and $r$ are values of~$(x = y)$.
+%%    \item Since~$p$ and~$q$ are homotopic, we have~$(p = q)$; a witness of this
+%%    fact is the value~$H : (p = q)$.
+%%    \item Because of the hole, $p$ (and~$q$) are not homotopic to~$r$. So $\neg(p
+%%    = r)$; more precisely, the type~$\neg(p=r) \defeqv ((p=r) \to
+%%    \boldsymbol{0})$ is inhabited, where~$\boldsymbol{0}$ is the \emph{empty
+%%    type}.
+%%    \item We have~$(x = y) \simeq \ZZ$, where~$\simeq$ denotes
+%%    \emph{equivalence}, to be discussed below.
+%%  \end{itemize}
+%%}
+%
+%\note{
+%  \begin{itemize}
+%    \item\justifying The type $(f \simeq g)$ is the type of homotopies
+%    between~$f$ and~$g$. It is read as the type of ``continuous families of
+%    paths $f(x) \leadsto g(x)$''.
+%
+%    \item To understand the definition of contractibility geometrically, one
+%    may not read it in logical terms: One may not read it as ``there exists a
+%    point~$x$ such that any point~$y$ is connected to~$x$''.
+%
+%    \item Instead, it should be read as follows: There exists a point~$x$ such
+%    that there is a \emph{continuous} way of associating to any point~$y$ a
+%    path~$x \leadsto y$. Convince yourself that this not possible for your
+%    favorite example of a non-contractible space (for instance, the circle).
+%
+%    \item A space is \emph{connected} if and only if
+%    \[ \sum_{x:X} \prod_{y:X} \|x=y\|_{-1}. \]
+%    Here, $\|(x=y)\|_{-1}$ is the \emph{$(-1)$-truncation} of~$(x = y)$; it is a
+%    mere proposition. See below.
+%  \end{itemize}
+%}
+
+\frame[t]{\frametitle{Induktive Definitionen}
+%  The \hil{interval} $I$ is generated by
+%  \begin{itemize}
+%    \item a point $0 : I$ and
+%    \item a point $1 : I$ and
+%    \item a path $\seg : (0 = 1)$.
+%  \end{itemize}
+%  Of course, we can show $I \simeq \boldsymbol{1}$.
+%  \bigskip
+%  \pause
+
+  Der \hil{Kreislinie} $S^1$ wird erzeugt von
+  \begin{itemize}
+    \item einem Punkt $\base : S^1$ und
+    \item einem Pfad $\lloop : (\base = \base)$.
+  \end{itemize}
+  \bigskip
+
+  Die \hil{Kugeloberfläche} $S^2$ wird erzeugt von
+  \begin{itemize}
+    \item einem Punkt $\base : S^2$ und
+    \item einem 2-Pfad $\surf : (\refl_\base = \refl_\base)$.
+  \end{itemize}
+  \bigskip
+
+  Der \hil{Torus} $T^2$ wird erzeugt von
+  \begin{itemize}
+    \item einem Punkt $b : T^2$,
+    \item einem Pfad $p : (b = b)$,
+    \item einem Pfad $q : (b = b)$ und
+    \item einem 2-Pfad $t : (p \ct q = q \ct p)$.
+  \end{itemize}
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying Note that a presentation of a type \emph{determines}, but does not
+    \emph{explicitly describe} its higher identity types.
+    \item Just like the free vector space spanned by set contains not only the
+    given elements, but also their linear combinations, the type given by a
+    higher inductive definition (or its higher identity types) may contain many
+    more values than explicitly listed.
+    \item For instance, there is a nontrivial element in $(\refl_{\refl_\base}
+    = \refl_{\refl_\base})$, where $\base : S^2$, corresponding to the
+    \emph{Hopf fibration}.
+    \item More generally, higher-dimensional paths are forced into existence by
+    \emph{proofs}. For instance, in~$(\base = \base)$ where $\base : S^1$,
+    there are the values~$\lloop \ct (\lloop \ct \lloop)$ and~$(\lloop \ct
+    \lloop) \ct \lloop$. They are the same by a witness of type~$(\lloop \ct
+    (\lloop \ct \lloop) = (\lloop \ct \lloop) \ct \lloop)$.
+    \item Also, different generators may turn out to give rise to the same
+    element.
+  \end{itemize}
+}
+
+\frame[t]{\frametitle{Pfadinduktion}
+  \hil{(Based) path induction} sagt aus: Gegeben
+  \begin{itemize}
+    \item ein Wert~$a$ eines Typs~$A$,
+    \item eine Typfamilie~$C : \prod_{x:A} ((a = x) \to \U)$ und
+    \item einen Wert~$c : C(a,\refl_a)$,
+  \end{itemize}
+  dann gibt es eine Funktion
+  \[ f : \prod_{x:A} \prod_{p:(a=x)} C(x,p) \]
+  mit~$f(a,\refl_a) \equiv c$.
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying In particular, in proving that a proposition depending on a value~$x$
+    and an identity witness~$p : (a = x)$ holds for all thoses values and
+    witnesses, it suffices to prove it for the special value~$a$ and the
+    canonical identity witness~$\refl_a$.
+
+    \item Note that this does not mean that any value of~$(a = x)$ is equal
+    to~$\refl_a$! Indeed, this claim is not even well-typed.
+
+    \item The induction principle only makes a statement about the whole \emph{type
+    family} of the~$(a = x)$'s with~$x$ varying, not about individual types.
+
+    \item Compare with the classical based path space: In it, any element (any
+    path starting at~$a$) is connected to the trivial path at~$a$. But this
+    does not mean that any path is homotopic to the trivial path.
+  \end{itemize}
+}
+
+\note{
+  \justifying
+  As an example, let's define the path reversal function
+  \[ \inv : \prod_{x:A} ((a = x) \longrightarrow (x = a)), \]
+  where~$a:A$ is a fixed value, by path induction. For this, we define the type
+  family
+  \[ C \defeqv ((x:A, p : (a = x)) \mapsto (x = a)) : \prod_{x:A} ((a = x) \to \U) \]
+  and note that we have the value
+  \[ c \defeqv \refl_a : C(a,\refl_a). \]
+  Therefore, by path induction, we obtain a function
+  \[ f : \prod_{x:A} \prod_{p:(a=x)} (x=a). \]
+  This is~$\inv$.
+}
+
+\note{
+  \begin{itemize}
+  \item\justifying
+  Working informally, we would write the construction more concisely:
+
+  ``Let~$p:(a=x)$ be given, we want to construct~$\inv(p) : (x=a)$.
+  By path induction, we may assume that~$p \equiv \refl_a$. In this case, we
+  define~$\inv(p)$ as~$\refl_a$.''
+
+  \item Here is how we construct the path composition function:
+
+  ``Let~$p:(a=b)$ and~$q:(b=c)$ be given. By path induction, we may assume
+  that~$p \equiv \refl_a$. Again by path induction, we may assume that~$q
+  \equiv \refl_a$. In this case, we define~$p \ct q$ as~$\refl_a$.''
+
+  \item Here is how to construct the function~$\ap_g : (x = y) \to (g(x) = g(y))$, if~$g$ is
+  some given function:
+
+  ``By path induction, it suffices to define~$\ap_g(p)$ when~$p$ is~$\refl_x$.
+  In this case, we declare~$\ap_g(p)$ to be~$\refl_{g(x)}$.''
+  \end{itemize}
+}
+
+\note{
+  \justifying
+  Path induction does not allow to replace any paths whatsoever by the
+  canonical reflexivity witnesses. For instance, the following ``proof'' of
+  \[ p \ct q = q \ct p \]
+  for all paths~$p$ and~$q$ is bogus:
+
+  ``By path induction, we may assume that~$p$ and~$q$ are~$\refl_a$. In this
+  case,~$p \ct q$ and~$q \ct p$ both equal~$\refl_a \ct \refl_a = \refl_a$.''
+
+  Indeed, the claimed statement is not even well-typed:
+  \[ \prod_{x,y,z:X} \prod_{p:(x=y)} \prod_{q:(y=z)}
+    (p \ct q = q \ct p). \]
+  The composition~$q \ct p$ is not defined. Weakening the statement to
+  \[ \prod_{x:X} \prod_{p:(x=x)} \prod_{q:(x=x)} (p \ct q = q \ct p) \]
+  does not help either, since in this statement there is no free endpoint,
+  so path induction does not apply.
+}
+
+
+\end{document}
+
+\subsection{What is the univalence axiom?}
+
+\frame[t]{\frametitle{What is the univalence axiom?}
+  An \hil{equivalence} is a function $f : X \to Y$ such that
+  \[ \IsEquiv(f) \defeqv \prod_{y:Y} \IsContr(\fib_f(y)). \]
+
+  Types $X$ and $Y$ are \hil{equivalent} iff
+  \[ (X \simeq Y) \defeqv \sum_{f : X \to Y} \IsEquiv(f). \]
+
+  The \hil{univalence axiom} states: The canonical function
+  \[ (X = Y) \longrightarrow (X \simeq Y) \]
+  is an equivalence, for all types $X$ and $Y$.
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying Read in logical terms, a function $f : X \to Y$ is an
+    equivalence if and only if for any~$y:Y$, the fiber~$\fib_f(y)$ is a
+    singleton, i.\,e.\@ if and only if~$f$ is bijective.
+    \item One can prove that~$\IsMereProp(\IsEquiv(f))$.
+    \item A value of~$(X \simeq Y)$ is a pair consisting of a function~$f : X
+    \to Y$ together with a proof that~$f$ is an equivalence.
+  \end{itemize}
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying Let~$X$ and~$Y$ be types, i.\,e.\@ values of the
+    universe~$\U$. Then there is the identity type~$(X = Y)$. What does it
+    look like?
+    \item Without the univalence axiom, this question does not have an answer;
+    the special behaviour of~$(X = Y)$ is left unspecified by the remaining rules
+    of homotopy type theory.
+    \item With the univalence axiom, the question has a clear answer: The
+    type~$(X = Y)$ of identity witnesses is equivalent to the type~$(X \simeq
+    Y)$ of equivalences.
+  \end{itemize}
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying The canonical function~$(X = Y) \to (X \simeq Y)$
+    appearing in the univalence axiom is constructed by path induction. It maps
+    the canonical reflexivity witness~$\refl_X$ to the trivial
+    equivalence~$\id_X : X \to X$ (together with a proof that~$\id_X$ is an
+    equivalence).
+  \end{itemize}
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying By the univalence axiom, equivalent types \emph{really are} equal.
+    \item It implies that isomorphic groups, vector spaces, \ldots\@ are equal.
+    \item Thus the widespread practice of \emph{pretending} that isomorphic
+    structures are equal is rigorously formalized.
+    \item Because any construction has to respect equality, the univalence
+    axiom guarantees that \emph{any construction respects equivalence}.
+    \item Most nontrivial mathematical results in homotopy type theory require
+    the univalence axiom.
+  \end{itemize}
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying The univalence axiom implies \emph{function
+    extensionality}: The canonically defined function
+    \[ (f = g) \longrightarrow \prod_{x:A} (f(x) = g(x)) \]
+    is an equivalence, for all functions $f,g : A \to B$.
+    \item So homotopic functions are equal.
+  \end{itemize}
+}
+
+\note{
+  \begin{itemize}
+    \item\justifying Without the univalence axiom, it is consistent to assume
+    \emph{uniqueness of identity proofs}, i.\,e.\@
+    \[ \UIP \defeqv \prod_{X:\U} \prod_{x,y:X} \prod_{p,q:(x=y)} (p=q), \]
+    thus collapsing the homotopical universe.
+    \item Phrased differently, the univalence axiom can not be added to an
+    \emph{extensional} type theory (one fulfilling $\UIP$).
+  \end{itemize}
+
+  \begin{itemize}
+    \item\justifying \emph{No computational interpretation of the univalence axiom is
+    known yet.} This prevents us from \emph{running} proofs (as computer
+    programs). If this were possible, we could, for instance, simply run a
+    proof of the fact that some~$\pi_k(S^n)$ is cyclic (i.\,e.\@ of the
+    form~$\ZZ/(m)$) to find out the value of~$m$.
+  \end{itemize}
+}
+
+
+\end{document}
