@@ -122,7 +122,7 @@
   \addtocounter{framenumber}{\value{framenumberpreappendix}}
 }
 
-\setbeameroption{hide notes}
+\setbeameroption{show notes}
 \setbeamertemplate{note page}[plain]
 
 \newcommand{\imgslide}[1]{{\usebackgroundtemplate{\parbox[c][\paperheight][c]{\paperwidth}{\centering\includegraphics[height=\paperheight]{#1}}}\begin{frame}[plain]\end{frame}}}
@@ -161,23 +161,24 @@
 
 \note{
   \begin{itemize}
-    \item\justifying Foundations allow us to be maximally precise.
-    \item A \emph{proof} as commonly understood is really a shorthand for a
-    (never spelled out) fully formal proof.
-    \item Unlike informal proofs, the correctness of a formal proof can be
-    checked mechanically.
+    \item\justifying Grundlagen erlauben uns, maximal präzise zu sein.
+    \item Ein \emph{Beweis} im üblichen mathematischen Sinn ist eine Anleitung,
+    wie ein (niemals ausbuchstabierter) vollständig formaler Beweis zu
+    konstruieren wäre.
+    \item Die Korrektheit von formalen Beweisversuchen kann -- anders als bei
+    informalen Beweisversuchen -- maschinell geprüft werden.
   \end{itemize}
-
-  %\img{0.5}{logicomix}{Logicomix: An Epic Search for Truth}
 }
+
 \note{
   \begin{itemize}
-    \item\justifying There is no such theorem as ``the sun system is stable if
-    and only if the following large cardinal axiom holds''. Results depend only
-    very occasionally on special foundational axioms.
+    \item\justifying Es gibt kein Theorem der Art "`Das Sonnensystem ist genau
+    dann stabil, wenn das folgende Axiom über große Kardinalzahlen gilt"'.
+    Resultate in der Mathematik hängen nur sehr selten von speziellen Details
+    der Fundierung ab.
 
-    \item Bridges will continue to hold even if a logician discovers an
-    inconsistency in Zermelo--Fraenkel set theory.
+    \item Brücken werden nicht zusammenbrechen, wenn eine Logikerin eine
+    Inkonsistenz in Zermelo--Fraenkel-Mengenlehre findet.
   \end{itemize}
 }
 
@@ -199,7 +200,6 @@
   \end{columns}
 \end{frame}
 
-%\imgslide{images/philosophiae-newton}
 \imgslide{images/principia-mathematica}
 \imgslide{images/principia-mathematica-1plus1}
 
@@ -221,6 +221,26 @@
   Mengenlehre, Typtheorie.
 \end{frame}}
 
+\note{\justifying
+  Die Russellsche Antinomie verläuft wie folgt.
+  \medskip
+
+  Wir definieren die Ansammlung
+  \[ R \defeq \{ M \,|\, M \not\in M \} \]
+  derjenigen Mengen, die sich nicht selbst enthalten. (Die meisten Mengen
+  enthalten sich nicht selbst.)
+  \par
+
+  Die Aussage~$R \in R$ ist dann, nach Definition, äquivalent zu ihrer
+  Negation~$R \not\in R$. Das ist ein Widerspruch (wieso genau?).
+  \par
+
+  Die Russellsche Antinomie hat viele weitere Gesichter: die Barbierin, die
+  genau diejenigen Leute rasiert, die sich nicht selbst rasieren; der Kreter,
+  der behauptet, dass alle Kreter lügen; das Adjektiv "`heterolog"'.
+  \par
+}
+
 
 \section{Mengenlehre}
 
@@ -241,6 +261,25 @@
   \end{itemize}
 \end{frame}
 
+\note{\justifying
+  Wie wird die Russellsche Antinomie in nicht-naiver Mengenlehre aufgelöst?
+  \medskip
+
+  Ist~$P(x)$ eine Aussage, die eine freie Variable~$x$ enthält, so kann man
+  ihre Extension
+  \[ \{ x \,|\, P(x) \} \]
+  bilden. Dieser Ausdruck beschreibt zunächst nur eine \emph{Klasse} (oder
+  \emph{Unmenge} -- vielen Dank an Ludwig Neidhart für diese Sprechweise),
+  und zwar die Klasse all derjenigen \emph{Mengen}~$x$, für die~$P(x)$ gilt.
+  Echte Klassen sind nicht eigenständige mathematische Objekte, sondern nur
+  syntaktischer Zucker.
+  \medskip
+
+  Die Russellsche Antinomie kann man dann nicht mehr formulieren, weil~"`$R \in
+  R$"' nicht länger eine wohlgeformte Aussage ist.
+  \par
+}
+
 \begin{frame}{Mengenlehre?}
   Mengentheoretische Grundlagen \ldots
   \begin{itemize}
@@ -250,6 +289,26 @@
     zum Nachteil interaktiver Beweisumgebungen.
   \end{itemize}
 \end{frame}
+
+\note{
+  \begin{itemize}
+    \item Beispiele für Fragen, die in Mengenlehre formuliert werden können?
+    \begin{itemize}
+      \item Ist $2 = (0,0)$? (Nicht bei den von mir angegebenen Definitionen.)
+      \item Ist $\sin \in \pi$? (Hängt von der nicht angegebenen Definition der
+      reellen Zahlen ab.)
+    \end{itemize}
+    \item\justifying In der mathematischen Praxis befindet man diese Fragen als
+    unsinnig, denn sie missachten die \emph{Typen} der beteiligten
+    mathematischen Objekte und sind nicht invariant unter Isomorphie der
+    beteiligten Strukturen. Man könnte eine konkrete Konstruktion der reellen
+    Zahlen durch eine andere, gleich gute, ersetzen, und dann andere Antworten
+    auf diese Fragen erhalten.
+    \item\justifying Es gibt übrigens auch \emph{strukturelle Ansätze} zu
+    Mengenlehre ohne ein globales Zugehörigkeitsprädikat (z.\,B. ETCS), die
+    diesen Mangel beheben.
+  \end{itemize}
+}
 
 
 \section{Extensionale Typtheorie}
@@ -269,61 +328,55 @@
   Wie spezifiert man ein Typsystem?
 \end{frame}}
 
+\note{
+  \begin{itemize}
+    \item Wie sehen Regeln für Typen so aus?
+    \url{https://ncatlab.org/nlab/show/type+theory\#typeforming_rules}
+
+    \item Wie sehen Regeln für die darübergelagerte Logik aus?
+    siehe Abschnitt~2.3 des Pizzaseminarskripts:
+    \url{https://pizzaseminar.speicherleck.de/skript2/konstruktive-mathematik.pdf\#page=19}
+
+    \item Geheimtipp von Makarius:
+    Thompsons \emph{Type Theory and Functional Programming},
+    \url{https://www.cs.kent.ac.uk/people/staff/sjt/TTFP/}
+  \end{itemize}
+}
+
 
 \section{Intensionale Typtheorie}
 
 {\logo{\includegraphics[scale=0.1]{images/torus}}
 \begin{frame}{Intensionale Typtheorie}
   \begin{itemize}
-    \item Intensionale Typtheorie ist wie extensionale Typtheorie,
-    nur ohne das Konzept von Aussagen.
-    \item Homotopietyptheorie ist intensionale Typtheorie plus das
-    Univalenzaxiom.
+    \item\justifying Intensionale Typtheorie (entwickelt ca. 1960) ist wie
+    extensionale Typtheorie, nur ohne das Konzept von Aussagen und einer
+    darübergelagerten Logikschicht. Logik ergibt sich von selbst aus dem
+    Typsystem!
+    \item Homotopietyptheorie (vorgestellt 2005 von Voevodsky) ist intensionale
+    Typtheorie plus das Univalenzaxiom.
   \end{itemize}
 \end{frame}}
 
-%\frame[t]{\frametitle{What is homotopy type theory?}
-%  \begin{itemize}
-%    \item Homotopy type theory is a new foundational theory.
-%    \item Basic notions have a homotopy-theoretic flavour.
-%    \item One can start doing ``real mathematics'' right away, without complex encodings.
-%    \item Initiated by Voevodsky in 2005.
-%  \end{itemize}
-%
-%  %\img{0.2}{authors}{Some participants of the IAS special year}
-%}
+\note{
+  Homotopietyptheorie ist sowohl (Homotopietyp)theorie als auch
+  Homotopie(typtheorie).
+  \medskip
 
-%\frame<1>[t,label=awesome]{\frametitle{What is homotopy type theory?}
-%  Homotopy type theory \ldots
-%  \begin{itemize}
-%    \item is elegant,
-%    \item reflects mathematical practice,
-%    \item contains wondrous new concepts,
-%    \item ensures that everything respects equivalences,
-%    \item simplifies the plumbing of homotopy theory,
-%    \item allows for accessible computer formalization.
-%  \end{itemize}
-%}
-%
-%\note{
-%  \begin{itemize}
-%    \item\justifying Homotopy type theory is approximately \emph{intensional Martin-Löf type
-%    theory} (existing since the 1970s) plus the new \emph{univalence axiom}.
-%    \item After repeatedly experiencing mistakes in his field going unnoticed
-%    for several years, Voevodsky wanted to work with proof assistants. He went
-%    public in 2009.
-%    \item Voevodsky: ``This story got me scared. Starting from 1993 multiple groups of
-%    mathematicians studied the [\ldots] paper at seminars and used it in their
-%    work and none of them noticed the mistake.
-%
-%    And it clearly was not an accident. A technical argument by a trusted author, which 
-%    is hard to check and looks similar to arguments known to be correct, is
-%    hardly ever checked in detail.''
-%  \end{itemize}
-%}
+  Einige Gründe, wieso manche Mathematikerinnen sich für Homotopietyptheorie
+  begeistern, sind: Sie ist \ldots
+  \begin{itemize}
+    \item elegant,
+    \item spiegelt die mathematische Praxis wieder,
+    \item enthält wundersame neue Konzepte (Identitätstypen, Pfadinduktion, Kreisinduktion,
+    \ldots),
+    \item stellt sicher, dass alles Äquivalenzen respektiert,
+    \item vereinfacht die Grundlagen von Homotopietheorie und
+    \item erlaubt zugängliche Computerformalisierung.
+  \end{itemize}
+}
 
-
-\frame[t]{\frametitle{Gleichheitstypen}
+\begin{frame}{Gleichheitstypen}
   Sei~$X$ eine Menge und seien~$x,y \in X$ Elemente.
   \begin{itemize}
     \item Dann ist ``$x=y$'' eine \hil{Aussage}.
@@ -332,7 +385,7 @@
 
   Sei~$X$ ein Typ in intensionaler Typtheorie und seien~$x,y : X$ Werte.
   \begin{itemize}
-    \item Es gibt einen \hil{Gleichheitstyp} $\Id_X(x,y)$ or $(x =_X y)$.
+    \item Es gibt einen \hil{Gleichheitstyp} $\Id_X(x,y)$ oder $(x =_X y)$.
     \item Um ``$x=y$'' nachzuweisen,
     gib einen Wert von~$(x = y)$ an.
     \item Wir haben $\refl_x : (x = x)$.
@@ -342,45 +395,44 @@
 
   \pause
   Intuition: $(x = y)$ ist der Typ der \hil{Pfade} $x \leadsto y$.
-}
+\end{frame}
 
 \note{
   \begin{itemize}
-    \item\justifying Note that we use logical terminology. A proposition is merely a
-    statement, not necessarily a true statement.
-    \item In an intensional type theory, propositions are not an extra part of
-    the language distinct from values and types.
-    \item Instead, \emph{propositions are types}.
-    \item To prove a proposition means to exhibit a value of it.
-    Such a value can be thought of as a \emph{proof} or \emph{witness}.
-    \item We have \emph{proof relevance}.
-    \item Types whose values are all equal -- types for which merely knowing that they
-    are inhabited is all there is to know -- are called \emph{mere propositions}. See below for
-    $\IsMereProp$.
+    \item In intensionaler Typtheorie sind Aussagen nicht eine zusätzlicher
+    Bestandteil der Sprache neben Werten und Typen.
+    \item Stattdessen \emph{sind Aussagen Typen}.
+    \item Eine Aussage zu beweisen bedeutet, einen Wert von ihr anzugeben.
+    Ein solcher Wert kann als \emph{Beweis} oder \emph{Zeuge} für die Aussage
+    angesehen werden.
+    \item Intensionale Typtheorie ist \emph{beweisrelevant}.
+    \item Typen, für die je zwei Werte gleich sind, also Typen, für die
+    lediglich zu wissen, dass sie bewohnt sind, schon alles ist, was man über
+    sie wissen kann, heißen \emph{mere propositions}.
   \end{itemize}
 }
 
 \note{
   \justifying
-  Examples for more complex propositions (types):
+  Beispiele für komplexere Aussagen (Typen):
   \begin{itemize}
-    \item ``$X$ is a subsingleton'': \tabto{4.9cm}
+    \item "`$X$ enthält höchstens ein Element"': \tabto{5.45cm}
     $\prod_{x:X} \prod_{y:X} (x=y)$
-    \item ``Addition is commutative'': \tabto{4.9cm}
+    \item "`Addition ist kommutativ'': \tabto{5.45cm}
     $\prod_{n:\NN} \prod_{m:\NN} (n+m = m+n)$
-    \item ``Every number is even'': \tabto{4.9cm}
+    \item "`Jede natürliche Zahl ist gerade"': \tabto{5.45cm}
     $\prod_{n:\NN} \sum_{m:\NN} (n=2m)$
   \end{itemize}
 
-  By reading ``for all $x:X$'' for ``$\prod_{x:X}$'' and ``there exists $x:X$''
-  for~``$\sum_{x:X}$'', these types can be interpreted in a simple logical way.
-  But at the same time, they can be read in geometric/homotopy-theoretic terms;
-  see below.
+  Indem man "`$\prod_{x:X}$"' als~"`für alle~$x:X$"' und~"`$\sum_{x:X}$"'
+  als~"`es gibt~$x:X$"' liest, erhalten diese Typen eine logische
+  Interpretation. Zugleich aber kann man ihnen eine
+  geometrische/homotopietheoretische Interpretation verleihen.
   \par
 }
 
 \note{
-  The type of monoid structures on a type~$X$ is
+  Der Typ der Monoidstrukturen auf einem Typ~$X$ ist
   \begin{multline*}
     \sum_{\circ:X \times X \to X}
     \sum_{e:X}
@@ -393,92 +445,56 @@
 
 \note{
   \begin{itemize}
-    \item\justifying Identity witnesses can be composed: Let $p : (x = y)$ and $q :
-    (y = z)$. Then there exists a canonically defined witness~$p \ct q : (x = z)$.
+    \item\justifying Identitätszeugen können miteinander komponiert werden: Sei
+    $p : (x = y)$ und $q : (y = z)$. Dann existiert ein kanonisch definierter
+    Zeuge~$p \ct q : (x = z)$.
 
-    \item Composition of identity witnesses is associative. The proof of this
-    fact is a value of the type
+    \item Komposition von Identitätszeugen ist assoziativ. Der Beweis dieser
+    Tatsache ist ein Wert des Typs
     \[ (p \ct (q \ct r) = (p \ct q) \ct r). \]
   \end{itemize}
 }
 
 
-%\section{Homotopy theory in HoTT}
-%
-%\subsection{How are types like spaces?}
-%
-%\frame[t]{\frametitle{How are types like spaces?}
-%  \begin{center}\begin{tabular}{ll}
-%    \toprule
-%    homotopy theory & type theory \\\midrule
-%    \hil{space} $X$ & type $X$ \\
-%    \hil{point} $x \in X$ & value $x:X$ \\
-%    \hil{path} $x \leadsto y$ & value of $(x = y)$ \\
-%    \hil{(continuous) map} & value of $X \to Y$ \\
-%    \bottomrule
-%  \end{tabular}\end{center}
-%
-%  \begin{itemize}
-%    \item A \hil{homotopy} between maps $f, g : X \to Y$ is a value of
-%    \[ (f \simeq g) \defeqv \prod_{x:X} (f(x) = g(x)). \]
-%    \item A space $X$ is \hil{contractible} iff
-%    \[ \IsContr(X) \defeqv \sum_{x:X} \prod_{y:X} (x=y). \]
-%  \end{itemize}
-%}
-%
-%%\note{
-%%  \begin{center}
-%%    \scalebox{0.6}{\input{images/paths.pspdftex}}
-%%  \end{center}
-%%  \vspace{-1.3em}
-%%
-%%  \begin{itemize}
-%%    \item\justifying This type has values $x, y : X$.
-%%    \item The paths~$p$, $q$, and $r$ are values of~$(x = y)$.
-%%    \item Since~$p$ and~$q$ are homotopic, we have~$(p = q)$; a witness of this
-%%    fact is the value~$H : (p = q)$.
-%%    \item Because of the hole, $p$ (and~$q$) are not homotopic to~$r$. So $\neg(p
-%%    = r)$; more precisely, the type~$\neg(p=r) \defeqv ((p=r) \to
-%%    \boldsymbol{0})$ is inhabited, where~$\boldsymbol{0}$ is the \emph{empty
-%%    type}.
-%%    \item We have~$(x = y) \simeq \ZZ$, where~$\simeq$ denotes
-%%    \emph{equivalence}, to be discussed below.
-%%  \end{itemize}
-%%}
-%
-%\note{
-%  \begin{itemize}
-%    \item\justifying The type $(f \simeq g)$ is the type of homotopies
-%    between~$f$ and~$g$. It is read as the type of ``continuous families of
-%    paths $f(x) \leadsto g(x)$''.
-%
-%    \item To understand the definition of contractibility geometrically, one
-%    may not read it in logical terms: One may not read it as ``there exists a
-%    point~$x$ such that any point~$y$ is connected to~$x$''.
-%
-%    \item Instead, it should be read as follows: There exists a point~$x$ such
-%    that there is a \emph{continuous} way of associating to any point~$y$ a
-%    path~$x \leadsto y$. Convince yourself that this not possible for your
-%    favorite example of a non-contractible space (for instance, the circle).
-%
-%    \item A space is \emph{connected} if and only if
-%    \[ \sum_{x:X} \prod_{y:X} \|x=y\|_{-1}. \]
-%    Here, $\|(x=y)\|_{-1}$ is the \emph{$(-1)$-truncation} of~$(x = y)$; it is a
-%    mere proposition. See below.
-%  \end{itemize}
-%}
+\begin{frame}{Typen als Räume}
+  \begin{center}\begin{tabular}{ll}
+    \toprule
+    Homotopietheorie & Typtheorie \\\midrule
+    \hil{Raum} $X$ & Typ $X$ \\
+    \hil{Punkt} $x \in X$ & Wert $x:X$ \\
+    \hil{Pfad} $x \leadsto y$ & Wert von $(x = y)$ \\
+    \hil{(stetige) Abbildung} & Wert von $X \to Y$ \\
+    \bottomrule
+  \end{tabular}\end{center}
 
-\frame[t]{\frametitle{Induktive Definitionen}
-%  The \hil{interval} $I$ is generated by
-%  \begin{itemize}
-%    \item a point $0 : I$ and
-%    \item a point $1 : I$ and
-%    \item a path $\seg : (0 = 1)$.
-%  \end{itemize}
-%  Of course, we can show $I \simeq \boldsymbol{1}$.
-%  \bigskip
-%  \pause
+  \begin{itemize}
+    \item Eine \hil{Homotopie} zwischen Abbildungen $f, g : X \to Y$ ist ein
+    Wert von
+    \[ (f \simeq g) \defeqv \prod_{x:X} (f(x) = g(x)). \]
+    \item Ein Raum $X$ ist genau dann \hil{zusammenziehbar}, wenn
+    \[ \IsContr(X) \defeqv \sum_{x:X} \prod_{y:X} (x=y). \]
+  \end{itemize}
+\end{frame}
 
+\note{
+  \begin{center}
+    \scalebox{0.6}{\input{images/paths.pspdftex}}
+  \end{center}
+  \vspace{-1.3em}
+
+  \begin{itemize}
+    \item\justifying Dieser Typ~$X$ enthält die Werte~$x, y : X$.
+    \item Die Pfade~$p$, $q$ und $r$ sind Werte von~$(x = y)$.
+    \item Da~$p$ und~$q$ "`zueinander homotop sind"', haben wir~$(p = q)$; ein
+    Zeuge dieses Faktums ist der Wert~$H : (p = q)$.
+    \item Wegen des Lochs sind $p$ (und~$q$) nicht zu~$r$ homotop. Also $\neg(p
+    = r)$; genauer gesagt ist der Typ~$\neg(p=r) \defeqv ((p=r) \to
+    \boldsymbol{0})$ bewohnt, wobei~$\boldsymbol{0}$ der \emph{leere
+    Typ} ist.
+  \end{itemize}
+}
+
+\begin{frame}{Induktive Definitionen}
   Der \hil{Kreislinie} $S^1$ wird erzeugt von
   \begin{itemize}
     \item einem Punkt $\base : S^1$ und
@@ -500,7 +516,7 @@
     \item einem Pfad $q : (b = b)$ und
     \item einem 2-Pfad $t : (p \ct q = q \ct p)$.
   \end{itemize}
-}
+\end{frame}
 
 \note{
   \begin{itemize}
@@ -523,7 +539,7 @@
   \end{itemize}
 }
 
-\frame[t]{\frametitle{Pfadinduktion}
+\begin{frame}{Pfadinduktion}
   \hil{(Based) path induction} sagt aus: Gegeben
   \begin{itemize}
     \item ein Wert~$a$ eines Typs~$A$,
@@ -533,7 +549,7 @@
   dann gibt es eine Funktion
   \[ f : \prod_{x:A} \prod_{p:(a=x)} C(x,p) \]
   mit~$f(a,\refl_a) \equiv c$.
-}
+\end{frame}
 
 \note{
   \begin{itemize}
@@ -703,6 +719,5 @@
     form~$\ZZ/(m)$) to find out the value of~$m$.
   \end{itemize}
 }
-
 
 \end{document}
