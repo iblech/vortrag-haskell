@@ -126,6 +126,7 @@
 \setbeamertemplate{note page}[plain]
 
 \newcommand{\imgslide}[1]{{\usebackgroundtemplate{\parbox[c][\paperheight][c]{\paperwidth}{\centering\includegraphics[height=\paperheight]{#1}}}\begin{frame}[plain]\end{frame}}}
+\newcommand{\imgslideW}[1]{{\usebackgroundtemplate{\parbox[c][\paperheight][c]{\paperwidth}{\centering\includegraphics[width=\paperwidth]{#1}}}\begin{frame}[plain]\end{frame}}}
 
 \begin{document}
 
@@ -154,6 +155,10 @@
   \par
 \end{frame}
 
+\imgslideW{images/logicomix-1}
+\imgslideW{images/logicomix-2}
+
+
 \note{
   \begin{itemize}
     \item\justifying Foundations allow us to be maximally precise.
@@ -176,7 +181,6 @@
   \end{itemize}
 }
 
-
 \begin{frame}[plain,c]
   \begin{columns}[c]
     \begin{column}{0.6\textwidth}
@@ -195,6 +199,10 @@
   \end{columns}
 \end{frame}
 
+%\imgslide{images/philosophiae-newton}
+\imgslide{images/principia-mathematica}
+\imgslide{images/principia-mathematica-1plus1}
+
 {\logo{\includegraphics[scale=0.3]{images/paradox}}
 \begin{frame}{Paradoxa}
   \begin{itemize}
@@ -212,10 +220,6 @@
   Lösungsvorschläge: \\
   Mengenlehre, Typtheorie.
 \end{frame}}
-
-\imgslide{images/principia-mathematica}
-\imgslide{images/philosophiae-newton}
-\imgslide{images/principia-mathematica-1plus1}
 
 
 \section{Mengenlehre}
