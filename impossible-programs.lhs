@@ -88,7 +88,7 @@ Falls `p` nicht erfüllbar ist, dann kann `epsilon p` sein, was es möchte.
 >     else True  : epsilon (p . (True:))
 >     where xs = epsilon (p . (False:))
 
-Etwas schneller geht es dank Lazyness so:
+Etwas schneller geht es dank Laziness so:
 
     epsilon :: ([Bool] -> Bool) -> [Bool]
     epsilon p = h : epsilon (p . (h:))
@@ -204,3 +204,6 @@ entscheidend ist, ob `A` *kompakt* ist oder nicht.
 2. Definiere eine Typklasse `Compact` und implementiere Instanzen für
    `[Bool]` und `NAT` sowie eine generische Instanz `(Compact a, Compact b) =>
    Compact (a,b)`.
+
+3. Schreibe eine Funktion, die den größten Funktionswert einer gegebenen
+   Funktion `[Bool] -> Nat` bestimmt. (Lösung in impossible-maximum.hs.)
