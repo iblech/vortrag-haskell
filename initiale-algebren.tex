@@ -494,14 +494,14 @@ ana alpha x = MkNu (fmap (ana alpha) (alpha x))
 
   \emph{Beispiel:} Das Wesentliche vom Datentyp der endlichen Listen ist, dass
   man seine Werte aus Grundbestandteilen (\texttt{Nil} und \texttt{Cons x})
-  sukzessive kontruieren kann. Trotzdem kann man seine Werte auch beobachten
+  sukzessive \emph{konstruieren} kann. Trotzdem kann man seine Werte auch \emph{beobachten}
   (prüfen, ob ein Wert \texttt{Nil} ist oder eine Cons-Zelle ist).
   \medskip
 
   \emph{Beispiel:} Das Wesentliche vom Datentyp der nicht notwendigerweise
-  endlichen Listen ist, dass man seine Werte beobachten kann (ist eine solche
+  endlichen Listen ist, dass man seine Werte \emph{beobachten} kann (ist eine solche
   Liste leer oder eine Cons-Zelle?). Trotzdem kann man aber auch seine Werte
-  konstruieren (etwa an eine gegebene beliebig lange Liste vorne ein Element
+  \emph{konstruieren} (etwa an eine gegebene beliebig lange Liste vorne ein Element
   anfügen).
   \par
 }
