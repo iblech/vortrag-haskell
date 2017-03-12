@@ -291,7 +291,7 @@ class Monoid m where
 \begin{frame}\frametitle{Wozu?}
   \begin{itemize}
     \item Allgegenwärtigkeit
-    \item Gemeinsamkeite und Unterschiede
+    \item Gemeinsamkeiten und Unterschiede
     \item Generische Beweise
     \item Generische Algorithmen
   \end{itemize}
@@ -350,10 +350,10 @@ class Monoid m where
   auf~$X$}, wenn für jedes Paar~$(M,\texttt{phi})$ bestehend aus einem
   Monoid~$M$ und einer Abbildung~$\texttt{phi} : X \to M$ genau ein
   Monoidhomomorphismus~$\texttt{cata phi} : F \to M$ existiert,
-  sodass~$\texttt{phi} = \texttt{cata phi} . \texttt{inj}$.
+  sodass~$\texttt{phi} = \texttt{cata phi} \mathop{.} \texttt{inj}$.
   \medskip
 
-  Man kann zeigen -- über ein kategorielles Standard-Argument -- dass je zwei
+  Man kann zeigen -- über ein kategorielles Standardargument -- dass je zwei
   Paare~$(F,\texttt{inj})$, welche diese universelle Eigenschaft erfüllen,
   vermöge eines eindeutigen Isomorphismus zueinander isomorph sind. Das
   rechtfertigt, von \emph{dem} freien Monoid über~$X$ zu sprechen.
