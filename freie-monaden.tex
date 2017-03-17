@@ -5,6 +5,7 @@
 \usepackage{comment}
 \usepackage{minted}
 \usepackage{wasysym}
+\usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \usepackage[all]{xy}
@@ -18,20 +19,27 @@
 \DeclareUnicodeCharacter{21D2}{$\Rightarrow$}
 \DeclareUnicodeCharacter{2192}{$\rightarrow$}
 
-\title[Freie Monaden]{\smiley{} Freie Monaden \smiley}
+\title[Freie Monaden]{\smiley{} Monaden als Monoidobjekte \smiley}
 \author[Augsburger Curry Club]{
   \includegraphics[scale=0.1]{images/a-monad-is-just-1} \\\ \\
   Ingo Blechschmidt \\[0.1em] \scriptsize\texttt{<iblech@speicherleck.de>}}
-\date[2015-09-10]{\vspace*{-1.5em}\scriptsize Augsburger Curry-Club \\ 10.
-September 2015 und 8. Oktober 2015}
+\date[2017-03-17]{\vspace*{-1.5em}\scriptsize Hannover.FP \\ 17.
+März 2017}
 
-\usetheme{Warsaw}
+\useinnertheme[shadow=true]{rounded}
+\useoutertheme{split}
+\usecolortheme{orchid}
+\usecolortheme{whale}
+\setbeamerfont{block title}{size={}}
 
 \useinnertheme{rectangles}
 
 \usecolortheme{seahorse}
 \definecolor{mypurple}{RGB}{150,0,255}
 \setbeamercolor{structure}{fg=mypurple}
+\definecolor{myred}{RGB}{150,0,0}
+\setbeamercolor*{title}{bg=myred,fg=white}
+\setbeamercolor*{titlelike}{bg=myred,fg=white}
 
 \usefonttheme{serif}
 \usepackage[T1]{fontenc}
@@ -52,7 +60,7 @@ September 2015 und 8. Oktober 2015}
 \newcommand{\Hask}{\mathrm{Hask}}
 
 \setbeamertemplate{navigation symbols}{}
-\setbeamertemplate{headline}{}
+%\setbeamertemplate{headline}{}
 
 \setbeamertemplate{title page}[default][colsep=-1bp,rounded=false,shadow=false]
 \setbeamertemplate{frametitle}[default][colsep=-2bp,rounded=false,shadow=false,center]
@@ -64,10 +72,10 @@ September 2015 und 8. Oktober 2015}
 
 \newcommand{\hil}[1]{{\usebeamercolor[fg]{item}{\textbf{#1}}}}
 \setbeamertemplate{frametitle}{%
-  \vskip1em%
+  \vskip0.5em%
   \leavevmode%
   \begin{beamercolorbox}[dp=1ex,center]{}%
-      \usebeamercolor[fg]{item}{\textbf{\textsf{\Large \insertframetitle}}}
+      \usebeamercolor[fg]{item}{\textbf{\Large \insertframetitle}}
   \end{beamercolorbox}%
 }
 
@@ -90,7 +98,7 @@ September 2015 und 8. Oktober 2015}
   \addtocounter{framenumber}{\value{framenumberpreappendix}}
 }
 
-\setbeameroption{show notes}
+\setbeameroption{hide notes}
 \setbeamertemplate{note page}[plain]
 
 \begin{document}
@@ -478,7 +486,7 @@ class Monoid m where
   sodass die \hil{Funktoraxiome} erfüllt sind:
   \begin{itemize}
     \item $F(\id_X) = \id_{F(X)}$,
-    \item $F(f \circ g) = F(f) \circ F(g)$.
+    \item $F(g \circ f) = F(g) \circ F(f)$.
   \end{itemize}
   \vfill
 
@@ -577,15 +585,17 @@ data Void  a
 
 \begin{frame}\frametitle{Monoidale Kategorien}
   \small
-  \begin{tabular}{@{}r|l@{}}
-    $\mathrm{Set}$ & $\mathrm{End}(\Hask)$ \\\hline
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    $\mathrm{Set}$ & $\mathrm{End}(\Hask)$ \\\midrule
     Menge $M$ & Funktor $M$ \\
     Abbildung $M \to N$ & natürliche Transformation $\forall a. M a \to N a$ \\
     $M \times N$ & $M \circ N$ mit $(M \circ N) a = M (N a)$ \\
     nur linke Komponente ändern & nur äußere Schicht ändern \\
     nur rechte Komponente ändern & nur innere Schicht ändern \\
     \pause
-    \hil{Monoid} & \hil{Monade}
+    \hil{Monoid} & \hil{Monade} \\
+    \bottomrule
   \end{tabular}
 
   \begin{center}
@@ -761,7 +771,7 @@ instance Monad (State s) where
 }
 
 
-\subsection{"`Monoid in einer Kategorie von Endofunktoren"'}
+\subsection[Slogan]{"`Monoid in einer Kategorie von Endofunktoren"'}
 
 \begin{frame}\frametitle{Die Monadenaxiome}
   {\scriptsize
