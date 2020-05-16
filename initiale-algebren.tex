@@ -279,9 +279,9 @@ product = cata productA
 
   \inputminted{haskell}{images/initial-algebras.hs}
 
-  Entsprechend sind viele (struturell-)rekursive Funktionen Beispiele für
+  Entsprechend sind viele (strukturell-)rekursive Funktionen Beispiele für
   Katamorphismen -- also Morphismen, die uns die universelle Eigenschaft der
-  initialen Algebren schenken.
+  initialen Algebren schenkt.
   \par
 }
 
@@ -326,15 +326,15 @@ cata g (MkMu r) = g (fmap (cata g r))
   Initiale Algebren modellieren Datentypen, für die jeder Wert "`endlich"' ist.
   \medskip
 
-  Tatsächlich kann man in vielen Kategorien die initale Algebra eines
+  Tatsächlich kann man in vielen Kategorien die initiale Algebra eines
   Funktors~$F$ gewinnen als
   \[ \mu F = \operatorname{colim}(\emptyset \to F(\emptyset) \to F(F(\emptyset)) \to \cdots). \]
   Dabei ist~$\emptyset$ das initiale Objekt (der leere Datentyp~\texttt{Void}).
 \end{frame}
 
 \note{\justifying
-  Ist~$F$ der Funktor der vorherigen Folien, so realisiert die gezeigte Formel
-  für~$\mu F$ als (Ko-)Limes der Datentypen der leeren Listen, der höchstens
+  Ist~$F$ der Funktor der vorherigen Folien, so realisiert die gezeigte Formel~$\mu F$
+  als (Ko-)Limes der Datentypen der leeren Listen, der höchstens
   einelementigen Listen, der höchstens zweielementigen Listen, und so
   weiter.\par
 }
